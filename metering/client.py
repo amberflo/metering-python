@@ -25,14 +25,15 @@ class Client(object):
     """Create a new Segment client."""
     log = logging.getLogger('amberflo')
 
-    def __init__(self, write_key=None, host=None, debug=False,
+    def __init__(self, user_name=None, password=None, host=None, debug=False,
                  max_queue_size=10000, send=True, on_error=None, flush_at=100,
                  flush_interval=0.5, gzip=False, max_retries=3,
                  sync_mode=False, timeout=15, thread=1):
-        require('write_key', write_key, string_types)
-
+        require('user_name', user_name, string_types)
+        require('password', password, string_types)
         self.queue = queue.Queue(max_queue_size)
-        self.write_key = write_key
+        self.password = password
+        self.user_name = user_name
         self.on_error = on_error
         self.debug = debug
         self.send = send
@@ -58,7 +59,7 @@ class Client(object):
             for n in range(thread):
                 self.consumers = []
                 consumer = Consumer(
-                    self.queue, write_key, host=host, on_error=on_error,
+                    self.queue, user_name=user_name, password=password, host=host, on_error=on_error,
                     flush_at=flush_at, flush_interval=flush_interval,
                     gzip=gzip, retries=max_retries, timeout=timeout,
                 )

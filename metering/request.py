@@ -12,14 +12,14 @@ from metering.utils import remove_trailing_slash
 
 _session = sessions.Session()
 token = None
-def login(write_key, user_id):
+def login(user_name,password):
     global token
     if token is not None:
         return token
     log = logging.getLogger('amberflo')
     log.debug('login')
-    login_request = {"AuthParameters" : {"USERNAME" : "demo","PASSWORD" :
-                  "changeme"}, "AuthFlow" : "USER_PASSWORD_AUTH", "ClientId" :
+    login_request = {"AuthParameters" : {"USERNAME" : user_name,"PASSWORD" :
+                  password}, "AuthFlow" : "USER_PASSWORD_AUTH", "ClientId" :
                   "9g4vt735jc90ju6u82gmqan3m","UserPoolId" :
                   "us-west-2_2Yhs6Fa2h"}
     headers = {
@@ -34,7 +34,7 @@ def login(write_key, user_id):
         result = res.json()
         #log.debug('*****************received result: %s', result)
         token = str(result['AuthenticationResult']['IdToken'])
-        log.debug('*****************received token: %s', token)
+        # log.debug('*****************received token: %s', token)
         return token
     try:
         log.debug('login failed')   
@@ -44,16 +44,15 @@ def login(write_key, user_id):
     except Exception as e:
         log.debug(e)   
 
-def post(write_key, host=None, gzip=False, timeout=15, **kwargs):
+def post(user_name,password, host=None, gzip=False, timeout=15, **kwargs):
     log = logging.getLogger('amberflo')
-    token = login(write_key,'test')
+    token = login(user_name,password)
     #log.debug('*******using token: '+token)
     """Post the `kwargs` to the API"""
     
     body = kwargs
     body["sentAt"] = datetime.utcnow().replace(tzinfo=tzutc()).isoformat()
     url = 'https://app.amberflo.io/ingest/'
-    auth = HTTPBasicAuth(write_key, '')
     data = json.dumps(body['batch'], cls=DatetimeSerializer)
     log.debug('making request: %s', data)
     headers = {
