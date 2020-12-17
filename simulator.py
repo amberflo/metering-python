@@ -54,7 +54,7 @@ metering.write_key = options.password
 metering.on_error = failed
 metering.debug = True
 
-log = logging.getLogger('segment')
+log = logging.getLogger('amberflo')
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
 log.addHandler(ch)

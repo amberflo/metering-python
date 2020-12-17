@@ -16,7 +16,7 @@ def login(write_key, user_id):
     global token
     if token is not None:
         return token
-    log = logging.getLogger('segment')
+    log = logging.getLogger('amberflo')
     log.debug('login')
     login_request = {"AuthParameters" : {"USERNAME" : "demo","PASSWORD" :
                   "changeme"}, "AuthFlow" : "USER_PASSWORD_AUTH", "ClientId" :
@@ -45,7 +45,7 @@ def login(write_key, user_id):
         log.debug(e)   
 
 def post(write_key, host=None, gzip=False, timeout=15, **kwargs):
-    log = logging.getLogger('segment')
+    log = logging.getLogger('amberflo')
     token = login(write_key,'test')
     #log.debug('*******using token: '+token)
     """Post the `kwargs` to the API"""

@@ -1,9 +1,9 @@
 ﻿analytics-python
 ==============
 
-[![CircleCI](https://circleci.com/gh/segmentio/analytics-python.svg?style=svg&circle-token=b09aadca8e15901549cf885adcb8e1eaf671a5d8)](https://circleci.com/gh/segmentio/analytics-python)
+[![CircleCI](https://circleci.com/gh/amberfloio/analytics-python.svg?style=svg&circle-token=b09aadca8e15901549cf885adcb8e1eaf671a5d8)](https://circleci.com/gh/amberfloio/analytics-python)
 
-analytics-python is a python client for [Segment](https://segment.com)
+analytics-python is a python client for [Segment](https://amberflo.com)
 
 <div align="center">
   <img src="https://user-images.githubusercontent.com/16131737/53616895-a1142d80-3b99-11e9-8e0e-594c0b0dcdc9.png"/>
@@ -20,7 +20,7 @@ Analytics helps you measure your users, product, and business. It unlocks insigh
 3. **Explore your data** by creating metrics (for example, new signups, retention cohorts, and revenue generation).
     - The best Segment companies use retention cohorts to measure product market fit. Netflix has 70% paid retention after 12 months, 30% after 7 years.
 
-[Segment](https://segment.com) collects analytics data and allows you to send it to more than 250 apps (such as Google Analytics, Mixpanel, Optimizely, Facebook Ads, Slack, Sentry) just by flipping a switch. You only need one Segment code snippet, and you can turn integrations on and off at will, with no additional code. [Sign up with Segment today](https://app.segment.com/signup).
+[Segment](https://amberflo.com) collects analytics data and allows you to send it to more than 250 apps (such as Google Analytics, Mixpanel, Optimizely, Facebook Ads, Slack, Sentry) just by flipping a switch. You only need one Segment code snippet, and you can turn integrations on and off at will, with no additional code. [Sign up with Segment today](https://app.amberflo.com/signup).
 
 ### Why?
 1. **Power all your analytics apps with the same data**. Instead of writing code to integrate all of your tools individually, send data to Segment, once.
@@ -43,13 +43,13 @@ Analytics helps you measure your users, product, and business. It unlocks insigh
 
 ### 🚀 Startup Program
 <div align="center">
-  <a href="https://segment.com/startups"><img src="https://user-images.githubusercontent.com/16131737/53128952-08d3d400-351b-11e9-9730-7da35adda781.png" /></a>
+  <a href="https://amberflo.com/startups"><img src="https://user-images.githubusercontent.com/16131737/53128952-08d3d400-351b-11e9-9730-7da35adda781.png" /></a>
 </div>
-If you are part of a new startup  (&lt;$5M raised, &lt;2 years since founding), we just launched a new startup program for you. You can get a Segment Team plan  (up to <b>$25,000 value</b> in Segment credits) for free up to 2 years — <a href="https://segment.com/startups/">apply here</a>!
+If you are part of a new startup  (&lt;$5M raised, &lt;2 years since founding), we just launched a new startup program for you. You can get a Segment Team plan  (up to <b>$25,000 value</b> in Segment credits) for free up to 2 years — <a href="https://amberflo.com/startups/">apply here</a>!
 
 ## Documentation
 
-Documentation is available at [https://segment.com/libraries/python](https://segment.com/libraries/python).
+Documentation is available at [https://amberflo.com/libraries/python](https://amberflo.com/libraries/python).
 
 ## License
 
@@ -68,7 +68,7 @@ WWWWWW||WWWWWW
 
 (The MIT License)
 
-Copyright (c) 2013 Segment Inc. <friends@segment.com>
+Copyright (c) 2013 Segment Inc. <friends@amberflo.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 

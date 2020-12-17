@@ -1,7 +1,7 @@
 1.3.0-beta1 / 2019-04-27
 ==================
  
-  * Add `sync_mode` option ([#147](https://github.com/segmentio/analytics-python/pull/147))
+  * Add `sync_mode` option ([#147](https://github.com/amberfloio/analytics-python/pull/147))
 
 1.3.0-beta0 / 2018-10-10
 ==================
@@ -21,18 +21,18 @@
 1.2.9 / 2017-11-28
 ==================
 
-  * [Fix](https://github.com/segmentio/analytics-python/pull/102): Stringify non-string userIds and anonymousIds.
+  * [Fix](https://github.com/amberfloio/analytics-python/pull/102): Stringify non-string userIds and anonymousIds.
 
 1.2.8 / 2017-09-20
 ==================
 
-  * [Fix](https://github.com/segmentio/analytics-python/issues/94): Date objects are removed from event properties.
-  * [Fix](https://github.com/segmentio/analytics-python/pull/98): Fix for regression introduced in version 1.2.4.
+  * [Fix](https://github.com/amberfloio/analytics-python/issues/94): Date objects are removed from event properties.
+  * [Fix](https://github.com/amberfloio/analytics-python/pull/98): Fix for regression introduced in version 1.2.4.
 
 1.2.7 / 2017-01-31
 ==================
 
-  * [Fix](https://github.com/segmentio/analytics-python/pull/92): Correctly serialize date objects.
+  * [Fix](https://github.com/amberfloio/analytics-python/pull/92): Correctly serialize date objects.
 
 1.2.6 / 2016-12-07
 ==================
@@ -132,5 +132,5 @@
 ==================
 
  * Added history.d change log
- * Merging https://github.com/segmentio/analytics-python/pull/14 to add support for lists and PEP8 fixes. Thanks https://github.com/dfee!
+ * Merging https://github.com/amberfloio/analytics-python/pull/14 to add support for lists and PEP8 fixes. Thanks https://github.com/dfee!
   * Fixing #12, adding static public API to analytics.__init__

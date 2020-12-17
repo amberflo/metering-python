@@ -23,7 +23,7 @@ ID_TYPES = (numbers.Number, string_types)
 
 class Client(object):
     """Create a new Segment client."""
-    log = logging.getLogger('segment')
+    log = logging.getLogger('amberflo')
 
     def __init__(self, write_key=None, host=None, debug=False,
                  max_queue_size=10000, send=True, on_error=None, flush_at=100,
@@ -94,7 +94,6 @@ class Client(object):
         timestamp = msg['time']
         if timestamp is None:
             timestamp = str(int(round(time.time() * 1000)))
-        print(type(timestamp))
         message_id = msg.get('messageId')
         if message_id is None:
             message_id = uuid4()

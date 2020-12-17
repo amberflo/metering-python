@@ -20,7 +20,7 @@ BATCH_SIZE_LIMIT = 475000
 
 class Consumer(Thread):
     """Consumes the messages from the client's queue."""
-    log = logging.getLogger('segment')
+    log = logging.getLogger('amberflo')
 
     def __init__(self, queue, write_key, flush_at=100, host=None,
                  on_error=None, flush_interval=0.5, gzip=False, retries=10,
@@ -126,7 +126,6 @@ class Consumer(Thread):
             max_tries=self.retries + 1,
             giveup=fatal_exception)
         def send_request():
-            print(batch)
             post(self.write_key, self.host, gzip=self.gzip,
                  timeout=self.timeout, batch=batch)
 
