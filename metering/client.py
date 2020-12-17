@@ -3,10 +3,10 @@ from uuid import uuid4
 import logging
 import numbers
 import atexit
-
+import time
 from dateutil.tz import tzutc
 from six import string_types
-
+from six import integer_types
 from metering.utils import guess_timezone, clean
 from metering.consumer import Consumer
 from metering.request import post
@@ -68,178 +68,44 @@ class Client(object):
                 if send:
                     consumer.start()
 
-    def identify(self, user_id=None, traits=None, context=None, timestamp=None,
-                 anonymous_id=None, integrations=None, message_id=None):
-        traits = traits or {}
-        context = context or {}
-        integrations = integrations or {}
-        require('user_id or anonymous_id', user_id or anonymous_id, ID_TYPES)
-        require('traits', traits, dict)
+   
 
+    def track(self, tenant=None, meter_name=None,meter_value=None,dimensions=None,
+              timestamp=None):
+        dimensions = dimensions or {}
+        require('tenant', tenant ,string_types)
+        require('meter_name', meter_name, string_types)
+        require('meter_value', meter_value, integer_types)
+        if timestamp is None:
+            timestamp = str(int(round(time.time() * 1000)))
         msg = {
-            'integrations': integrations,
-            'anonymousId': anonymous_id,
-            'timestamp': timestamp,
-            'context': context,
-            'type': 'identify',
-            'userId': user_id,
-            'traits': traits,
-            'messageId': message_id,
+            'tenant': tenant,
+            'meter_name': meter_name,
+            'meter_value': meter_value,
+            'time': timestamp,
+            'dimensions': dimensions,
         }
 
         return self._enqueue(msg)
 
-    def track(self, user_id=None, event=None, properties=None, context=None,
-              timestamp=None, anonymous_id=None, integrations=None,
-              message_id=None):
-        properties = properties or {}
-        context = context or {}
-        integrations = integrations or {}
-        require('user_id or anonymous_id', user_id or anonymous_id, ID_TYPES)
-        require('properties', properties, dict)
-        require('event', event, string_types)
-
-        msg = {
-            'integrations': integrations,
-            'anonymousId': anonymous_id,
-            'properties': properties,
-            'timestamp': timestamp,
-            'context': context,
-            'userId': user_id,
-            'type': 'track',
-            'event': event,
-            'messageId': message_id,
-        }
-
-        return self._enqueue(msg)
-
-    def alias(self, previous_id=None, user_id=None, context=None,
-              timestamp=None, integrations=None, message_id=None):
-        context = context or {}
-        integrations = integrations or {}
-        require('previous_id', previous_id, ID_TYPES)
-        require('user_id', user_id, ID_TYPES)
-
-        msg = {
-            'integrations': integrations,
-            'previousId': previous_id,
-            'timestamp': timestamp,
-            'context': context,
-            'userId': user_id,
-            'type': 'alias',
-            'messageId': message_id,
-        }
-
-        return self._enqueue(msg)
-
-    def group(self, user_id=None, group_id=None, traits=None, context=None,
-              timestamp=None, anonymous_id=None, integrations=None,
-              message_id=None):
-        traits = traits or {}
-        context = context or {}
-        integrations = integrations or {}
-        require('user_id or anonymous_id', user_id or anonymous_id, ID_TYPES)
-        require('group_id', group_id, ID_TYPES)
-        require('traits', traits, dict)
-
-        msg = {
-            'integrations': integrations,
-            'anonymousId': anonymous_id,
-            'timestamp': timestamp,
-            'groupId': group_id,
-            'context': context,
-            'userId': user_id,
-            'traits': traits,
-            'type': 'group',
-            'messageId': message_id,
-        }
-
-        return self._enqueue(msg)
-
-    def page(self, user_id=None, category=None, name=None, properties=None,
-             context=None, timestamp=None, anonymous_id=None,
-             integrations=None, message_id=None):
-        properties = properties or {}
-        context = context or {}
-        integrations = integrations or {}
-        require('user_id or anonymous_id', user_id or anonymous_id, ID_TYPES)
-        require('properties', properties, dict)
-
-        if name:
-            require('name', name, string_types)
-        if category:
-            require('category', category, string_types)
-
-        msg = {
-            'integrations': integrations,
-            'anonymousId': anonymous_id,
-            'properties': properties,
-            'timestamp': timestamp,
-            'category': category,
-            'context': context,
-            'userId': user_id,
-            'type': 'page',
-            'name': name,
-            'messageId': message_id,
-        }
-
-        return self._enqueue(msg)
-
-    def screen(self, user_id=None, category=None, name=None, properties=None,
-               context=None, timestamp=None, anonymous_id=None,
-               integrations=None, message_id=None):
-        properties = properties or {}
-        context = context or {}
-        integrations = integrations or {}
-        require('user_id or anonymous_id', user_id or anonymous_id, ID_TYPES)
-        require('properties', properties, dict)
-
-        if name:
-            require('name', name, string_types)
-        if category:
-            require('category', category, string_types)
-
-        msg = {
-            'integrations': integrations,
-            'anonymousId': anonymous_id,
-            'properties': properties,
-            'timestamp': timestamp,
-            'category': category,
-            'context': context,
-            'userId': user_id,
-            'type': 'screen',
-            'name': name,
-            'messageId': message_id,
-        }
-
-        return self._enqueue(msg)
-
+   
     def _enqueue(self, msg):
         """Push a new `msg` onto the queue, return `(success, msg)`"""
-        timestamp = msg['timestamp']
+        timestamp = msg['time']
         if timestamp is None:
-            timestamp = datetime.utcnow().replace(tzinfo=tzutc())
+            timestamp = str(int(round(time.time() * 1000)))
+        print(type(timestamp))
         message_id = msg.get('messageId')
         if message_id is None:
             message_id = uuid4()
 
-        require('integrations', msg['integrations'], dict)
-        require('type', msg['type'], string_types)
-        require('timestamp', timestamp, datetime)
-        require('context', msg['context'], dict)
+        require('time', timestamp, str)
 
         # add common
-        timestamp = guess_timezone(timestamp)
-        msg['timestamp'] = timestamp.isoformat()
-        msg['messageId'] = stringify_id(message_id)
-        msg['context']['library'] = {
-            'name': 'analytics-python',
-            'version': VERSION
-        }
-
-        msg['userId'] = stringify_id(msg.get('userId', None))
-        msg['anonymousId'] = stringify_id(msg.get('anonymousId', None))
-
+       # timestamp = guess_timezone(timestamp)
+       # msg['time'] = timestamp.isoformat()
+       # msg['messageId'] = stringify_id(message_id)
+      
         msg = clean(msg)
         self.log.debug('queueing: %s', msg)
 
@@ -256,7 +122,6 @@ class Client(object):
 
         try:
             self.queue.put(msg, block=False)
-            self.log.debug('enqueued %s.', msg['type'])
             return True, msg
         except queue.Full:
             self.log.warning('analytics-python queue is full')

@@ -12,29 +12,26 @@ def json_hash(str):
     if str:
         return json.loads(str)
 
-# simulator.py --type track --writeKey changeme --userId demo --event agentcall
+# simulator.py --type track --password changeme --userId demo --event agentcall
 
 
 parser = argparse.ArgumentParser(description='send a amberflo message')
 
-parser.add_argument('--writeKey', help='the amberflo writeKey')
+parser.add_argument('--password', help='the amberflo password')
 parser.add_argument('--type', help='The amberflo message type')
 
 parser.add_argument('--userId', help='the user id to send the event as')
-parser.add_argument(
-    '--anonymousId', help='the anonymous user id to send the event as')
+
 parser.add_argument(
     '--context', help='additional context for the event (JSON-encoded)')
 
-parser.add_argument('--event', help='the event name to send with the event')
+parser.add_argument('--meter_name', help='the meter name to send')
+parser.add_argument('--meter_value', help='the meter value to send ')
 parser.add_argument(
     '--properties', help='the event properties to send (JSON-encoded)')
 
-parser.add_argument(
-    '--name', help='name of the screen or page to send with the message')
 
-parser.add_argument(
-    '--traits', help='the identify/group traits to send (JSON-encoded)')
+
 
 parser.add_argument('--groupId', help='the group id')
 
@@ -46,35 +43,14 @@ def failed(status, msg):
 
 
 def track():
-    metering.track(options.userId, options.event, anonymous_id=options.anonymousId,
-                    properties=json_hash(options.properties), context=json_hash(options.context))
-
-
-def page():
-    metering.page(options.userId, name=options.name, anonymous_id=options.anonymousId,
-                   properties=json_hash(options.properties), context=json_hash(options.context))
-
-
-def screen():
-    metering.screen(options.userId, name=options.name, anonymous_id=options.anonymousId,
-                     properties=json_hash(options.properties), context=json_hash(options.context))
-
-
-def identify():
-    metering.identify(options.userId, anonymous_id=options.anonymousId,
-                       traits=json_hash(options.traits), context=json_hash(options.context))
-
-
-def group():
-    metering.group(options.userId, options.groupId, json_hash(options.traits),
-                    json_hash(options.context), anonymous_id=options.anonymousId)
+    metering.track(options.userId, options.meter_name,int(options.meter_value), dimensions=json_hash(options.context)) 
 
 
 def unknown():
     print()
 
 
-metering.write_key = options.writeKey
+metering.write_key = options.password
 metering.on_error = failed
 metering.debug = True
 
@@ -84,11 +60,7 @@ ch.setLevel(logging.DEBUG)
 log.addHandler(ch)
 
 switcher = {
-    "track": track,
-    "page": page,
-    "screen": screen,
-    "identify": identify,
-    "group": group
+    "track": track
 }
 
 func = switcher.get(options.type)

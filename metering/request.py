@@ -35,32 +35,32 @@ def login(write_key, user_id):
         #log.debug('*****************received result: %s', result)
         token = str(result['AuthenticationResult']['IdToken'])
         log.debug('*****************received token: %s', token)
+        return token
     try:
         log.debug('login failed')   
         result = res.json()
         log.debug('received response: %s', result)
         raise APIError(res.status_code, result['code'], result['message'])
+    except Exception as e:
+        log.debug(e)   
 
 def post(write_key, host=None, gzip=False, timeout=15, **kwargs):
-    
     log = logging.getLogger('segment')
     token = login(write_key,'test')
-    log.debug('*******using token: '+token)
+    #log.debug('*******using token: '+token)
     """Post the `kwargs` to the API"""
     
     body = kwargs
     body["sentAt"] = datetime.utcnow().replace(tzinfo=tzutc()).isoformat()
     url = 'https://app.amberflo.io/ingest/'
     auth = HTTPBasicAuth(write_key, '')
-    data = json.dumps(body, cls=DatetimeSerializer)
+    data = json.dumps(body['batch'], cls=DatetimeSerializer)
     log.debug('making request: %s', data)
     headers = {
         'Content-Type': 'application/json',
         'accept': 'application/json',
         'Authorization' :  token,
-        #'bearerAuth' :  'Bearer '+token,
     }
-    log.debug(headers)
     if gzip:
         headers['Content-Encoding'] = 'gzip'
         buf = BytesIO()

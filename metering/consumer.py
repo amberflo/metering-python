@@ -62,7 +62,6 @@ class Consumer(Thread):
         batch = self.next()
         if len(batch) == 0:
             return False
-
         try:
             self.request(batch)
             success = True
@@ -111,7 +110,6 @@ class Consumer(Thread):
 
     def request(self, batch):
         """Attempt to upload the batch and retry before raising an error """
-
         def fatal_exception(exc):
             if isinstance(exc, APIError):
                 # retry on server errors and client errors
@@ -128,6 +126,7 @@ class Consumer(Thread):
             max_tries=self.retries + 1,
             giveup=fatal_exception)
         def send_request():
+            print(batch)
             post(self.write_key, self.host, gzip=self.gzip,
                  timeout=self.timeout, batch=batch)
 
