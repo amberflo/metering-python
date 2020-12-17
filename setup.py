@@ -7,18 +7,18 @@ try:
 except ImportError:
     from distutils.core import setup
 
-# Don't import analytics-python module here, since deps may not be installed
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'analytics'))
+# Don't import metering-python module here, since deps may not be installed
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'metering'))
 from version import VERSION
 
 long_description = '''
-Segment is the simplest way to integrate analytics into your application.
-One API allows you to turn on any other analytics service. No more learning
+Amberflo is the simplest way to integrate metering into your application.
+One API allows you to turn on any other metering service. No more learning
 new APIs, repeated code, and wasted development time.
 
-This is the official python client that wraps the Segment REST API (https://segment.com).
+This is the official python client that wraps the Segment REST API (https://amberflo.io).
 
-Documentation and more details at https://github.com/segmentio/analytics-python
+Documentation and more details at https://github.com/amberflo/metering-python
 '''
 
 install_requires = [
@@ -37,21 +37,21 @@ tests_require = [
 ]
 
 setup(
-    name='analytics-python',
+    name='metering-python',
     version=VERSION,
-    url='https://github.com/segmentio/analytics-python',
+    url='https://github.com/amberflo/metering-python',
     author='Segment',
     author_email='friends@segment.com',
-    maintainer='Segment',
+    maintainer='Amberflo.io',
     maintainer_email='friends@segment.com',
-    test_suite='analytics.test.all',
-    packages=['analytics', 'analytics.test'],
+    test_suite='metering.test.all',
+    packages=['metering', 'metering.test'],
     license='MIT License',
     install_requires=install_requires,
     extras_require={
         'test': tests_require
     },
-    description='The hassle-free way to integrate analytics into any python application.',
+    description='The hassle-free way to integrate amberflo into any python application.',
     long_description=long_description,
     classifiers=[
         "Development Status :: 5 - Production/Stable",

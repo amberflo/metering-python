@@ -1,6 +1,6 @@
 
-from analytics.version import VERSION
-from analytics.client import Client
+from metering.version import VERSION
+from metering.client import Client
 
 __version__ = VERSION
 

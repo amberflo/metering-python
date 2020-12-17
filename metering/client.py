@@ -7,10 +7,10 @@ import atexit
 from dateutil.tz import tzutc
 from six import string_types
 
-from analytics.utils import guess_timezone, clean
-from analytics.consumer import Consumer
-from analytics.request import post
-from analytics.version import VERSION
+from metering.utils import guess_timezone, clean
+from metering.consumer import Consumer
+from metering.request import post
+from metering.version import VERSION
 
 try:
     import queue
