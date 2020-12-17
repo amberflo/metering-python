@@ -12,13 +12,13 @@ def json_hash(str):
     if str:
         return json.loads(str)
 
-# analytics -method=<method> -segment-write-key=<segmentWriteKey> [options]
+# simulator.py --type track --writeKey changeme --userId demo --event agentcall
 
 
-parser = argparse.ArgumentParser(description='send a segment message')
+parser = argparse.ArgumentParser(description='send a amberflo message')
 
-parser.add_argument('--writeKey', help='the Segment writeKey')
-parser.add_argument('--type', help='The Segment message type')
+parser.add_argument('--writeKey', help='the amberflo writeKey')
+parser.add_argument('--type', help='The amberflo message type')
 
 parser.add_argument('--userId', help='the user id to send the event as')
 parser.add_argument(
@@ -46,27 +46,27 @@ def failed(status, msg):
 
 
 def track():
-    analytics.track(options.userId, options.event, anonymous_id=options.anonymousId,
+    metering.track(options.userId, options.event, anonymous_id=options.anonymousId,
                     properties=json_hash(options.properties), context=json_hash(options.context))
 
 
 def page():
-    analytics.page(options.userId, name=options.name, anonymous_id=options.anonymousId,
+    metering.page(options.userId, name=options.name, anonymous_id=options.anonymousId,
                    properties=json_hash(options.properties), context=json_hash(options.context))
 
 
 def screen():
-    analytics.screen(options.userId, name=options.name, anonymous_id=options.anonymousId,
+    metering.screen(options.userId, name=options.name, anonymous_id=options.anonymousId,
                      properties=json_hash(options.properties), context=json_hash(options.context))
 
 
 def identify():
-    analytics.identify(options.userId, anonymous_id=options.anonymousId,
+    metering.identify(options.userId, anonymous_id=options.anonymousId,
                        traits=json_hash(options.traits), context=json_hash(options.context))
 
 
 def group():
-    analytics.group(options.userId, options.groupId, json_hash(options.traits),
+    metering.group(options.userId, options.groupId, json_hash(options.traits),
                     json_hash(options.context), anonymous_id=options.anonymousId)
 
 
@@ -74,9 +74,9 @@ def unknown():
     print()
 
 
-analytics.write_key = options.writeKey
-analytics.on_error = failed
-analytics.debug = True
+metering.write_key = options.writeKey
+metering.on_error = failed
+metering.debug = True
 
 log = logging.getLogger('segment')
 ch = logging.StreamHandler()
@@ -94,6 +94,6 @@ switcher = {
 func = switcher.get(options.type)
 if func:
     func()
-    analytics.shutdown()
+    metering.shutdown()
 else:
     print("Invalid Message Type " + options.type)
