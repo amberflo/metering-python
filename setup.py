@@ -13,10 +13,8 @@ from version import VERSION
 
 long_description = '''
 Amberflo is the simplest way to integrate metering into your application.
-One API allows you to turn on any other metering service. No more learning
-new APIs, repeated code, and wasted development time.
 
-This is the official python client that wraps the Segment REST API (https://amberflo.io).
+This is the official python client that wraps the Amberflo REST API (https://amberflo.io).
 
 Documentation and more details at https://github.com/amberflo/metering-python
 '''
@@ -37,7 +35,7 @@ tests_require = [
 ]
 
 setup(
-    name='metering-python',
+    name='amberflo-metering-python',
     version=VERSION,
     url='https://github.com/amberflo/metering-python',
     author='Segment',
