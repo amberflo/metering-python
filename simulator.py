@@ -16,14 +16,14 @@ def json_hash(str):
 
 
 parser = argparse.ArgumentParser(description='send a amberflo message')
-parser.add_argument('--user_name', help='the amberflo username')
-parser.add_argument('--password', help='the amberflo password')
-parser.add_argument('--tenant', help='the tenant to send the meter for')
+parser.add_argument('--user_name', help='the amberflo username', required=True)
+parser.add_argument('--password', help='the amberflo password', required=True)
+parser.add_argument('--tenant', help='the tenant to send the meter for', required=True)
 
-parser.add_argument('--meter_name', help='the meter name to send')
-parser.add_argument('--meter_value', help='the meter value to send ')
+parser.add_argument('--meter_name', help='the meter name to send', required=True)
+parser.add_argument('--meter_value', help='the meter value to send ', required=True)
 parser.add_argument(
-    '--dimensions', help='the dimensions to send (JSON-encoded)')
+    '--dimensions', help='the dimensions to send (JSON-encoded) FUTURE')
 
 
 
@@ -35,7 +35,10 @@ def failed(status, msg):
 
 
 def track():
-    metering.track(options.tenant, options.meter_name,int(options.meter_value), dimensions=json_hash(options.dimensions)) 
+    i = 0
+    while i<1:
+        metering.track(options.tenant, options.meter_name,int(options.meter_value), dimensions=json_hash(options.dimensions)) 
+        i = i + 1
 
 
 def unknown():
