@@ -6,16 +6,21 @@ from gzip import GzipFile
 from requests.auth import HTTPBasicAuth
 from requests import sessions
 from io import BytesIO
-
+import time
 from metering.version import VERSION
 from metering.utils import remove_trailing_slash
 
 _session = sessions.Session()
 token = None
+last_login_time = None
+
 def login(user_name,password):
     global token
-    if token is not None:
+    global last_login_time
+    if token is not None and (time.time() - last_login_time ) < 600:
         return token
+    last_login_time = time.time()
+
     log = logging.getLogger('amberflo')
     log.debug('login')
     login_request = {"AuthParameters" : {"USERNAME" : user_name,"PASSWORD" :
