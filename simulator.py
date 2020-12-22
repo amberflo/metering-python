@@ -2,6 +2,7 @@ import metering
 import argparse
 import json
 import logging
+import time
 
 __name__ = 'simulator.py'
 __version__ = '0.0.1'
@@ -12,7 +13,7 @@ def json_hash(str):
     if str:
         return json.loads(str)
 
-# simulator.py --user_name demo --password changeme --tenant customerXXX --meter_name apicall --meter_value 1
+# simulator.py --user_name demo --password changeme --tenant customerXXX --meter_name apicall --meter_value 1 --dimensions "[{\"Name\": \"region\", \"Value\": \"us-east-1\"}]"
 
 
 parser = argparse.ArgumentParser(description='send a amberflo message')
@@ -39,6 +40,7 @@ def track():
     while i<1:
         metering.track(options.tenant, options.meter_name,int(options.meter_value), dimensions=json_hash(options.dimensions)) 
         i = i + 1
+        time.sleep(3)
 
 
 def unknown():
