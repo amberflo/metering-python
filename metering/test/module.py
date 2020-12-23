@@ -15,14 +15,14 @@ class TestModule(unittest.TestCase):
 
     def test_no_write_key(self):
         analytics.write_key = None
-        self.assertRaises(Exception, analytics.track)
+        self.assertRaises(Exception, analytics.meter)
 
     def test_no_host(self):
         analytics.host = None
-        self.assertRaises(Exception, analytics.track)
+        self.assertRaises(Exception, analytics.meter)
 
-    def test_track(self):
-        analytics.track('userId', 'python module event')
+    def test_meter(self):
+        analytics.meter('userId', 'python module event')
         analytics.flush()
 
     def test_identify(self):

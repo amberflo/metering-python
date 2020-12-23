@@ -42,12 +42,12 @@ class TestConsumer(unittest.TestCase):
     def test_upload(self):
         q = Queue()
         consumer = Consumer(q, 'testsecret')
-        track = {
-            'type': 'track',
+        meter = {
+            'type': 'meter',
             'event': 'python event',
             'userId': 'userId'
         }
-        q.put(track)
+        q.put(meter)
         success = consumer.upload()
         self.assertTrue(success)
 
@@ -62,12 +62,12 @@ class TestConsumer(unittest.TestCase):
         with mock.patch('analytics.consumer.post') as mock_post:
             consumer.start()
             for i in range(0, 3):
-                track = {
-                    'type': 'track',
+                meter = {
+                    'type': 'meter',
                     'event': 'python event %d' % i,
                     'userId': 'userId'
                 }
-                q.put(track)
+                q.put(meter)
                 time.sleep(flush_interval * 1.1)
             self.assertEqual(mock_post.call_count, 3)
 
@@ -82,23 +82,23 @@ class TestConsumer(unittest.TestCase):
         with mock.patch('analytics.consumer.post') as mock_post:
             consumer.start()
             for i in range(0, flush_at * 2):
-                track = {
-                    'type': 'track',
+                meter = {
+                    'type': 'meter',
                     'event': 'python event %d' % i,
                     'userId': 'userId'
                 }
-                q.put(track)
+                q.put(meter)
             time.sleep(flush_interval * 1.1)
             self.assertEqual(mock_post.call_count, 2)
 
     def test_request(self):
         consumer = Consumer(None, 'testsecret')
-        track = {
-            'type': 'track',
+        meter = {
+            'type': 'meter',
             'event': 'python event',
             'userId': 'userId'
         }
-        consumer.request([track])
+        consumer.request([meter])
 
     def _test_request_retry(self, consumer,
                             expected_exception, exception_count):
@@ -111,21 +111,21 @@ class TestConsumer(unittest.TestCase):
 
         with mock.patch('analytics.consumer.post',
                         mock.Mock(side_effect=mock_post)):
-            track = {
-                'type': 'track',
+            meter = {
+                'type': 'meter',
                 'event': 'python event',
                 'userId': 'userId'
             }
             # request() should succeed if the number of exceptions raised is
             # less than the retries paramater.
             if exception_count <= consumer.retries:
-                consumer.request([track])
+                consumer.request([meter])
             else:
                 # if exceptions are raised more times than the retries
                 # parameter, we expect the exception to be returned to
                 # the caller.
                 try:
-                    consumer.request([track])
+                    consumer.request([meter])
                 except type(expected_exception) as exc:
                     self.assertEqual(exc, expected_exception)
                 else:
@@ -172,12 +172,12 @@ class TestConsumer(unittest.TestCase):
         q = Queue()
         consumer = Consumer(
             q, 'testsecret', flush_at=100000, flush_interval=3)
-        track = {
-            'type': 'track',
+        meter = {
+            'type': 'meter',
             'event': 'python event',
             'userId': 'userId'
         }
-        msg_size = len(json.dumps(track).encode())
+        msg_size = len(json.dumps(meter).encode())
         # number of messages in a maximum-size batch
         n_msgs = int(475000 / msg_size)
 
@@ -193,6 +193,6 @@ class TestConsumer(unittest.TestCase):
                         side_effect=mock_post_fn) as mock_post:
             consumer.start()
             for _ in range(0, n_msgs + 2):
-                q.put(track)
+                q.put(meter)
             q.join()
             self.assertEquals(mock_post.call_count, 2)

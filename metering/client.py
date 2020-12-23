@@ -71,7 +71,7 @@ class Client(object):
 
    
 
-    def track(self, tenant=None, meter_name=None,meter_value=None,dimensions=None,
+    def meter(self, tenant=None, meter_name=None,meter_value=None,dimensions=None,
               timestamp=None):
         dimensions = dimensions or {}
         require('tenant', tenant ,string_types)

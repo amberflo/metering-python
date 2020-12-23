@@ -16,9 +16,9 @@ sync_mode = False
 default_client = None
 
 
-def track(*args, **kwargs):
-    """Send a track call."""
-    _proxy('track', *args, **kwargs)
+def meter(*args, **kwargs):
+    """Send a meter call."""
+    _proxy('meter', *args, **kwargs)
 
 
 

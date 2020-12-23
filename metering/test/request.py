@@ -12,7 +12,7 @@ class TestRequests(unittest.TestCase):
         res = post('testsecret', batch=[{
             'userId': 'userId',
             'event': 'python event',
-            'type': 'track'
+            'type': 'meter'
         }])
         self.assertEqual(res.status_code, 200)
 
@@ -40,7 +40,7 @@ class TestRequests(unittest.TestCase):
         res = post('testsecret', batch=[{
             'userId': 'userId',
             'event': 'python event',
-            'type': 'track'
+            'type': 'meter'
         }], timeout=15)
         self.assertEqual(res.status_code, 200)
 
@@ -49,5 +49,5 @@ class TestRequests(unittest.TestCase):
             post('testsecret', batch=[{
                 'userId': 'userId',
                 'event': 'python event',
-                'type': 'track'
+                'type': 'meter'
             }], timeout=0.0001)

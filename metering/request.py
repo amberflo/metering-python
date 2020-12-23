@@ -97,7 +97,7 @@ class APIError(Exception):
         self.code = code
 
     def __str__(self):
-        msg = "[Segment] {0}: {1} ({2})"
+        msg = "[Amberflo] {0}: {1} ({2})"
         return msg.format(self.code, self.message, self.status)
 
 

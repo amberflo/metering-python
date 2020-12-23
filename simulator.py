@@ -3,6 +3,7 @@ import argparse
 import json
 import logging
 import time
+from uuid import uuid4
 
 __name__ = 'simulator.py'
 __version__ = '0.0.1'
@@ -35,10 +36,20 @@ def failed(status, msg):
     raise Exception(msg)
 
 
-def track():
+def meter():
     i = 0
+    dimensions = json_hash(options.dimensions)
+    dimensions_with_unique_id = dimensions.copy()
+    dimensions_with_unique_id.append({'Name': 'unique_id', 'Value': str(uuid4())}) 
     while i<1:
-        metering.track(options.tenant, options.meter_name,int(options.meter_value), dimensions=json_hash(options.dimensions)) 
+        # dedup is happening on a full record
+        metering.meter(options.tenant, options.meter_name,int(options.meter_value), dimensions=dimensions) 
+        # addint a timestamp
+        metering.meter(options.tenant, options.meter_name,int(options.meter_value), \
+            dimensions=dimensions,timestamp=str(int(round(time.time() * 1000)))) 
+        # adding unique id
+        metering.meter(options.tenant, options.meter_name,int(options.meter_value), dimensions=dimensions_with_unique_id) 
+
         i = i + 1
         time.sleep(3)
 
@@ -58,10 +69,10 @@ ch.setLevel(logging.DEBUG)
 log.addHandler(ch)
 
 switcher = {
-    "track": track
+    "meter": meter
 }
 
-func = switcher.get("track")
+func = switcher.get("meter")
 if func:
     func()
     metering.shutdown()

@@ -24,9 +24,9 @@ class TestClient(unittest.TestCase):
     def test_empty_flush(self):
         self.client.flush()
 
-    def test_basic_track(self):
+    def test_basic_meter(self):
         client = self.client
-        success, msg = client.track('userId', 'python test event')
+        success, msg = client.meter('userId', 'python test event')
         client.flush()
         self.assertTrue(success)
         self.assertFalse(self.failed)
@@ -36,13 +36,13 @@ class TestClient(unittest.TestCase):
         self.assertTrue(isinstance(msg['messageId'], str))
         self.assertEqual(msg['userId'], 'userId')
         self.assertEqual(msg['properties'], {})
-        self.assertEqual(msg['type'], 'track')
+        self.assertEqual(msg['type'], 'meter')
 
     def test_stringifies_user_id(self):
         # A large number that loses precision in node:
         # node -e "console.log(157963456373623802 + 1)" > 157963456373623800
         client = self.client
-        success, msg = client.track(
+        success, msg = client.meter(
             user_id=157963456373623802, event='python test event')
         client.flush()
         self.assertTrue(success)
@@ -55,7 +55,7 @@ class TestClient(unittest.TestCase):
         # A large number that loses precision in node:
         # node -e "console.log(157963456373623803 + 1)" > 157963456373623800
         client = self.client
-        success, msg = client.track(
+        success, msg = client.meter(
             anonymous_id=157963456373623803, event='python test event')
         client.flush()
         self.assertTrue(success)
@@ -64,9 +64,9 @@ class TestClient(unittest.TestCase):
         self.assertEqual(msg['userId'], None)
         self.assertEqual(msg['anonymousId'], '157963456373623803')
 
-    def test_advanced_track(self):
+    def test_advanced_meter(self):
         client = self.client
-        success, msg = client.track(
+        success, msg = client.meter(
             'userId', 'python test event', {'property': 'value'},
             {'ip': '192.168.0.1'}, datetime(2014, 9, 3), 'anonymousId',
             {'Amplitude': True}, 'messageId')
@@ -85,7 +85,7 @@ class TestClient(unittest.TestCase):
         })
         self.assertEqual(msg['messageId'], 'messageId')
         self.assertEqual(msg['userId'], 'userId')
-        self.assertEqual(msg['type'], 'track')
+        self.assertEqual(msg['type'], 'meter')
 
     def test_basic_identify(self):
         client = self.client
@@ -281,7 +281,7 @@ class TestClient(unittest.TestCase):
 
     def test_success_on_invalid_write_key(self):
         client = Client('bad_key', on_error=self.fail)
-        client.track('userId', 'event')
+        client.meter('userId', 'event')
         client.flush()
         self.assertFalse(self.failed)
 
@@ -289,7 +289,7 @@ class TestClient(unittest.TestCase):
         Client(six.u('unicode_key'))
 
     def test_numeric_user_id(self):
-        self.client.track(1234, 'python event')
+        self.client.meter(1234, 'python event')
         self.client.flush()
         self.assertFalse(self.failed)
 
