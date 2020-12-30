@@ -4,8 +4,8 @@ import six
 import mock
 import time
 
-from analytics.version import VERSION
-from analytics.client import Client
+from metering.version import VERSION
+from metering.client import Client
 
 
 class TestClient(unittest.TestCase):
