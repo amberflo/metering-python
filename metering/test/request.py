@@ -3,14 +3,15 @@ import unittest
 import json
 import requests
 
-from analytics.request import post, DatetimeSerializer
+from metering.request import post, DatetimeSerializer
 
 
 class TestRequests(unittest.TestCase):
 
     def test_valid_request(self):
-        res = post('testsecret', batch=[{
-            'userId': 'userId',
+        res = post('demo', 'changeme', batch=[{
+            'userId': 'demo',
+            'password': 'changeme',
             'event': 'python event',
             'type': 'meter'
         }])
@@ -37,7 +38,7 @@ class TestRequests(unittest.TestCase):
         self.assertEqual(result, expected)
 
     def test_should_not_timeout(self):
-        res = post('testsecret', batch=[{
+        res = post('demo', 'changeme', batch=[{
             'userId': 'userId',
             'event': 'python event',
             'type': 'meter'
@@ -46,7 +47,7 @@ class TestRequests(unittest.TestCase):
 
     def test_should_timeout(self):
         with self.assertRaises(requests.ReadTimeout):
-            post('testsecret', batch=[{
+            post('demo', 'changeme', batch=[{
                 'userId': 'userId',
                 'event': 'python event',
                 'type': 'meter'

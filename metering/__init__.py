@@ -5,8 +5,8 @@ from metering.client import Client
 __version__ = VERSION
 
 """Settings."""
-user_name = None
-password = None
+user_name = 'demo'
+password = 'chengeme'
 host = None
 on_error = None
 debug = False

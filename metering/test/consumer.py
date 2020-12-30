@@ -8,8 +8,8 @@ try:
 except ImportError:
     from Queue import Queue
 
-from analytics.consumer import Consumer, MAX_MSG_SIZE
-from analytics.request import APIError
+from metering.consumer import Consumer, MAX_MSG_SIZE
+from metering.request import APIError
 
 
 class TestConsumer(unittest.TestCase):
@@ -41,7 +41,7 @@ class TestConsumer(unittest.TestCase):
 
     def test_upload(self):
         q = Queue()
-        consumer = Consumer(q, 'testsecret')
+        consumer = Consumer(q, 'demo', 'changeme')
         meter = {
             'type': 'meter',
             'event': 'python event',
@@ -109,7 +109,7 @@ class TestConsumer(unittest.TestCase):
                 raise expected_exception
         mock_post.call_count = 0
 
-        with mock.patch('analytics.consumer.post',
+        with mock.patch('metering.consumer.post',
                         mock.Mock(side_effect=mock_post)):
             meter = {
                 'type': 'meter',
@@ -135,21 +135,21 @@ class TestConsumer(unittest.TestCase):
 
     def test_request_retry(self):
         # we should retry on general errors
-        consumer = Consumer(None, 'testsecret')
+        consumer = Consumer(None, 'demo', 'changeme')
         self._test_request_retry(consumer, Exception('generic exception'), 2)
 
         # we should retry on server errors
-        consumer = Consumer(None, 'testsecret')
+        consumer = Consumer(None, 'demo', 'changeme')
         self._test_request_retry(consumer, APIError(
             500, 'code', 'Internal Server Error'), 2)
 
         # we should retry on HTTP 429 errors
-        consumer = Consumer(None, 'testsecret')
+        consumer = Consumer(None, 'demo', 'changeme')
         self._test_request_retry(consumer, APIError(
             429, 'code', 'Too Many Requests'), 2)
 
         # we should NOT retry on other client errors
-        consumer = Consumer(None, 'testsecret')
+        consumer = Consumer(None, 'demo', 'changeme')
         api_error = APIError(400, 'code', 'Client Errors')
         try:
             self._test_request_retry(consumer, api_error, 1)
@@ -159,7 +159,7 @@ class TestConsumer(unittest.TestCase):
             self.fail('request() should not retry on client errors')
 
         # test for number of exceptions raise > retries value
-        consumer = Consumer(None, 'testsecret', retries=3)
+        consumer = Consumer(None, 'demo', 'changeme', retries=3)
         self._test_request_retry(consumer, APIError(
             500, 'code', 'Internal Server Error'), 3)
 

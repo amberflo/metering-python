@@ -1,6 +1,6 @@
 import unittest
 
-import analytics
+import metering
 
 
 class TestModule(unittest.TestCase):
@@ -10,40 +10,40 @@ class TestModule(unittest.TestCase):
 
     def setUp(self):
         self.failed = False
-        analytics.write_key = 'testsecret'
-        analytics.on_error = self.failed
+        metering.write_key = 'testsecret'
+        metering.on_error = self.failed
 
     def test_no_write_key(self):
-        analytics.write_key = None
-        self.assertRaises(Exception, analytics.meter)
+        metering.write_key = None
+        self.assertRaises(Exception, metering.meter)
 
     def test_no_host(self):
-        analytics.host = None
-        self.assertRaises(Exception, analytics.meter)
+        metering.host = None
+        self.assertRaises(Exception, metering.meter)
 
     def test_meter(self):
-        analytics.meter('userId', 'python module event')
-        analytics.flush()
+        metering.meter('Python Test', meter_name='python module event', meter_value=1)
+        metering.flush()
 
-    def test_identify(self):
-        analytics.identify('userId', {'email': 'user@email.com'})
-        analytics.flush()
-
-    def test_group(self):
-        analytics.group('userId', 'groupId')
-        analytics.flush()
-
-    def test_alias(self):
-        analytics.alias('previousId', 'userId')
-        analytics.flush()
-
-    def test_page(self):
-        analytics.page('userId')
-        analytics.flush()
-
-    def test_screen(self):
-        analytics.screen('userId')
-        analytics.flush()
+    # def test_identify(self):
+    #     metering.identify('userId', {'email': 'user@email.com'})
+    #     metering.flush()
+    #
+    # def test_group(self):
+    #     metering.group('userId', 'groupId')
+    #     metering.flush()
+    #
+    # def test_alias(self):
+    #     metering.alias('previousId', 'userId')
+    #     metering.flush()
+    #
+    # def test_page(self):
+    #     metering.page('userId')
+    #     metering.flush()
+    #
+    # def test_screen(self):
+    #     metering.screen('userId')
+    #     metering.flush()
 
     def test_flush(self):
-        analytics.flush()
+        metering.flush()
