@@ -22,7 +22,7 @@ jobs:
         python-version: 3.6
     - name: Install dependencies
       run: |
-        sudo pip install requests>=2.7,<3.0 six>=1.5 monotonic>=1.5 backoff==1.10.0 python-dateutil>2.1
+        sudo pip install requests six monotonic backoff==1.10.0 python-dateutil
         sudo pip install coverage pylint==1.9.3 flake8 mock==3.0.5
         make test
     - name: Run Coverage test
