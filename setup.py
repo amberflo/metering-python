@@ -9,7 +9,7 @@ except ImportError:
 
 # Don't import metering-python module here, since deps may not be installed
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'metering'))
-from version import VERSION
+from metering.version import VERSION
 
 long_description = '''
 Amberflo is the simplest way to integrate metering into your application.
