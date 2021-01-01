@@ -26,7 +26,7 @@ class Client(object):
     log = logging.getLogger('amberflo')
 
     def __init__(self, user_name=None, password=None,
-                 max_load=10000000000, send=True, on_error=None, max_batch_size=100,
+                 max_load=100000, debug=False, send=True, on_error=None, max_batch_size=100,
                  send_interval=0.5, gzip=False, max_retries=3,
                  wait=False, timeout=15, thread=1):
         require('user_name', user_name, string_types)
@@ -40,6 +40,8 @@ class Client(object):
         self.send = send
         self.timeout = timeout
 
+        if debug:
+            self.log.setLevel(logging.DEBUG)
         if wait:
             self.consumers = None
         else:

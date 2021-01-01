@@ -16,7 +16,7 @@ class TestConsumer(unittest.TestCase):
 
     def test_next(self):
         q = Queue()
-        consumer = Consumer(q, '')
+        consumer = Consumer(q, 'demo', 'changeme')
         q.put(1)
         next = consumer.next()
         self.assertEqual(next, [1])
@@ -24,7 +24,7 @@ class TestConsumer(unittest.TestCase):
     def test_next_limit(self):
         q = Queue()
         flush_at = 50
-        consumer = Consumer(q, '', flush_at)
+        consumer = Consumer(q, 'demo', 'changeme', flush_at)
         for i in range(10000):
             q.put(i)
         next = consumer.next()
@@ -32,7 +32,7 @@ class TestConsumer(unittest.TestCase):
 
     def test_dropping_oversize_msg(self):
         q = Queue()
-        consumer = Consumer(q, '')
+        consumer = Consumer(q, 'demo', 'changeme')
         oversize_msg = {'m': 'x' * MAX_MSG_SIZE}
         q.put(oversize_msg)
         next = consumer.next()
@@ -57,7 +57,7 @@ class TestConsumer(unittest.TestCase):
         # The consumer should upload _n_ times.
         q = Queue()
         flush_interval = 0.3
-        consumer = Consumer(q, 'testsecret', flush_at=10,
+        consumer = Consumer(q, 'demo', 'changeme', flush_at=10,
                             flush_interval=flush_interval)
         with mock.patch('analytics.consumer.post') as mock_post:
             consumer.start()
@@ -92,7 +92,7 @@ class TestConsumer(unittest.TestCase):
             self.assertEqual(mock_post.call_count, 2)
 
     def test_request(self):
-        consumer = Consumer(None, 'testsecret')
+        consumer = Consumer(None, 'demo', 'changeme')
         meter = {
             'type': 'meter',
             'event': 'python event',
@@ -164,14 +164,14 @@ class TestConsumer(unittest.TestCase):
             500, 'code', 'Internal Server Error'), 3)
 
     def test_pause(self):
-        consumer = Consumer(None, 'testsecret')
+        consumer = Consumer(None, 'demo', 'changeme')
         consumer.pause()
         self.assertFalse(consumer.running)
 
     def test_max_batch_size(self):
         q = Queue()
         consumer = Consumer(
-            q, 'testsecret', flush_at=100000, flush_interval=3)
+            q, 'demo', 'changeme', flush_at=100000, flush_interval=3)
         meter = {
             'type': 'meter',
             'event': 'python event',
