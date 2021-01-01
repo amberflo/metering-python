@@ -5,9 +5,9 @@ name: Python application
 
 on:
   push:
-    branches: [ local_vivek ]
+    branches: [ main ]
   pull_request:
-    branches: [ local_vivek ]
+    branches: [ main ]
 
 jobs:
   build:
