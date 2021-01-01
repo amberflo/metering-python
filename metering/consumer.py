@@ -4,7 +4,7 @@ import monotonic
 import backoff
 import json
 
-from metering.request import post, APIError, DatetimeSerializer
+from metering.request import RequestManager, APIError, DatetimeSerializer
 
 try:
     from queue import Empty
@@ -22,18 +22,17 @@ class Consumer(Thread):
     """Consumes the messages from the client's queue."""
     log = logging.getLogger('amberflo')
 
-    def __init__(self, queue, user_name,password, flush_at=100, host=None,
-                 on_error=None, flush_interval=0.5, gzip=False, retries=10,
+    def __init__(self, queue, user_name,password, flush_at=100,
+                 on_error=None, send_interval=0.5, gzip=False, retries=10,
                  timeout=15):
         """Create a consumer thread."""
         Thread.__init__(self)
         # Make consumer a daemon thread so that it doesn't block program exit
         self.daemon = True
         self.flush_at = flush_at
-        self.flush_interval = flush_interval
+        self.flush_interval = send_interval
         self.user_name = user_name
         self.password = password
-        self.host = host
         self.on_error = on_error
         self.queue = queue
         self.gzip = gzip
@@ -127,7 +126,7 @@ class Consumer(Thread):
             max_tries=self.retries + 1,
             giveup=fatal_exception)
         def send_request():
-            post(self.user_name,self.password, self.host, gzip=self.gzip,
-                 timeout=self.timeout, batch=batch)
+            RequestManager(self.user_name, self.password, gzip=self.gzip,
+                           timeout=self.timeout, batch=batch).post()
 
         send_request()

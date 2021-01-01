@@ -9,7 +9,7 @@ from six import string_types
 from six import integer_types
 from metering.utils import guess_timezone, clean
 from metering.consumer import Consumer
-from metering.request import post
+from metering.request import RequestManager
 from metering.version import VERSION
 
 try:
@@ -25,27 +25,22 @@ class Client(object):
     """Create a new Segment client."""
     log = logging.getLogger('amberflo')
 
-    def __init__(self, user_name=None, password=None, host=None, debug=False,
-                 max_queue_size=10000, send=True, on_error=None, flush_at=100,
-                 flush_interval=0.5, gzip=False, max_retries=3,
-                 sync_mode=False, timeout=15, thread=1):
+    def __init__(self, user_name=None, password=None,
+                 max_load=10000000000, send=True, on_error=None, max_batch_size=100,
+                 send_interval=0.5, gzip=False, max_retries=3,
+                 wait=False, timeout=15, thread=1):
         require('user_name', user_name, string_types)
         require('password', password, string_types)
-        self.queue = queue.Queue(max_queue_size)
+        self.queue = queue.Queue(max_load)
         self.password = password
         self.user_name = user_name
         self.on_error = on_error
-        self.debug = debug
-        self.send = send
-        self.sync_mode = sync_mode
-        self.host = host
+        self.wait = wait
         self.gzip = gzip
+        self.send = send
         self.timeout = timeout
 
-        if debug:
-            self.log.setLevel(logging.DEBUG)
-
-        if sync_mode:
+        if wait:
             self.consumers = None
         else:
             # On program exit, allow the consumer thread to exit cleanly.
@@ -59,8 +54,8 @@ class Client(object):
             for n in range(thread):
                 self.consumers = []
                 consumer = Consumer(
-                    self.queue, user_name=user_name, password=password, host=host, on_error=on_error,
-                    flush_at=flush_at, flush_interval=flush_interval,
+                    self.queue, user_name=user_name, password=password, on_error=on_error,
+                    flush_at=max_batch_size, send_interval=send_interval,
                     gzip=gzip, retries=max_retries, timeout=timeout,
                 )
                 self.consumers.append(consumer)
@@ -69,14 +64,14 @@ class Client(object):
                 if send:
                     consumer.start()
 
-   
-
-    def meter(self, tenant=None, meter_name=None,meter_value=None,dimensions=None,
+    def meter(self, tenant=None, meter_name=None, meter_value=None, dimensions=None,
               timestamp=None):
-        dimensions = dimensions or {}
+        dimensions = dimensions or []
         require('tenant', tenant ,string_types)
         require('meter_name', meter_name, string_types)
         require('meter_value', meter_value, integer_types)
+        require('dimensions', dimensions, list)
+
         if timestamp is None:
             timestamp = str(int(round(time.time() * 1000)))
         msg = {
@@ -113,10 +108,11 @@ class Client(object):
         if not self.send:
             return True, msg
 
-        if self.sync_mode:
+        if self.wait:
             self.log.debug('enqueued with blocking %s.', msg['type'])
-            post(self.write_key, self.host, gzip=self.gzip,
-                 timeout=self.timeout, batch=[msg])
+            RequestManager(self.user_name, self.password,
+                           gzip=self.gzip,
+                           timeout=self.timeout, batch=[msg]).post()
 
             return True, msg
 
