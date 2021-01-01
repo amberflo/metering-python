@@ -33,6 +33,7 @@ class LoginManager:
         self.password = password
 
     def login(self):
+        global last_login_time
         log = logging.getLogger('amberflo')
         log.debug('login')
         login_request['AuthParameters']['USERNAME'] = self.user_name
@@ -41,6 +42,7 @@ class LoginManager:
         res = _session.post(login_url, data=json.dumps(login_request),
                             headers=headers)
         if res.status_code == 200:
+            last_login_time = time.time()
             log.debug('login successfully')
             result = res.json()
             # log.debug('*****************received result: %s', result)
@@ -60,6 +62,7 @@ class LoginManager:
         global last_login_time
         if not (token is not None and (time.time() - last_login_time) < 600):
             token = self.login()
+
         return token
 
 

@@ -126,7 +126,12 @@ class Consumer(Thread):
             max_tries=self.retries + 1,
             giveup=fatal_exception)
         def send_request():
-            RequestManager(self.user_name, self.password, gzip=self.gzip,
-                           timeout=self.timeout, batch=batch).post()
+            try:
+                RequestManager(self.user_name, self.password, gzip=self.gzip,
+                               timeout=self.timeout, batch=batch).post()
+            except Exception as e:
+                import traceback
+                print(traceback.format_exc())
+                raise e
 
         send_request()

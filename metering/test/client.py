@@ -31,8 +31,8 @@ class TestClient(unittest.TestCase):
         self.assertTrue(success)
         self.assertFalse(self.failed)
 
-        self.assertEqual(msg['event'], 'Testing python library.')
-        self.assertTrue(isinstance(msg['timestamp'], str))
+        self.assertEqual(msg['meter_name'], 'Testing python library.')
+        self.assertTrue(isinstance(msg['meter_name'], str))
 
     def test_flush(self):
         client = self.client
@@ -59,9 +59,9 @@ class TestClient(unittest.TestCase):
             self.assertFalse(consumer.is_alive())
 
     def test_synchronous(self):
-        client = Client('demo', 'changeme', sync_mode=True)
+        client = Client('demo', 'changeme', wait=True)
 
-        success, message = client.identify('userId')
+        success, message = client.meter('customerTestCae', 'Testing python library.', 1, [{'Name': 'test', 'Value': 'test'}])
         self.assertFalse(client.consumers)
         self.assertTrue(client.queue.empty())
         self.assertTrue(success)

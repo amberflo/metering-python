@@ -111,7 +111,7 @@ class Client(object):
             return True, msg
 
         if self.wait:
-            self.log.debug('enqueued with blocking %s.', msg['type'])
+            self.log.debug('enqueued with blocking %s.', msg['meter_name'])
             RequestManager(self.user_name, self.password,
                            gzip=self.gzip,
                            timeout=self.timeout, batch=[msg]).post()
