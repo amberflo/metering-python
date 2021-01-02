@@ -4,7 +4,7 @@ test:
 	coverage run --branch --include=metering/\* --omit=*/test* setup.py test
 
 release:
-	python setup.py sdist bdist_wheel
+	python3 setup.py sdist bdist_wheel
 	twine upload dist/*
 
 e2e_test:

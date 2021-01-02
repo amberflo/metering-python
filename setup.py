@@ -49,7 +49,7 @@ setup(
     name='amberflo-metering-python',
     version=VERSION,
     url='https://github.com/amberflo/metering-python',
-    author='Segment',
+    author='Amberflo',
     author_email='friends@amberflo.com',
     maintainer='Amberflo.io',
     maintainer_email='friends@amberflo.com',
@@ -60,7 +60,7 @@ setup(
     extras_require={
         'test': tests_require
     },
-    description='The hassle-free way to integrate amberflo into any python application.',
+    description='Integrate amberflo into any python application.',
     long_description=long_description,
     classifiers=[
         "Development Status :: 5 - Production/Stable",
