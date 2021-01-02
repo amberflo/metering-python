@@ -11,7 +11,7 @@ host = None
 on_error = None
 debug = False
 send = True
-sync_mode = False
+wait = False
 
 default_client = None
 
@@ -43,9 +43,9 @@ def _proxy(method, *args, **kwargs):
     """Create an analytics client if one doesn't exist and send to it."""
     global default_client
     if not default_client:
-        default_client = Client(user_name,password, host=host, debug=debug,
+        default_client = Client(user_name,password, debug=debug,
                                 on_error=on_error, send=send,
-                                sync_mode=sync_mode)
+                                wait=wait)
 
     fn = getattr(default_client, method)
     fn(*args, **kwargs)
