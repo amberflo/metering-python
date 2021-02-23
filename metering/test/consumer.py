@@ -1,7 +1,4 @@
 import unittest
-import mock
-import time
-import json
 
 try:
     from queue import Queue
@@ -9,14 +6,13 @@ except ImportError:
     from Queue import Queue
 
 from metering.consumer import Consumer, MAX_MSG_SIZE
-from metering.request import APIError
 
 
 class TestConsumer(unittest.TestCase):
 
     def test_next(self):
         q = Queue()
-        consumer = Consumer(q, 'demo', 'changeme')
+        consumer = Consumer(q, 'e9c6a4fc-e275-4eda-b2f8-353ef196ddb7')
         q.put(1)
         next = consumer.next()
         self.assertEqual(next, [1])
@@ -24,7 +20,7 @@ class TestConsumer(unittest.TestCase):
     def test_next_limit(self):
         q = Queue()
         flush_at = 50
-        consumer = Consumer(q, 'demo', 'changeme', flush_at)
+        consumer = Consumer(q, 'e9c6a4fc-e275-4eda-b2f8-353ef196ddb7', flush_at)
         for i in range(10000):
             q.put(i)
         next = consumer.next()
@@ -32,7 +28,7 @@ class TestConsumer(unittest.TestCase):
 
     def test_dropping_oversize_msg(self):
         q = Queue()
-        consumer = Consumer(q, 'demo', 'changeme')
+        consumer = Consumer(q, 'e9c6a4fc-e275-4eda-b2f8-353ef196ddb7')
         oversize_msg = {'m': 'x' * MAX_MSG_SIZE}
         q.put(oversize_msg)
         next = consumer.next()
@@ -41,11 +37,11 @@ class TestConsumer(unittest.TestCase):
 
     def test_upload(self):
         q = Queue()
-        consumer = Consumer(q, 'demo', 'changeme')
+        consumer = Consumer(q, 'e9c6a4fc-e275-4eda-b2f8-353ef196ddb7')
         meter = {
-            'type': 'meter',
-            'event': 'python event',
-            'userId': 'userId'
+            'tenant_id': 'myself',
+            'meter_name': 'python event',
+            'meter_value': 3
         }
         q.put(meter)
         success = consumer.upload()
@@ -53,16 +49,18 @@ class TestConsumer(unittest.TestCase):
 
 
     def test_request(self):
-        consumer = Consumer(None, 'demo', 'changeme')
+        consumer = Consumer(None, 'e9c6a4fc-e275-4eda-b2f8-353ef196ddb7')
         meter = {
-            'type': 'meter',
-            'event': 'python event',
-            'userId': 'userId'
+            'tenant_id': 'myself',
+            'meter_name': 'python event',
+            'meter_value': 3
         }
         consumer.request([meter])
 
     def test_pause(self):
-        consumer = Consumer(None, 'demo', 'changeme')
+        consumer = Consumer(None, 'e9c6a4fc-e275-4eda-b2f8-353ef196ddb7')
         consumer.pause()
         self.assertFalse(consumer.running)
 
+if __name__ == '__main__':
+    unittest.main()

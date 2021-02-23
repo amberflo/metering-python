@@ -14,12 +14,11 @@ def json_hash(str):
     if str:
         return json.loads(str)
 
-# simulator.py --user_name demo --password changeme --tenant customerXXX --meter_name apicall --meter_value 1 --dimensions "[{\"Name\": \"region\", \"Value\": \"us-east-1\"}]"
+# simulator.py --app_key e9c6a4fc-e275-4eda-b2f8-353ef196ddb7 --tenant customerXXX --meter_name apicall --meter_value 1 --dimensions "[{\"Name\": \"region\", \"Value\": \"us-east-1\"}]"
 
 
 parser = argparse.ArgumentParser(description='send a amberflo message')
-parser.add_argument('--user_name', help='the amberflo username', required=True)
-parser.add_argument('--password', help='the amberflo password', required=True)
+parser.add_argument('--app_key', help='the amberflo app_key', required=True)
 parser.add_argument('--tenant', help='the tenant to send the meter for', required=True)
 
 parser.add_argument('--meter_name', help='the meter name to send', required=True)
@@ -58,8 +57,7 @@ def unknown():
     print()
 
 
-metering.password = options.password
-metering.user_name = options.user_name
+metering.app_key = options.app_key
 metering.on_error = failed
 metering.debug = True
 

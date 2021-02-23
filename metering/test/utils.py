@@ -76,3 +76,6 @@ class TestUtils(unittest.TestCase):
                          utils.remove_trailing_slash('http://amberflo.io/'))
         self.assertEqual('http://amberflo.io',
                          utils.remove_trailing_slash('http://amberflo.io'))
+
+if __name__ == '__main__':
+    unittest.main()

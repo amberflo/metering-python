@@ -5,8 +5,7 @@ from metering.client import Client
 __version__ = VERSION
 
 """Settings."""
-user_name = 'demo'
-password = 'chengeme'
+app_key = 'e9c6a4fc-e275-4eda-b2f8-353ef196ddb7'
 host = None
 on_error = None
 debug = False
@@ -43,7 +42,7 @@ def _proxy(method, *args, **kwargs):
     """Create an analytics client if one doesn't exist and send to it."""
     global default_client
     if not default_client:
-        default_client = Client(user_name,password, debug=debug,
+        default_client = Client(app_key=app_key, debug=debug,
                                 on_error=on_error, send=send,
                                 wait=wait)
 

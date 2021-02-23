@@ -1,16 +1,13 @@
-from datetime import datetime
 from uuid import uuid4
 import logging
 import numbers
 import atexit
 import time
-from dateutil.tz import tzutc
 from six import string_types
 from six import integer_types
-from metering.utils import guess_timezone, clean
+from metering.utils import clean
 from metering.consumer import Consumer
 from metering.request import RequestManager
-from metering.version import VERSION
 
 try:
     import queue
@@ -25,15 +22,13 @@ class Client(object):
     """Create a new Segment client."""
     log = logging.getLogger('amberflo')
 
-    def __init__(self, user_name=None, password=None,
+    def __init__(self, app_key=None,
                  max_load=100000, debug=False, send=True, on_error=None, max_batch_size=100,
                  send_interval=0.5, gzip=False, max_retries=3,
                  wait=False, timeout=15, thread=1):
-        require('user_name', user_name, string_types)
-        require('password', password, string_types)
+        require('app_key', app_key, string_types)
         self.queue = queue.Queue(max_load)
-        self.password = password
-        self.user_name = user_name
+        self.app_key = app_key
         self.on_error = on_error
         self.wait = wait
         self.gzip = gzip
@@ -56,7 +51,7 @@ class Client(object):
             for n in range(thread):
                 self.consumers = []
                 consumer = Consumer(
-                    self.queue, user_name=user_name, password=password, on_error=on_error,
+                    self.queue, app_key=app_key, on_error=on_error,
                     flush_at=max_batch_size, send_interval=send_interval,
                     gzip=gzip, retries=max_retries, timeout=timeout,
                 )
@@ -112,7 +107,7 @@ class Client(object):
 
         if self.wait:
             self.log.debug('enqueued with blocking %s.', msg['meter_name'])
-            RequestManager(self.user_name, self.password,
+            RequestManager(self.app_key,
                            gzip=self.gzip,
                            timeout=self.timeout, batch=[msg]).post()
 

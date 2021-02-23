@@ -22,7 +22,7 @@ class Consumer(Thread):
     """Consumes the messages from the client's queue."""
     log = logging.getLogger('amberflo')
 
-    def __init__(self, queue, user_name,password, flush_at=100,
+    def __init__(self, queue, app_key, flush_at=100,
                  on_error=None, send_interval=0.5, gzip=False, retries=10,
                  timeout=15):
         """Create a consumer thread."""
@@ -31,8 +31,7 @@ class Consumer(Thread):
         self.daemon = True
         self.flush_at = flush_at
         self.flush_interval = send_interval
-        self.user_name = user_name
-        self.password = password
+        self.app_key = app_key
         self.on_error = on_error
         self.queue = queue
         self.gzip = gzip
@@ -127,8 +126,7 @@ class Consumer(Thread):
             giveup=fatal_exception)
         def send_request():
             try:
-                RequestManager(self.user_name, self.password, gzip=self.gzip,
-                               timeout=self.timeout, batch=batch).post()
+                RequestManager(self.app_key, gzip=self.gzip, timeout=self.timeout, batch=batch).post()
             except Exception as e:
                 import traceback
                 print(traceback.format_exc())

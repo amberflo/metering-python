@@ -1,7 +1,7 @@
 # metering-python
 Amberflo.io metering client in python
 
-simulator.py --user_name demo --password changeme --tenant customerXXX --meter_name apicall --meter_value 1
+simulator.py --app_key e9c6a4fc-e275-4eda-b2f8-353ef196ddb7 --tenant customerXXX --meter_name apicall --meter_value 1
 
 
 

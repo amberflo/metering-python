@@ -1,10 +1,4 @@
-from datetime import date, datetime
 import unittest
-import six
-import mock
-import time
-
-from metering.version import VERSION
 from metering.client import Client
 
 
@@ -16,7 +10,7 @@ class TestClient(unittest.TestCase):
 
     def setUp(self):
         self.failed = False
-        self.client = Client('demo', 'changeme', on_error=self.fail)
+        self.client = Client('e9c6a4fc-e275-4eda-b2f8-353ef196ddb7', on_error=self.fail)
 
     def test_requires_write_key(self):
         self.assertRaises(AssertionError, Client)
@@ -59,7 +53,7 @@ class TestClient(unittest.TestCase):
             self.assertFalse(consumer.is_alive())
 
     def test_synchronous(self):
-        client = Client('demo', 'changeme', wait=True)
+        client = Client('e9c6a4fc-e275-4eda-b2f8-353ef196ddb7', wait=True)
 
         success, message = client.meter('customerTestCae', 'Testing python library.', 1, [{'Name': 'test', 'Value': 'test'}])
         self.assertFalse(client.consumers)
@@ -67,7 +61,7 @@ class TestClient(unittest.TestCase):
         self.assertTrue(success)
 
     def test_overflow(self):
-        client = Client('demo', 'changeme', max_load=1)
+        client = Client('e9c6a4fc-e275-4eda-b2f8-353ef196ddb7', max_load=1)
         # Ensure consumer thread is no longer uploading
         client.join()
 
@@ -78,8 +72,11 @@ class TestClient(unittest.TestCase):
         # Make sure we are informed that the queue is at capacity
         self.assertFalse(success)
 
-    def test_success_on_invalid_write_key(self):
-        client = Client('bad_key', '', on_error=self.fail)
+    def test_failure_on_invalid_write_key(self):
+        client = Client('bad_key', on_error=self.fail)
         client.meter('customerTestCae', 'Testing python library.', 1, [{'Name': 'test', 'Value': 'test'}])
         client.flush()
-        self.assertFalse(self.failed)
+        self.assertTrue(self.failed)
+
+if __name__ == '__main__':
+    unittest.main()
