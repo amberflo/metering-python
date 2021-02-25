@@ -51,7 +51,7 @@ class RequestManager:
         try:
             payload = res.json()
             log.debug('received response: %s', payload)
-            raise APIError(res.status_code, res.text, payload['message'])
+            raise APIError(res.status_code, res.text, payload['unique_id'])
         except ValueError:
             raise APIError(res.status_code, 'unknown', res.text)
 

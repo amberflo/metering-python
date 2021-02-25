@@ -1,22 +1,15 @@
-from uuid import uuid4
 import logging
-import numbers
 import atexit
-import time
 from six import string_types
-from six import integer_types
-from metering.utils import clean
 from metering.consumer import Consumer
 from metering.request import RequestManager
+from metering.meter_message_factory import MeterFactory
+from metering.field_validator import FieldValidator
 
 try:
     import queue
 except ImportError:
     import Queue as queue
-
-
-ID_TYPES = (numbers.Number, string_types)
-
 
 class Client(object):
     """Create a new Segment client."""
@@ -26,7 +19,8 @@ class Client(object):
                  max_load=100000, debug=False, send=True, on_error=None, max_batch_size=100,
                  send_interval=0.5, gzip=False, max_retries=3,
                  wait=False, timeout=15, thread=1):
-        require('app_key', app_key, string_types)
+        FieldValidator.require_string_value('app_key', app_key)
+
         self.queue = queue.Queue(max_load)
         self.app_key = app_key
         self.on_error = on_error
@@ -61,44 +55,15 @@ class Client(object):
                 if send:
                     consumer.start()
 
-    def meter(self, tenant=None, meter_name=None, meter_value=None, dimensions=None,
-              timestamp=None):
-        dimensions = dimensions or []
-        require('tenant', tenant ,string_types)
-        require('meter_name', meter_name, string_types)
-        require('meter_value', meter_value, integer_types)
-        require('dimensions', dimensions, list)
+    def meter(self, meter_name, meter_value, customer_id=None, customer_name=None, dimensions=None, utc_time_millis=None, unique_id=None):
+        message = MeterFactory.create(meter_name=meter_name, meter_value=meter_value, customer_id=customer_id, \
+            customer_name=customer_name, dimensions=dimensions, utc_time_millis=utc_time_millis, unique_id=unique_id)
 
-        if timestamp is None:
-            timestamp = str(int(round(time.time() * 1000)))
-        msg = {
-            'tenant': tenant,
-            'meter_name': meter_name,
-            'meter_value': meter_value,
-            'time': timestamp,
-            'dimensions': dimensions,
-        }
-
-        return self._enqueue(msg)
+        return self._enqueue(message)
 
    
     def _enqueue(self, msg):
         """Push a new `msg` onto the queue, return `(success, msg)`"""
-        timestamp = msg['time']
-        if timestamp is None:
-            timestamp = str(int(round(time.time() * 1000)))
-        message_id = msg.get('messageId')
-        if message_id is None:
-            message_id = uuid4()
-
-        require('time', timestamp, str)
-
-        # add common
-       # timestamp = guess_timezone(timestamp)
-       # msg['time'] = timestamp.isoformat()
-       # msg['messageId'] = stringify_id(message_id)
-      
-        msg = clean(msg)
         self.log.debug('queueing: %s', msg)
 
         # if send is False, return msg as if it was successfully queued
@@ -144,13 +109,6 @@ class Client(object):
         """Flush all messages and cleanly shutdown the client"""
         self.flush()
         self.join()
-
-
-def require(name, field, data_type):
-    """Require that the named `field` has the right `data_type`"""
-    if not isinstance(field, data_type):
-        msg = '{0} must have {1}, got: {2}'.format(name, data_type, field)
-        raise AssertionError(msg)
 
 
 def stringify_id(val):
