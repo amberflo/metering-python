@@ -83,7 +83,7 @@ class Client(object):
             # 1. Threads in Python that runs on the standard CPython, aren't really running
             #    in parallel. See https://realpython.com/intro-to-python-threading/ for
             #    more info.
-            # 2. From 'RFC 2616 – Hypertext Transfer Protocol, section 8 - Connections.':
+            # 2. From 'RFC 2616 - Hypertext Transfer Protocol, section 8 - Connections.':
             #    "Clients that use persistent connections SHOULD limit the number of
             #     simultaneous connections that they maintain to a given server. A
             #     single-user client SHOULD NOT maintain more than 2 connections with
