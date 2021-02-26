@@ -1,11 +1,11 @@
-from datetime import date, datetime
+from datetime import datetime
 
-import logging
 import json
 from gzip import GzipFile
 from io import BytesIO
 from requests import sessions
 from dateutil.tz import tzutc
+from metering.logger import Logger
 
 _session = sessions.Session()
 ingest_url = 'https://app.amberflo.io/ingest-endpoint/'
@@ -21,9 +21,9 @@ class RequestManager:
         self.body = kwargs
 
     def post(self):
-        log = logging.getLogger('amberflo')
+        log = Logger()
 
-        data = json.dumps(self.body['batch'], cls=DatetimeSerializer)
+        data = json.dumps(self.body['batch'], cls=json.JSONEncoder)
         log.debug('making request: %s', data)
         headers = {
             'Content-Type': 'application/json',
@@ -66,11 +66,3 @@ class APIError(Exception):
     def __str__(self):
         msg = "[Amberflo] {0}: {1} ({2})"
         return msg.format(self.code, self.message, self.status)
-
-
-class DatetimeSerializer(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, (date, datetime)):
-            return obj.isoformat()
-
-        return json.JSONEncoder.default(self, obj)

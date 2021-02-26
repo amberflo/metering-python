@@ -21,7 +21,7 @@ class TestMeterFactory(unittest.TestCase):
     customer_id = "123"
     customer_name = "moishe oofnik" # https://muppet.fandom.com/wiki/Moishe_Oofnik
     unique_id = uuid4()
-    timestamp = time.time_ns() // 1_000_000
+    timestamp = time.time_ns() // 1000000
 
     def test_no_meter_name(self):
         with self.assertRaises(AssertionError):

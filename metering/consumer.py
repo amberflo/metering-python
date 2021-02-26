@@ -1,10 +1,10 @@
-import logging
 from threading import Thread
+import time
 import monotonic
 import backoff
-import json
 
-from metering.request import RequestManager, APIError, DatetimeSerializer
+from metering.request import RequestManager, APIError
+from metering.logger import Logger
 
 try:
     from queue import Empty
@@ -17,11 +17,13 @@ MAX_MSG_SIZE = 32 << 10
 # lower to leave space for extra data that will be added later, eg. "sentAt".
 BATCH_SIZE_LIMIT = 475000
 
+TIME_TO_SLEEP_IF_FAIL_OR_IDLE_SECONDS = 0.1
 
 class Consumer(Thread):
     """Consumes the messages from the client's queue."""
-    log = logging.getLogger('amberflo')
 
+    # TODO ofer 02/25/2021: consider removing the gzip param (should it really
+    # be configurable by the client?).
     def __init__(self, queue, app_key, flush_at=100,
                  on_error=None, send_interval=0.5, gzip=False, retries=10,
                  timeout=15):
@@ -42,12 +44,15 @@ class Consumer(Thread):
         self.running = True
         self.retries = retries
         self.timeout = timeout
+        self.log = Logger()
 
     def run(self):
         """Runs the consumer."""
         self.log.debug('consumer is running...')
         while self.running:
-            self.upload()
+            success = self.upload()
+            if not success:
+                self.__sleep(TIME_TO_SLEEP_IF_FAIL_OR_IDLE_SECONDS)
 
         self.log.debug('consumer exited.')
 
@@ -68,7 +73,7 @@ class Consumer(Thread):
             self.log.error('error uploading: %s', e)
             success = False
             if self.on_error:
-                self.on_error(e, batch)
+                self.__handle_error(e, batch)
         finally:
             # mark items as acknowledged from queue
             for item in batch:
@@ -81,7 +86,6 @@ class Consumer(Thread):
         items = []
 
         start_time = monotonic.monotonic()
-        total_size = 0
 
         while len(items) < self.flush_at:
             elapsed = monotonic.monotonic() - start_time
@@ -90,18 +94,7 @@ class Consumer(Thread):
             try:
                 item = queue.get(
                     block=True, timeout=self.flush_interval - elapsed)
-                item_size = len(json.dumps(
-                    item, cls=DatetimeSerializer).encode())
-                if item_size > MAX_MSG_SIZE:
-                    self.log.error(
-                        'Item exceeds 32kb limit, dropping. (%s)', str(item))
-                    continue
                 items.append(item)
-                total_size += item_size
-                if total_size >= BATCH_SIZE_LIMIT:
-                    self.log.debug(
-                        'hit batch size limit (size: %d)', total_size)
-                    break
             except Empty:
                 break
 
@@ -133,3 +126,16 @@ class Consumer(Thread):
                 raise e
 
         send_request()
+
+    def __handle_error(self, exception, batch):
+        try:
+            self.on_error(exception, batch)
+        except RuntimeError:
+            self.log.warn(exception)
+    
+    def __sleep(self, seconds):
+        # Sleep Time is in seconds: https://docs.python.org/2/library/time.html
+        try:
+            time.sleep(seconds)
+        except RuntimeError as exception:
+            self.log.warn(exception)

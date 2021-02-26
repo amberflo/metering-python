@@ -13,7 +13,8 @@ class TestClient(unittest.TestCase):
         self.client = Client('e9c6a4fc-e275-4eda-b2f8-353ef196ddb7', on_error=self.fail)
 
     def test_requires_write_key(self):
-        self.assertRaises(AssertionError, Client)
+        with self.assertRaises(AssertionError):
+            Client(None)
 
     def test_empty_flush(self):
         self.client.flush()

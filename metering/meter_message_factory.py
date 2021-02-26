@@ -37,7 +37,7 @@ class MeterFactory(object):
         # Create the message
         processed_unique = str(unique_id or uuid1())
         # '//' : Divides the number on its left by the number on its right, rounds down the answer, and returns a whole number.
-        processed_timestamp = str(utc_time_millis or (time.time_ns() // 1_000_000))
+        processed_timestamp = str(utc_time_millis or (time.time_ns() // 1000000))
 
         message_dictionary = {
             'unique_id': processed_unique,

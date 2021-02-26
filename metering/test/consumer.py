@@ -27,13 +27,13 @@ class TestConsumer(unittest.TestCase):
         self.assertEqual(next, list(range(flush_at)))
 
     def test_dropping_oversize_msg(self):
+        '''For the moment we dont hanfle the case of oversized message'''
         q = Queue()
         consumer = Consumer(q, 'e9c6a4fc-e275-4eda-b2f8-353ef196ddb7')
         oversize_msg = {'m': 'x' * MAX_MSG_SIZE}
         q.put(oversize_msg)
         next = consumer.next()
-        self.assertEqual(next, [])
-        self.assertTrue(q.empty())
+        self.assertEqual(next, [oversize_msg])
 
     def test_upload(self):
         q = Queue()
