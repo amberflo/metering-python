@@ -27,7 +27,7 @@ metering.meter(options.meter_name, \
     customer_id=options.customer_id, \
     customer_name=options.customer_name, \
     dimensions=dimensions, \
-    utc_time_millis=time.time_ns() // 1000000)
+    utc_time_millis=int(round(time.time() * 1000)))
 ## adding unique id
 metering.meter(options.meter_name, \
     int(options.meter_value), \
