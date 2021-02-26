@@ -1,4 +1,3 @@
-import sys
 import logging
 
 class Logger:
@@ -25,7 +24,7 @@ class Logger:
         try:
             self.log.warning(massage, *args)
         except RuntimeError:
-            print(massage, file=sys.stderr)
+            print(massage) # See how you log to sys.stderr in python 2 and 3
 
     def error(self, massage, *args):
         '''Logs an error level message (an error is unrecoverable issue).'''
@@ -33,4 +32,4 @@ class Logger:
         try:
             self.log.error(massage, *args)
         except RuntimeError:
-            print(massage, file=sys.stderr)
+            print(massage) # See how you log to sys.stderr in python 2 and 3
