@@ -17,7 +17,7 @@ class Logger:
             self.log.debug(massage, *args)
         # https://docs.python.org/3/library/exceptions.html
         except RuntimeError:
-            print(massage, file = sys.stdout)
+            print(massage)
 
     def warn(self, massage, *args):
         '''Logs a warning level message (a warning is recoverable issue).'''
@@ -25,7 +25,7 @@ class Logger:
         try:
             self.log.warning(massage, *args)
         except RuntimeError:
-            print(massage, file = sys.stderr)
+            print(massage, file=sys.stderr)
 
     def error(self, massage, *args):
         '''Logs an error level message (an error is unrecoverable issue).'''
@@ -33,4 +33,4 @@ class Logger:
         try:
             self.log.error(massage, *args)
         except RuntimeError:
-            print(massage, file = sys.stderr)
+            print(massage, file=sys.stderr)
