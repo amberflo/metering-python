@@ -1,6 +1,5 @@
 from threading import Thread
 import time
-import monotonic
 import backoff
 
 from metering.request import RequestManager, APIError
@@ -85,10 +84,10 @@ class Consumer(Thread):
         queue = self.queue
         items = []
 
-        start_time = monotonic.monotonic()
+        start_time = time.monotonic()
 
         while len(items) < self.flush_at:
-            elapsed = monotonic.monotonic() - start_time
+            elapsed = time.monotonic() - start_time
             if elapsed >= self.flush_interval:
                 break
             try:

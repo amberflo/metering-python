@@ -3,8 +3,6 @@ import time
 
 from numbers import Number
 from uuid import uuid1, UUID
-# https://six.readthedocs.io/
-from six import integer_types
 
 from metering.field_validator import FieldValidator
 
@@ -13,21 +11,21 @@ var_name = 'var'
 class TestFieldValidator(unittest.TestCase):
     """Test class for FieldValidator"""
 
-    def test_require_no_value_integer_type_none_is_allowed(self):
+    def test_require_no_value_int_type_none_is_allowed(self):
         #No exception
-        FieldValidator.require(var_name, None, integer_types)
+        FieldValidator.require(var_name, None, int)
 
-    def test_require_no_value_integer_type_none_is_not_allowed(self):
+    def test_require_no_value_int_type_none_is_not_allowed(self):
         with self.assertRaises(AssertionError):
-            FieldValidator.require(var_name, None, integer_types, allow_none = False)
+            FieldValidator.require(var_name, None, int, allow_none = False)
 
-    def test_require_integer_value_integer_type(self):
+    def test_require_integer_value_int_type(self):
         #No exception
-        FieldValidator.require(var_name, 3, integer_types)
+        FieldValidator.require(var_name, 3, int)
 
-    def test_require_double_value_integer_type(self):
+    def test_require_double_value_int_type(self):
         with self.assertRaises(AssertionError):
-            FieldValidator.require(var_name, 3.5, integer_types)
+            FieldValidator.require(var_name, 3.5, int)
 
     def test_require_double_value_double_type(self):
         #No exception

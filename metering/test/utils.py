@@ -1,9 +1,7 @@
-from datetime import date, datetime, timedelta
-from decimal import Decimal
+from datetime import datetime
 import unittest
 
 from dateutil.tz import tzutc
-import six
 
 from metering import utils
 

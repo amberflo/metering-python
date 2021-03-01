@@ -1,8 +1,6 @@
 import unittest
-import json
 import requests
 
-from datetime import datetime, date
 from metering.request import RequestManager
 
 
