@@ -24,9 +24,9 @@ jobs:
     - name: Install dependencies
       run: |
         sudo pip install --upgrade pip
+        sudo pip install pylint==2.0.1
         sudo pip install requests backoff==1.10.0 python-dateutil
-        sudo pip install coverage pylint flake8 mock==3.0.5
-        sudo pip install pylint --upgrade
+        sudo pip install coverage flake8 mock==3.0.5
         make test
     - name: Run Coverage test
       run: |
