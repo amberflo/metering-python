@@ -32,14 +32,14 @@ jobs:
       run: python -c "import sys; print(sys.version)"
     - name: Install dependencies
       run: |
-        sudo pip install --upgrade pip
-        sudo pip --version
-        sudo pip install pylint==2.0.1
-        sudo pip install requests backoff==1.10.0 python-dateutil
-        sudo pip install coverage flake8 mock==3.0.5
+        sudo pip3 install --upgrade pip
+        sudo pip3 --version
+        sudo pip3 install pylint==2.0.1
+        sudo pip3 install requests backoff==1.10.0 python-dateutil
+        sudo pip3 install coverage flake8 mock==3.0.5
         make test
     - name: Run Coverage test
       run: |
-        sudo pip install coverage
+        sudo pip3 install coverage
         coverage report --show-missing | tee /tmp/coverage
 
