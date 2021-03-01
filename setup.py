@@ -43,14 +43,14 @@ Documentation and more details at https://github.com/amberflo/metering-python
 '''
 
 install_requires = [
-    "requests>=2.25,<3.0", # https://requests.readthedocs.io/en/latest/community/updates/#release-history
+    "requests>=2.20,<3.0", # https://requests.readthedocs.io/en/latest/community/updates/#release-history
     "backoff==1.10.0", # https://pypi.org/project/backoff/
     "python-dateutil>=2.5" # https://dateutil.readthedocs.io/en/stable/changelog.html
 ]
 
 tests_require = [
     "mock==3.0.5",
-    "pylint==2.0.1", # http://pylint.pycqa.org/en/latest/whatsnew/2.0.html
+    "pylint==1.9.5", # http://pylint.pycqa.org/en/latest/whatsnew/2.0.html
     "flake8==3.7.9", # https://pypi.org/project/flake8/#history
     "coverage==4.5.4" # https://mock.readthedocs.io/en/latest/changelog.html
 ]

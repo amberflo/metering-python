@@ -1,5 +1,6 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+# Also see https://docs.github.com/en/actions/guides/building-and-testing-python
 
 name: Python application
 
@@ -23,7 +24,7 @@ jobs:
     - name: Install dependencies
       run: |
         sudo pip install requests backoff==1.10.0 python-dateutil
-        sudo pip install coverage pylint==2.0.1 flake8 mock==3.0.5
+        sudo pip install coverage pylint==1.9.5 flake8 mock==3.0.5
         make test
     - name: Run Coverage test
       run: |
