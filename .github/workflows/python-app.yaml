@@ -37,7 +37,7 @@ jobs:
         sudo pip3 install pylint==2.0.1
         sudo pip3 install requests backoff==1.10.0 python-dateutil
         sudo pip3 install coverage flake8 mock==3.0.5
-        sudo pip install -U pip setuptools
+        sudo pip3 install -U pip setuptools
         make test
     - name: Run Coverage test
       run: |
