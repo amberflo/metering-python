@@ -21,19 +21,20 @@ Samples:
 # dedup is happening on a full record
 metering.meter(options.meter_name, \
     int(options.meter_value), \
+    utc_time_millis=current_time, \
+    customer_id=options.customer_id, \
+    customer_name=options.customer_name)
+# adding dimensions
+metering.meter(options.meter_name, \
+    int(options.meter_value), \
+    utc_time_millis=current_time, \
     customer_id=options.customer_id, \
     customer_name=options.customer_name, \
     dimensions=dimensions)
-# addint a timestamp
-metering.meter(options.meter_name, \
-    int(options.meter_value), \
-    customer_id=options.customer_id, \
-    customer_name=options.customer_name, \
-    dimensions=dimensions, \
-    utc_time_millis=int(round(time.time() * 1000)))
 # adding unique id
 metering.meter(options.meter_name, \
     int(options.meter_value), \
+    utc_time_millis=current_time, \
     customer_id=options.customer_id, \
     customer_name=options.customer_name, \
     dimensions=dimensions, \
