@@ -2,7 +2,7 @@ import logging
 
 class Logger:
     '''This class encapsulate this modules logging logic.'''
-    
+
     def __init__(self):
         self.log = logging.getLogger('amberflo')
 

@@ -11,7 +11,9 @@ __name__ = 'simulator.py'
 __version__ = '0.0.1'
 __description__ = 'scripting simulator'
 
-# simulator.py --app_key e9c6a4fc-e275-4eda-b2f8-353ef196ddb7 --meter_name apicall --meter_value 1 --customer_id ID_X --customer_id NAME_X --dimensions "[{\"Name\": \"region\", \"Value\": \"us-east-1\"}]"
+# simulator.py --app_key e9c6a4fc-e275-4eda-b2f8-353ef196ddb7 --meter_name apicall --meter_value 1
+#   --customer_id ID_X --customer_id NAME_X
+#   --dimensions "[{\"Name\": \"region\", \"Value\": \"us-east-1\"}]"
 
 
 parser = argparse.ArgumentParser(description='send a amberflo message')
@@ -37,24 +39,26 @@ def failed(status, msg):
 def meter():
     i = 0
     dimensions = ast.literal_eval(options.dimensions)
+    current_time = int(round(time.time() * 1000))
 
     while i<1:
         # dedup is happening on a full record
         metering.meter(options.meter_name, \
             int(options.meter_value), \
+            utc_time_millis=current_time, \
+            customer_id=options.customer_id, \
+            customer_name=options.customer_name)
+        # adding dimensions
+        metering.meter(options.meter_name, \
+            int(options.meter_value), \
+            utc_time_millis=current_time, \
             customer_id=options.customer_id, \
             customer_name=options.customer_name, \
             dimensions=dimensions)
-        # addint a timestamp
-        metering.meter(options.meter_name, \
-            int(options.meter_value), \
-            customer_id=options.customer_id, \
-            customer_name=options.customer_name, \
-            dimensions=dimensions, \
-            utc_time_millis=int(round(time.time() * 1000)))
         # adding unique id
         metering.meter(options.meter_name, \
             int(options.meter_value), \
+            utc_time_millis=current_time, \
             customer_id=options.customer_id, \
             customer_name=options.customer_name, \
             dimensions=dimensions, \

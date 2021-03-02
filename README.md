@@ -17,30 +17,35 @@ Producer consumer of meter messages.
 # Test
 Run the following:
 1. Install project + dependencies:
-```Install  python setup.py install```
+```pip install requests pylint backoff==1.10.0 python-dateutil```
+```python setup.py install```
 3. Run unit tests + coverage:
 ```coverage run --branch --include=metering/\* --omit=*/test* setup.py test```
 2. Style check:
-```flake8 --max-complexity=10 --statistics metering > flake8.out || true```
+```flake8 --max-complexity=10 --statistics metering```
 
 # Usage
-## dedup is happening on a full record
+
+```
+# dedup is happening on a full record
 metering.meter(options.meter_name, \
     int(options.meter_value), \
+    utc_time_millis=int(round(time.time() * 1000)), \
+    customer_id=options.customer_id, \
+    customer_name=options.customer_name)
+# adding dimensions
+metering.meter(options.meter_name, \
+    int(options.meter_value), \
+    utc_time_millis=int(round(time.time() * 1000)), \
     customer_id=options.customer_id, \
     customer_name=options.customer_name, \
     dimensions=dimensions)
-## addint a timestamp
+# adding unique id
 metering.meter(options.meter_name, \
     int(options.meter_value), \
+    utc_time_millis=int(round(time.time() * 1000)), \
     customer_id=options.customer_id, \
     customer_name=options.customer_name, \
     dimensions=dimensions, \
-    utc_time_millis=int(round(time.time() * 1000)))
-## adding unique id
-metering.meter(options.meter_name, \
-    int(options.meter_value), \
-    customer_id=options.customer_id, \
-    customer_name=options.customer_name, \
-    dimensions=dimensions, \
-    unique_id = uuid1())
+    unique_id = uuid1())```
+

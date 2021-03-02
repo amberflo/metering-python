@@ -34,7 +34,7 @@ class FieldValidator(object):
         if field is None:
             if allow_none:
                 return None
-            
+
             msg = '{0} must have a value'.format(name)
             raise AssertionError(msg)
 

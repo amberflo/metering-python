@@ -1,4 +1,5 @@
 import unittest
+import time
 from metering.client import Client
 
 
@@ -21,7 +22,8 @@ class TestClient(unittest.TestCase):
 
     def test_basic_meter(self):
         client = self.client
-        success, msg = client.meter(meter_name='Testing python library.', meter_value=1, customer_name='customerTestCae')
+        success, msg = client.meter(meter_name='Testing python library.', meter_value=1,
+        utc_time_millis=int(round(time.time() * 1000)), customer_name='customerTestCae')
         client.flush()
         self.assertTrue(success)
         self.assertFalse(self.failed)
@@ -33,8 +35,9 @@ class TestClient(unittest.TestCase):
         client = self.client
         # set up the consumer with more requests than a single batch will allow
         for i in range(1000):
-            success, msg = client.meter(meter_name='Testing python library.', meter_value=1, customer_name='customerTestCae', \
-                dimensions={'test': 'test'})
+            success, msg = client.meter(meter_name='Testing python library.', meter_value=1,
+            utc_time_millis=int(round(time.time() * 1000)), customer_name='customerTestCae',
+            dimensions={'test': 'test'})
         # We can't reliably assert that the queue is non-empty here; that's
         # a race condition. We do our best to load it up though.
         client.flush()
@@ -45,8 +48,9 @@ class TestClient(unittest.TestCase):
         client = self.client
         # set up the consumer with more requests than a single batch will allow
         for i in range(1000):
-            success, msg = client.meter(meter_name='Testing python library.', meter_value=1, customer_name='customerTestCae', \
-                dimensions={'test': 'test'})
+            success, msg = client.meter(meter_name='Testing python library.', meter_value=1,
+            utc_time_millis=int(round(time.time() * 1000)), customer_name='customerTestCae',
+            dimensions={'test': 'test'})
         client.shutdown()
         # we expect two things after shutdown:
         # 1. client queue is empty
@@ -58,8 +62,9 @@ class TestClient(unittest.TestCase):
     def test_synchronous(self):
         client = Client('e9c6a4fc-e275-4eda-b2f8-353ef196ddb7', wait=True)
 
-        success, msg = client.meter(meter_name='Testing python library.', meter_value=1, customer_name='customerTestCae', \
-                dimensions={'test': 'test'})
+        success, msg = client.meter(meter_name='Testing python library.', meter_value=1,
+        utc_time_millis=int(round(time.time() * 1000)), customer_name='customerTestCae',
+        dimensions={'test': 'test'})
         self.assertFalse(client.consumers)
         self.assertTrue(client.queue.empty())
         self.assertTrue(success)
@@ -70,18 +75,21 @@ class TestClient(unittest.TestCase):
         client.join()
 
         for i in range(10):
-            client.meter(meter_name='Testing python library.', meter_value=1, customer_name='customerTestCae', \
-                dimensions={'test': 'test'})
+            client.meter(meter_name='Testing python library.', meter_value=1,
+            utc_time_millis=int(round(time.time() * 1000)), customer_name='customerTestCae',
+            dimensions={'test': 'test'})
 
-        success, msg = client.meter(meter_name='Testing python library.', meter_value=1, customer_name='customerTestCae', \
-                dimensions={'test': 'test'})
+        success, msg = client.meter(meter_name='Testing python library.', meter_value=1,
+        utc_time_millis=int(round(time.time() * 1000)),  customer_name='customerTestCae',
+        dimensions={'test': 'test'})
         # Make sure we are informed that the queue is at capacity
         self.assertFalse(success)
 
     def test_failure_on_invalid_write_key(self):
         client = Client('bad_key', on_error=self.fail)
-        client.meter(meter_name='Testing python library.', meter_value=1, customer_name='customerTestCae', \
-                dimensions={'test': 'test'})
+        client.meter(meter_name='Testing python library.', meter_value=1,
+        utc_time_millis=int(round(time.time() * 1000)), customer_name='customerTestCae',
+        dimensions={'test': 'test'})
         client.flush()
         self.assertTrue(self.failed)
 

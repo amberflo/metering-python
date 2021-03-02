@@ -1,5 +1,6 @@
 from threading import Thread
 import time
+import traceback
 import backoff
 
 from metering.request import RequestManager, APIError
@@ -118,9 +119,9 @@ class Consumer(Thread):
             giveup=fatal_exception)
         def send_request():
             try:
-                RequestManager(self.app_key, gzip=self.gzip, timeout=self.timeout, batch=batch).post()
+                RequestManager(self.app_key, gzip=self.gzip,
+                    timeout=self.timeout, batch=batch).post()
             except Exception as e:
-                import traceback
                 print(traceback.format_exc())
                 raise e
 
@@ -131,7 +132,7 @@ class Consumer(Thread):
             self.on_error(exception, batch)
         except RuntimeError:
             self.log.warn(exception)
-    
+
     def __sleep(self, seconds):
         # Sleep Time is in seconds: https://docs.python.org/2/library/time.html
         try:

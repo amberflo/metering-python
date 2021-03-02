@@ -31,7 +31,7 @@ class RequestManager:
             'User-Agent': 'Mozilla/5.0 (platform; rv:geckoversion) Gecko/geckotrail Firefox/firefoxversion',
             'X-API-Key': self.api_key
         }
-        
+
         # import ipdb; ipdb.set_trace()
         if self.gzip:
             headers['Content-Encoding'] = 'gzip'

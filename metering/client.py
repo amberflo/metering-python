@@ -102,15 +102,16 @@ class Client(object):
                 if send:
                     consumer.start()
 
-    def meter(self, meter_name, meter_value, customer_id=None, customer_name=None, dimensions=None, utc_time_millis=None, unique_id=None):
+    def meter(self, meter_name, meter_value, utc_time_millis, customer_id=None,
+        customer_name=None, dimensions=None, unique_id=None):
         '''creates the message and enqueues it'''
 
-        message = MeterFactory.create(meter_name=meter_name, meter_value=meter_value, customer_id=customer_id, \
-            customer_name=customer_name, dimensions=dimensions, utc_time_millis=utc_time_millis, unique_id=unique_id)
+        message = MeterFactory.create(meter_name=meter_name, meter_value=meter_value,
+            utc_time_millis=utc_time_millis, customer_id=customer_id,
+            customer_name=customer_name, dimensions=dimensions, unique_id=unique_id)
 
         return self._enqueue(message)
 
-   
     def _enqueue(self, msg):
         """Push a new `msg` onto the queue, return `(success, msg)`"""
         self.log.debug('queueing: %s', msg)
