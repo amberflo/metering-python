@@ -21,9 +21,9 @@ parser.add_argument('--app_key', help='the amberflo app_key', required=True)
 parser.add_argument('--meter_name', help='the meter name to send', required=True)
 parser.add_argument('--meter_value', help='the meter value to send ', required=True)
 
-parser.add_argument('--customer_id', help='the customer id to send the meter for', required=False)
+parser.add_argument('--customer_id', help='the customer id to send the meter for', required=True)
 parser.add_argument('--customer_name', \
-    help='the customer name to send the meter for', required=False)
+    help='the customer name to send the meter for', required=True)
 parser.add_argument(
     '--dimensions', help='the dimensions to send (JSON-encoded) FUTURE')
 

@@ -39,7 +39,9 @@ class TestConsumer(unittest.TestCase):
         q = Queue()
         consumer = Consumer(q, 'e9c6a4fc-e275-4eda-b2f8-353ef196ddb7')
         meter = {
-            'tenant_id': 'myself',
+            'time': 1614977378712,
+            'tenant_id': '123',
+            'tenant': 'myself',
             'meter_name': 'python event',
             'meter_value': 3
         }
@@ -51,7 +53,9 @@ class TestConsumer(unittest.TestCase):
     def test_request(self):
         consumer = Consumer(None, 'e9c6a4fc-e275-4eda-b2f8-353ef196ddb7')
         meter = {
-            'tenant_id': 'myself',
+            'time': 1614977378712,
+            'tenant_id': '123',
+            'tenant': 'myself',
             'meter_name': 'python event',
             'meter_value': 3
         }

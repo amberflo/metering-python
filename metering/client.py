@@ -102,8 +102,8 @@ class Client(object):
                 if send:
                     consumer.start()
 
-    def meter(self, meter_name, meter_value, utc_time_millis, customer_id=None,
-        customer_name=None, dimensions=None, unique_id=None):
+    def meter(self, meter_name, meter_value, utc_time_millis, customer_id,
+        customer_name, dimensions=None, unique_id=None):
         '''creates the message and enqueues it'''
 
         message = MeterFactory.create(meter_name=meter_name, meter_value=meter_value,

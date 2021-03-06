@@ -7,8 +7,7 @@ class MeterFactory(object):
 
 
     @staticmethod
-    def create(meter_name, meter_value, utc_time_millis, customer_id=None, customer_name=None, 
-    dimensions=None, unique_id=None):
+    def create(meter_name, meter_value, utc_time_millis, customer_id, customer_name, dimensions=None, unique_id=None):
         '''
         Params:
         1. meter_name - String. Required (also can't be a whitespace)
@@ -17,8 +16,8 @@ class MeterFactory(object):
             This argument decribes the meter event. Pay attention for this argument as two meters
             (with the same name) that are sent to Amberflo at the exact same time (and have the
             same unique id) will be deduped by the server.
-        4. customer_id - Optional. String.
-        5. customer_name - Optional. String
+        4. customer_id - Required. String.
+        5. customer_name - Required. String
         6. dimensions - Optional. Dictionary of String to String. Here you can specify more
             partition properies which which can help you analize your data.
         7. Unique_id - Optional UUID (defualt to a random uuid). This parameter can help the
@@ -27,8 +26,8 @@ class MeterFactory(object):
         '''
 
         # Validate the input
-        FieldValidator.require('customer_id', customer_id ,str)
-        FieldValidator.require('customer_name', customer_name ,str)
+        FieldValidator.require_string_value('customer_id', customer_id)
+        FieldValidator.require_string_value('customer_name', customer_name)
         FieldValidator.require_string_value('meter_name', meter_name)
         FieldValidator.require('meter_value', meter_value, Number, allow_none=False)
         FieldValidator.require_string_dictionary('dimensions', dimensions)
@@ -40,27 +39,17 @@ class MeterFactory(object):
         # a random value.
         # https://stackoverflow.com/questions/1785503/when-should-i-use-uuid-uuid1-vs-uuid-uuid4-in-python
         processed_unique = str(unique_id or uuid1())
-        processed_timestamp = str(utc_time_millis)
 
         message_dictionary = {
             'unique_id': processed_unique,
             'meter_name': meter_name,
             'meter_value': meter_value,
-            'time': processed_timestamp
+            'tenant_id': customer_id,
+            'tenant': customer_name,
+            'time': utc_time_millis
         }
 
-        MeterFactory.__add_string_if_populated('tenant_id', customer_id, message_dictionary)
-        MeterFactory.__add_string_if_populated('tenant_name', customer_name, message_dictionary)
-
         if dimensions is not None and dimensions:
-            dimensions_list = []
-            for key, value in dimensions.items():
-                dimensions_list.append({'Name': key, 'Value': value})
-            message_dictionary['dimensions'] = dimensions_list
+            message_dictionary['dimensions'] = dimensions
 
         return message_dictionary
-
-    @staticmethod
-    def __add_string_if_populated(key_name, value, message_dictionary):
-        if (value is not None and value):
-            message_dictionary[key_name] = value

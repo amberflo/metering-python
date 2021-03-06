@@ -8,7 +8,9 @@ class TestRequests(unittest.TestCase):
 
     def test_valid_request(self):
         res = RequestManager('e9c6a4fc-e275-4eda-b2f8-353ef196ddb7', batch=[{
-            'tenant_id': 'myself',
+            'time': 1614977378712,
+            'tenant_id': '123',
+            'tenant': 'myself',
             'meter_name': 'python event',
             'meter_value': 3
         }]).post()
@@ -16,7 +18,9 @@ class TestRequests(unittest.TestCase):
 
     def test_should_not_timeout(self):
         res = RequestManager('e9c6a4fc-e275-4eda-b2f8-353ef196ddb7', batch=[{
-            'tenant_id': 'myself',
+            'time': 1614977378712,
+            'tenant_id': '123',
+            'tenant': 'myself',
             'meter_name': 'python event',
             'meter_value': 3
             }], timeout=15).post()
@@ -25,7 +29,9 @@ class TestRequests(unittest.TestCase):
     def test_should_timeout(self):
         with self.assertRaises(requests.ReadTimeout):
             RequestManager('e9c6a4fc-e275-4eda-b2f8-353ef196ddb7', batch=[{
-                'tenant_id': 'myself',
+                'time': 1614977378712,
+                'tenant_id': '123',
+                'tenant': 'myself',
                 'meter_name': 'python event',
                 'meter_value': 3
             }], timeout=0.0001).post()
