@@ -1,14 +1,18 @@
 import unittest
+import time
 import requests
 
 from metering.request import RequestManager
 
 
 class TestRequests(unittest.TestCase):
+    """Test class for RequestManager"""
+
+    timestamp = int(round(time.time() * 1000))
 
     def test_valid_request(self):
         res = RequestManager('e9c6a4fc-e275-4eda-b2f8-353ef196ddb7', batch=[{
-            'time': 1614977378712,
+            'time': self.timestamp,
             'tenant_id': '123',
             'tenant': 'myself',
             'meter_name': 'python event',
@@ -18,7 +22,7 @@ class TestRequests(unittest.TestCase):
 
     def test_should_not_timeout(self):
         res = RequestManager('e9c6a4fc-e275-4eda-b2f8-353ef196ddb7', batch=[{
-            'time': 1614977378712,
+            'time': self.timestamp,
             'tenant_id': '123',
             'tenant': 'myself',
             'meter_name': 'python event',
@@ -29,7 +33,7 @@ class TestRequests(unittest.TestCase):
     def test_should_timeout(self):
         with self.assertRaises(requests.ReadTimeout):
             RequestManager('e9c6a4fc-e275-4eda-b2f8-353ef196ddb7', batch=[{
-                'time': 1614977378712,
+                'time': self.timestamp,
                 'tenant_id': '123',
                 'tenant': 'myself',
                 'meter_name': 'python event',

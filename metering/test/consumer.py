@@ -1,4 +1,5 @@
 import unittest
+import time
 
 try:
     from queue import Queue
@@ -9,6 +10,7 @@ from metering.consumer import Consumer, MAX_MSG_SIZE
 
 
 class TestConsumer(unittest.TestCase):
+    timestamp = int(round(time.time() * 1000))
 
     def test_next(self):
         q = Queue()
@@ -39,7 +41,7 @@ class TestConsumer(unittest.TestCase):
         q = Queue()
         consumer = Consumer(q, 'e9c6a4fc-e275-4eda-b2f8-353ef196ddb7')
         meter = {
-            'time': 1614977378712,
+            'time': self.timestamp,
             'tenant_id': '123',
             'tenant': 'myself',
             'meter_name': 'python event',
@@ -53,7 +55,7 @@ class TestConsumer(unittest.TestCase):
     def test_request(self):
         consumer = Consumer(None, 'e9c6a4fc-e275-4eda-b2f8-353ef196ddb7')
         meter = {
-            'time': 1614977378712,
+            'time': self.timestamp,
             'tenant_id': '123',
             'tenant': 'myself',
             'meter_name': 'python event',

@@ -8,7 +8,7 @@ from dateutil.tz import tzutc
 from metering.logger import Logger
 
 _session = sessions.Session()
-ingest_url = 'https://app.amberflo.io/ingest-java'
+ingest_url = 'https://app.amberflo.io/ingest-endpoint'
 
 
 class RequestManager:
