@@ -19,19 +19,24 @@ This is the official python client that wraps the Amberflo REST API (https://amb
 Samples:
 
 # dedup is happening on a full record
+
 metering.meter(options.meter_name, \
     int(options.meter_value), \
     utc_time_millis=current_time, \
     customer_id=options.customer_id, \
     customer_name=options.customer_name)
+
 # adding dimensions
+
 metering.meter(options.meter_name, \
     int(options.meter_value), \
     utc_time_millis=current_time, \
     customer_id=options.customer_id, \
     customer_name=options.customer_name, \
     dimensions=dimensions)
+
 # adding unique id
+
 metering.meter(options.meter_name, \
     int(options.meter_value), \
     utc_time_millis=current_time, \

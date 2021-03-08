@@ -24,3 +24,8 @@ Release History
 ============
 - Dropped support of python versions < 3.5.
 - Changed the 'utc_time_millis' to be a mandatory field.
+
+
+1.0.7
+============
+- Changed the 'customer_id' and 'customer_info' to be mandatory fields.
