@@ -2,7 +2,9 @@
 Amberflo.io metering client in python (python 3.5 and above)
 
 Obtain {{my-api-key}} and run:
-```python3 simulator.py --app_key {{my-api-key}} --meter_api_name ApiCalls --meter_value 1 --customer_id ID_X --dimensions "{\"Name\": \"region\", \"Value\": \"us-east-1\"}"```
+```
+python3 simulator.py --app_key {{my-api-key}} --meter_api_name ApiCalls --meter_value 1 --customer_id ID_X --dimensions "{\"Name\": \"region\", \"Value\": \"us-east-1\"}"
+```
 
 # Design
 Producer consumer of meter messages.
@@ -45,5 +47,6 @@ metering.meter(options.meter_api_name, \
     meter_time_in_millis=int(round(time.time() * 1000)), \
     customer_id=options.customer_id, \
     dimensions=dimensions, \
-    unique_id = uuid1())```
+    unique_id = uuid1())
+```
 
