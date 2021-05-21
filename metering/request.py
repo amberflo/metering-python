@@ -8,7 +8,7 @@ from dateutil.tz import tzutc
 from metering.logger import Logger
 
 _session = sessions.Session()
-ingest_url = 'https://app.amberflo.io/ingest-endpoint'
+ingest_url = 'https://app.amberflo.io/ingest'
 
 
 class RequestManager:
@@ -42,18 +42,17 @@ class RequestManager:
                 gz.write(data.encode('utf-8'))
             data = buf.getvalue()
 
-        res = _session.post(ingest_url, data=data, headers=headers, timeout=self.timeout)
+        response = _session.post(ingest_url, data=data, headers=headers, timeout=self.timeout)
         print("data uploaded")
-        if res.status_code == 200:
+        if response.status_code == 200:
             log.debug('data uploaded successfully')
-            return res
+            return response
 
         try:
-            payload = res.json()
-            log.debug('received response: %s', payload)
-            raise APIError(res.status_code, res.text, payload['unique_id'])
+            log.debug('received response: %s', response.text)
+            raise APIError(response.status_code, response.text, response.text)
         except ValueError:
-            raise APIError(res.status_code, 'unknown', res.text)
+            raise APIError(response.status_code, 'unknown', response.text)
 
 
 class APIError(Exception):

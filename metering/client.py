@@ -102,13 +102,13 @@ class Client(object):
                 if send:
                     consumer.start()
 
-    def meter(self, meter_name, meter_value, utc_time_millis, customer_id,
-        customer_name, dimensions=None, unique_id=None):
+    def meter(self, meter_api_name, meter_value, meter_time_in_millis, customer_id,
+        dimensions=None, unique_id=None):
         '''creates the message and enqueues it'''
 
-        message = MeterFactory.create(meter_name=meter_name, meter_value=meter_value,
-            utc_time_millis=utc_time_millis, customer_id=customer_id,
-            customer_name=customer_name, dimensions=dimensions, unique_id=unique_id)
+        message = MeterFactory.create(meter_api_name=meter_api_name, meter_value=meter_value,
+            meter_time_in_millis=meter_time_in_millis, customer_id=customer_id,
+            dimensions=dimensions, unique_id=unique_id)
 
         return self._enqueue(message)
 
@@ -121,7 +121,7 @@ class Client(object):
             return True, msg
 
         if self.wait:
-            self.log.debug('enqueued with blocking %s.', msg['meter_name'])
+            self.log.debug('enqueued with blocking %s.', msg['meterApiName'])
             # Exceptions go back to the client if the client chose to go for a sync mode.
             RequestManager(self.app_key,
                            gzip=False,

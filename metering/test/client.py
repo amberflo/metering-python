@@ -22,22 +22,22 @@ class TestClient(unittest.TestCase):
 
     def test_basic_meter(self):
         client = self.client
-        success, msg = client.meter(meter_name='Testing python library.', meter_value=1,
-        utc_time_millis=int(round(time.time() * 1000)), 
-        customer_id='123', customer_name='customerTestCae')
+        success, msg = client.meter(meter_api_name='Testing python library.', meter_value=1,
+        meter_time_in_millis=int(round(time.time() * 1000)), 
+        customer_id='123')
         client.flush()
         self.assertTrue(success)
         self.assertFalse(self.failed)
 
-        self.assertEqual(msg['meter_name'], 'Testing python library.')
-        self.assertTrue(isinstance(msg['meter_name'], str))
+        self.assertEqual(msg['meterApiName'], 'Testing python library.')
+        self.assertTrue(isinstance(msg['meterApiName'], str))
 
     def test_flush(self):
         client = self.client
         # set up the consumer with more requests than a single batch will allow
         for i in range(1000):
-            success, msg = client.meter(meter_name='Testing python library.', meter_value=1,
-            utc_time_millis=int(round(time.time() * 1000)), customer_name='customerTestCae',
+            success, msg = client.meter(meter_api_name='Testing python library.', meter_value=1,
+            meter_time_in_millis=int(round(time.time() * 1000)), 
             customer_id='123', dimensions={'test': 'test'})
         # We can't reliably assert that the queue is non-empty here; that's
         # a race condition. We do our best to load it up though.
@@ -49,8 +49,8 @@ class TestClient(unittest.TestCase):
         client = self.client
         # set up the consumer with more requests than a single batch will allow
         for i in range(1000):
-            success, msg = client.meter(meter_name='Testing python library.', meter_value=1,
-            utc_time_millis=int(round(time.time() * 1000)), customer_name='customerTestCae',
+            success, msg = client.meter(meter_api_name='Testing python library.', meter_value=1,
+            meter_time_in_millis=int(round(time.time() * 1000)), 
             customer_id='123', dimensions={'test': 'test'})
         client.shutdown()
         # we expect two things after shutdown:
@@ -63,8 +63,8 @@ class TestClient(unittest.TestCase):
     def test_synchronous(self):
         client = Client('e9c6a4fc-e275-4eda-b2f8-353ef196ddb7', wait=True)
 
-        success, msg = client.meter(meter_name='Testing python library.', meter_value=1,
-        utc_time_millis=int(round(time.time() * 1000)), customer_name='customerTestCae',
+        success, msg = client.meter(meter_api_name='Testing python library.', meter_value=1,
+        meter_time_in_millis=int(round(time.time() * 1000)), 
         customer_id='123', dimensions={'test': 'test'})
         self.assertFalse(client.consumers)
         self.assertTrue(client.queue.empty())
@@ -76,20 +76,20 @@ class TestClient(unittest.TestCase):
         client.join()
 
         for i in range(10):
-            client.meter(meter_name='Testing python library.', meter_value=1,
-            utc_time_millis=int(round(time.time() * 1000)), customer_name='customerTestCae',
+            client.meter(meter_api_name='Testing python library.', meter_value=1,
+            meter_time_in_millis=int(round(time.time() * 1000)), 
             customer_id='123', dimensions={'test': 'test'})
 
-        success, msg = client.meter(meter_name='Testing python library.', meter_value=1,
-        utc_time_millis=int(round(time.time() * 1000)),  customer_name='customerTestCae',
+        success, msg = client.meter(meter_api_name='Testing python library.', meter_value=1,
+        meter_time_in_millis=int(round(time.time() * 1000)),  
         customer_id='123', dimensions={'test': 'test'})
         # Make sure we are informed that the queue is at capacity
         self.assertFalse(success)
 
     def test_failure_on_invalid_write_key(self):
         client = Client('bad_key', on_error=self.fail)
-        client.meter(meter_name='Testing python library.', meter_value=1,
-        utc_time_millis=int(round(time.time() * 1000)), customer_name='customerTestCae',
+        client.meter(meter_api_name='Testing python library.', meter_value=1,
+        meter_time_in_millis=int(round(time.time() * 1000)), 
         customer_id='123', dimensions={'test': 'test'})
         client.flush()
         self.assertTrue(self.failed)

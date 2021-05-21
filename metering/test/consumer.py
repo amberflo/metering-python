@@ -41,11 +41,10 @@ class TestConsumer(unittest.TestCase):
         q = Queue()
         consumer = Consumer(q, 'e9c6a4fc-e275-4eda-b2f8-353ef196ddb7')
         meter = {
-            'time': self.timestamp,
-            'tenant_id': '123',
-            'tenant': 'myself',
-            'meter_name': 'python event',
-            'meter_value': 3
+            'meterTimeInMillis': self.timestamp,
+            'customerId': '123',
+            'meterApiName': 'python event',
+            'meterValue': 3
         }
         q.put(meter)
         success = consumer.upload()
@@ -55,11 +54,10 @@ class TestConsumer(unittest.TestCase):
     def test_request(self):
         consumer = Consumer(None, 'e9c6a4fc-e275-4eda-b2f8-353ef196ddb7')
         meter = {
-            'time': self.timestamp,
-            'tenant_id': '123',
-            'tenant': 'myself',
-            'meter_name': 'python event',
-            'meter_value': 3
+            'meterTimeInMillis': self.timestamp,
+            'customerId': '123',
+            'meterApiName': 'python event',
+            'meterValue': 3
         }
         consumer.request([meter])
 

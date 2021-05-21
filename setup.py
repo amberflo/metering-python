@@ -20,28 +20,25 @@ Samples:
 
 # dedup is happening on a full record
 
-metering.meter(options.meter_name, \
+metering.meter(options.meter_api_name, \
     int(options.meter_value), \
-    utc_time_millis=current_time, \
-    customer_id=options.customer_id, \
-    customer_name=options.customer_name)
+    meter_time_in_millis=current_time, \
+    customer_id=options.customer_id)
 
 # adding dimensions
 
-metering.meter(options.meter_name, \
+metering.meter(options.meter_api_name, \
     int(options.meter_value), \
-    utc_time_millis=current_time, \
+    meter_time_in_millis=current_time, \
     customer_id=options.customer_id, \
-    customer_name=options.customer_name, \
     dimensions=dimensions)
 
 # adding unique id
 
-metering.meter(options.meter_name, \
+metering.meter(options.meter_api_name, \
     int(options.meter_value), \
-    utc_time_millis=current_time, \
+    meter_time_in_millis=current_time, \
     customer_id=options.customer_id, \
-    customer_name=options.customer_name, \
     dimensions=dimensions, \
     unique_id = uuid1())
 

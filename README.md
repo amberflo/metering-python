@@ -1,7 +1,8 @@
 # metering-python
 Amberflo.io metering client in python (python 3.5 and above)
 
-simulator.py --app_key e9c6a4fc-e275-4eda-b2f8-353ef196ddb7 --meter_name apicall --meter_value 1 --customer_id ID_X --customer_id NAME_X
+Obtain {{my-api-key}} and run:
+```python3 simulator.py --app_key {{my-api-key}} --meter_api_name ApiCalls --meter_value 1 --customer_id ID_X --dimensions "{\"Name\": \"region\", \"Value\": \"us-east-1\"}"```
 
 # Design
 Producer consumer of meter messages.
@@ -17,8 +18,8 @@ Producer consumer of meter messages.
 # Test
 Run the following:
 1. Install project + dependencies:
-```pip install requests pylint backoff==1.10.0 python-dateutil```
-```python setup.py install```
+```pip3 install requests pylint backoff==1.10.0 python-dateutil```
+```python3 setup.py install```
 3. Run unit tests + coverage:
 ```coverage run --branch --include=metering/\* --omit=*/test* setup.py test```
 2. Style check:
@@ -28,24 +29,21 @@ Run the following:
 
 ```
 # dedup is happening on a full record
-metering.meter(options.meter_name, \
+metering.meter(options.meter_api_name, \
     int(options.meter_value), \
-    utc_time_millis=int(round(time.time() * 1000)), \
-    customer_id=options.customer_id, \
-    customer_name=options.customer_name)
+    meter_time_in_millis=int(round(time.time() * 1000)), \
+    customer_id=options.customer_id)
 # adding dimensions
-metering.meter(options.meter_name, \
+metering.meter(options.meter_api_name, \
     int(options.meter_value), \
-    utc_time_millis=int(round(time.time() * 1000)), \
+    meter_time_in_millis=int(round(time.time() * 1000)), \
     customer_id=options.customer_id, \
-    customer_name=options.customer_name, \
     dimensions=dimensions)
 # adding unique id
-metering.meter(options.meter_name, \
+metering.meter(options.meter_api_name, \
     int(options.meter_value), \
-    utc_time_millis=int(round(time.time() * 1000)), \
+    meter_time_in_millis=int(round(time.time() * 1000)), \
     customer_id=options.customer_id, \
-    customer_name=options.customer_name, \
     dimensions=dimensions, \
     unique_id = uuid1())```
 
