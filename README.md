@@ -27,9 +27,9 @@ Run the following:
 2. Style check:
 ```flake8 --max-complexity=10 --statistics metering```
 
-# Usage
+# Ingestion
 
-```
+```python
 # dedup is happening on a full record
 metering.meter(options.meter_api_name, \
     int(options.meter_value), \
@@ -50,3 +50,63 @@ metering.meter(options.meter_api_name, \
     unique_id = uuid1())
 ```
 
+# Calling the Usage API
+```python
+import time
+from metering.usage import UsageClient, AggregationType, TimeGroupingInterval, TimeRange, Take
+from metering.usage_payload_factory import UsagePayloadFactory
+
+
+def call_usage():
+    # obtain your Amberflo API Key
+    api_key = 'my-api-key'
+
+    # initialize the usage client
+    client = UsageClient(api_key)
+
+    # Example: group by customers for a specific meter and customer
+    # setup usage query params
+    # visit following link for description of payload:
+    # https://amberflo.readme.io/reference#usage
+
+    start_time_in_seconds = int(round(time.time())) - (24 * 60 * 60)
+    time_range = TimeRange(start_time_in_seconds=start_time_in_seconds)
+    take = Take(limit=10, is_ascending=False)
+    group_by = ['customerId']
+    usage_filter = {'customerId': '1234'}
+    message = UsagePayloadFactory.create(
+        meter_api_name="my_meter",
+        aggregation=AggregationType(AggregationType.SUM),
+        time_grouping_interval=TimeGroupingInterval(TimeGroupingInterval.DAY),
+        time_range=time_range,
+        group_by=group_by,
+        usage_filter=usage_filter,
+        take=take)
+
+    response = client.get_usage(message)
+    print(response)
+
+call_usage()
+
+```
+
+# Setting up a customer
+
+```python
+import metering
+
+
+def setup_customer():
+    # obtain your Amberflo API Key
+    metering.api_key = 'my-api-key'
+
+    # traits are optional. Traits can be used as filters or aggregation buckets.
+    customer = metering.add_or_update_customer(
+        customer_id='1234',
+        customer_name='Stark Industries',
+        traits={'region': 'midwest', 'stripeId': 'cus_AJ6bY3VqcaLAEs'})
+    print(customer)
+
+
+setup_customer()
+```

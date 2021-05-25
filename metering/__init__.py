@@ -19,8 +19,9 @@ def meter(*args, **kwargs):
     """Send a meter call."""
     _proxy('meter', *args, **kwargs)
 
-
-
+def add_or_update_customer(*args, **kwargs):
+    """Setup customer"""
+    return _proxy_with_return('add_or_update_customer', *args, **kwargs)
 
 def flush():
     """Tell the client to flush."""
@@ -48,3 +49,14 @@ def _proxy(method, *args, **kwargs):
 
     fn = getattr(default_client, method)
     fn(*args, **kwargs)
+
+def _proxy_with_return(method, *args, **kwargs):
+    """Create an analytics client if one doesn't exist and send to it."""
+    global default_client
+    if not default_client:
+        default_client = Client(app_key=app_key, debug=debug,
+                                on_error=on_error, send=send,
+                                wait=wait)
+
+    fn = getattr(default_client, method)
+    return fn(*args, **kwargs)    

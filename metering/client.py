@@ -4,6 +4,8 @@ from metering.request import RequestManager
 from metering.meter_message_factory import MeterFactory
 from metering.field_validator import FieldValidator
 from metering.logger import Logger
+from metering.customer import CustomerApiClient
+from metering.customer_payload_factory import CustomerPayloadFactory
 
 try:
     import queue
@@ -111,6 +113,17 @@ class Client(object):
             dimensions=dimensions, unique_id=unique_id)
 
         return self._enqueue(message)
+
+    def add_or_update_customer(self,customer_id, customer_name, traits=None):
+        '''creates or updates customer'''
+        message = CustomerPayloadFactory.create(
+            customer_id=customer_id,
+            customer_name=customer_name,
+            traits=traits
+        )
+        client = CustomerApiClient(self.app_key)
+        return client.add_or_update_customer(message)
+
 
     def _enqueue(self, msg):
         """Push a new `msg` onto the queue, return `(success, msg)`"""

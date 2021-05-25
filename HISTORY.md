@@ -29,3 +29,9 @@ Release History
 1.0.7
 ============
 - Changed the 'customer_id' and 'customer_info' to be mandatory fields.
+
+2.0.0
+============
+- Added UsageClient
+- Added CustomerApiClient
+- Refactored MeterFactory to change message property names to camel case, updated names, and remove customer name. 
