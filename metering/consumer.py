@@ -1,3 +1,4 @@
+from re import S
 from threading import Thread
 import time
 import traceback
@@ -24,9 +25,9 @@ class Consumer(Thread):
 
     # TODO ofer 02/25/2021: consider removing the gzip param (should it really
     # be configurable by the client?).
-    def __init__(self, queue, app_key, flush_at=100,
-                 on_error=None, send_interval=0.5, gzip=False, retries=10,
-                 timeout=15):
+    def __init__(self, queue, app_key, s3_bucket=None, access_key=None, secret_key=None,
+                flush_at=100, on_error=None, send_interval=0.5, gzip=False, retries=10,
+                timeout=15):
         """Create a consumer thread."""
         Thread.__init__(self)
         # Make consumer a daemon thread so that it doesn't block program exit
@@ -34,6 +35,9 @@ class Consumer(Thread):
         self.flush_at = flush_at
         self.flush_interval = send_interval
         self.app_key = app_key
+        self.s3_bucket=s3_bucket
+        self.access_key=access_key
+        self.secret_key=secret_key
         self.on_error = on_error
         self.queue = queue
         self.gzip = gzip
@@ -119,8 +123,12 @@ class Consumer(Thread):
             giveup=fatal_exception)
         def send_request():
             try:
-                RequestManager(self.app_key, gzip=self.gzip,
-                    timeout=self.timeout, batch=batch).post()
+                if self.s3_bucket:
+                    RequestManager(None,self.s3_bucket, self.access_key, self.secret_key,
+                    timeout=self.timeout, batch=batch).send_to_s3()
+                else:        
+                    RequestManager(self.app_key, gzip=self.gzip,
+                        timeout=self.timeout, batch=batch).post()
             except Exception as e:
                 print(traceback.format_exc())
                 raise e
