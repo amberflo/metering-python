@@ -1,4 +1,3 @@
-from copy import Error
 from datetime import datetime
 
 import sys
