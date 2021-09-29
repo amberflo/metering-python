@@ -48,8 +48,10 @@ Documentation and more details at https://github.com/amberflo/metering-python
 install_requires = [
     "requests>=2.20,<3.0", # https://requests.readthedocs.io/en/latest/community/updates/#release-history
     "backoff==1.10.0", # https://pypi.org/project/backoff/
-    "python-dateutil>=2.5" # https://dateutil.readthedocs.io/en/stable/changelog.html
+    "python-dateutil>=2.5", # https://dateutil.readthedocs.io/en/stable/changelog.html
+    "boto3>=1.18.47"
 ]
+
 
 tests_require = [
     "mock==3.0.5",
