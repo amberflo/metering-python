@@ -36,3 +36,7 @@ Release History
 - Added CustomerApiClient
 - Refactored MeterFactory to change message property names to camel case, updated names, and remove customer name. 
 - Added metering/samples for usage and customer
+
+2.1.0
+============
+- Add s3 ingestion client 
