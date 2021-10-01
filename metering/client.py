@@ -7,6 +7,7 @@ from metering.logger import Logger
 from metering.customer import CustomerApiClient
 from metering.customer_payload_factory import CustomerPayloadFactory
 
+
 try:
     import queue
 except ImportError:
@@ -23,7 +24,7 @@ class Client(object):
 
     # TODO ofer 02/25/2021 - Some magic numbers going on here. We should document them and
     # explain why we use these numbers.
-    def __init__(self, app_key,
+    def __init__(self, app_key, s3_bucket=None, access_key=None, secret_key=None, 
                  max_load=100000, debug=False, send=True, on_error=None, max_batch_size=100,
                  send_interval=0.5, max_retries=3,
                  wait=False, timeout= DEFAULT_TIME_OUT, thread=1):
@@ -49,9 +50,17 @@ class Client(object):
             10. thread - the amount of consumer threads that listen to this client's queue and
                 send http request to amberflo.
         '''
-
-        FieldValidator.require_string_value('app_key', app_key)
-
+        if s3_bucket:
+            self.app_key = None
+            self.s3_bucket = s3_bucket
+            self.access_key = access_key
+            self.secret_key = secret_key
+        else:
+            FieldValidator.require_string_value('app_key', app_key)
+            self.app_key = app_key
+            self.s3_bucket = None
+            self.access_key = None
+            self.secret_key = None
         # According to https://docs.python.org/3/library/queue.html:
         # "The queue module implements multi-producer, multi-consumer queues. It is especially
         # useful in threaded programming when information must be exchanged safely between
@@ -60,7 +69,6 @@ class Client(object):
         # So this queue should be safe to use from all python platforms
         # (https://www.python.org/download/alternatives/).
         self.queue = queue.Queue(max_load)
-        self.app_key = app_key
         self.on_error = on_error
         self.wait = wait
         self.send = send
@@ -94,7 +102,8 @@ class Client(object):
             for n in range(thread):
                 self.consumers = []
                 consumer = Consumer(
-                    self.queue, app_key=app_key, on_error=on_error,
+                    self.queue, app_key=app_key, s3_bucket=self.s3_bucket, access_key=self.access_key,
+                    secret_key=self.secret_key, on_error=on_error,
                     flush_at=max_batch_size, send_interval=send_interval,
                     gzip=False, retries=max_retries, timeout=timeout,
                 )
@@ -139,7 +148,6 @@ class Client(object):
             RequestManager(self.app_key,
                            gzip=False,
                            timeout=self.timeout, batch=[msg]).post()
-
             return True, msg
 
         try:
