@@ -40,3 +40,11 @@ Release History
 2.1.0
 ============
 - Add s3 ingestion client 
+
+2.2.0
+============
+Fixes:
+- When uploading to s3, credentials do not work.
+- Logging is not working when set to DEBUG
+- uniqueId is not random if done within short interval of time
+- s3 Filename logic is wrong, has special characters
