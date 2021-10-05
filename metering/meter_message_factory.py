@@ -1,4 +1,4 @@
-from uuid import uuid1, UUID
+from uuid import uuid4, UUID
 from numbers import Number
 from metering.field_validator import FieldValidator
 
@@ -36,7 +36,7 @@ class MeterFactory(object):
         # We use uuid1 as it also take into account the mac address in order to produce
         # a random value.
         # https://stackoverflow.com/questions/1785503/when-should-i-use-uuid-uuid1-vs-uuid-uuid4-in-python
-        processed_unique = str(unique_id or uuid1())
+        processed_unique = str(unique_id or uuid4())
 
         message_dictionary = {
             'uniqueId': processed_unique,

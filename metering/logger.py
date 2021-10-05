@@ -7,7 +7,7 @@ class Logger:
         self.log = logging.getLogger('amberflo')
 
     def debugMode(self):
-        self.log.setLevel(logging.DEBUG)
+        logging.basicConfig(level=logging.DEBUG)
 
     def debug(self, massage, *args):
         '''Logs a debug level message.'''
