@@ -30,7 +30,6 @@ class MeterFactory(object):
         FieldValidator.require('meter_value', meter_value, Number, allow_none=False)
         FieldValidator.require_string_dictionary('dimensions', dimensions)
         FieldValidator.require('meter_time_in_millis', meter_time_in_millis, Number, allow_none=False)
-        FieldValidator.require('unique_id', unique_id, UUID)
 
         # Create the message
         # We use uuid1 as it also take into account the mac address in order to produce

@@ -48,3 +48,7 @@ Fixes:
 - Logging is not working when set to DEBUG
 - uniqueId is not random if done within short interval of time
 - s3 Filename logic is wrong, has special characters
+
+2.3.0
+============
+1. Remove constraint that uniqueId should be UUID. 
