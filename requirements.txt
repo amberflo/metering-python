@@ -8,3 +8,4 @@ setuptools
 pylint
 flake8
 coverage
+black

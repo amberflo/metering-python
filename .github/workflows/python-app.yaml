@@ -35,6 +35,8 @@ jobs:
       run: python -c "import sys; print(sys.version)"
     - name: Install dependencies
       run: pip install --user -r requirements.txt
+    - name: Check code formatting
+      run: black --check .
     - name: Run tests
       run: make test
     - name: Run Coverage test
