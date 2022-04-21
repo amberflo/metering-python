@@ -38,6 +38,6 @@ jobs:
     - name: Check code formatting
       run: black --check .
     - name: Run tests
-      run: make test
-    - name: Run Coverage test
+      run: coverage run --branch --include 'metering/*' --omit '*test*' setup.py test
+    - name: Present coverage report
       run: coverage report --show-missing
