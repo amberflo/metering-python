@@ -16,7 +16,7 @@ class CustomerApiClient:
                         }
         self.logger = Logger()
 
-    def add_or_update_customer(self, payload):
+    def add_or_update_customer(self, payload, create_customer_in_stripe=False):
         log = self.logger
         log.debug('calling customers api', payload)
 
@@ -33,8 +33,9 @@ class CustomerApiClient:
                     url,  data=json.dumps(payload), headers=self.headers)
             else:
                 log.debug('Creating customer')
+                params = {'autoCreateCustomerInStripe': 'true'} if create_customer_in_stripe else None
                 updated_response = requests.post(
-                    url,  data=json.dumps(payload), headers=self.headers)
+                    url,  data=json.dumps(payload), params=params, headers=self.headers)
 
             if updated_response.status_code == 200:
                 log.debug('API call successful')

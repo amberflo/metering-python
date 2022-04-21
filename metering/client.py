@@ -123,7 +123,7 @@ class Client(object):
 
         return self._enqueue(message)
 
-    def add_or_update_customer(self,customer_id, customer_name, traits=None):
+    def add_or_update_customer(self,customer_id, customer_name, traits=None, create_customer_in_stripe=False):
         '''creates or updates customer'''
         message = CustomerPayloadFactory.create(
             customer_id=customer_id,
@@ -131,7 +131,7 @@ class Client(object):
             traits=traits
         )
         client = CustomerApiClient(self.app_key)
-        return client.add_or_update_customer(message)
+        return client.add_or_update_customer(message, create_customer_in_stripe)
 
 
     def _enqueue(self, msg):
