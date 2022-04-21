@@ -1,12 +1,14 @@
+import os
 import unittest
 import time
 from metering.usage import UsageClient, AggregationType, TimeGroupingInterval, TimeRange, Take
 from metering.usage_payload_factory import UsagePayloadFactory
 
+API_KEY = os.environ['TEST_API_KEY']
+
 metadata_key = 'metadata'
 seconds_since_epoch_intervals_key = 'secondsSinceEpochIntervals'
 client_meters_key = 'clientMeters'
-key = 'e9c6a4fc-e275-4eda-b2f8-353ef196ddb7'
 
 
 class TestUsage(unittest.TestCase):
@@ -26,7 +28,7 @@ class TestUsage(unittest.TestCase):
             time_grouping_interval=self.time_grouping_interval,
             time_range=self.time_range,
             group_by=None, usage_filter=None,  take=None)
-        client = UsageClient(key)
+        client = UsageClient(API_KEY)
         response = client.get_usage(message)
         print(response)
         self.assertEqual(metadata_key in response, True)
@@ -40,7 +42,7 @@ class TestUsage(unittest.TestCase):
             time_grouping_interval=self.time_grouping_interval,
             time_range=self.time_range,
             group_by=self.group_by, usage_filter=self.usage_filter,  take=self.take)
-        client = UsageClient(key)
+        client = UsageClient(API_KEY)
         response = client.get_usage(message)
         print(response)
         self.assertEqual(metadata_key in response, True)

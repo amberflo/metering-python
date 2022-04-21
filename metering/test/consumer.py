@@ -1,3 +1,4 @@
+import os
 import unittest
 import time
 
@@ -8,13 +9,15 @@ except ImportError:
 
 from metering.consumer import Consumer, MAX_MSG_SIZE
 
+API_KEY = os.environ['TEST_API_KEY']
+
 
 class TestConsumer(unittest.TestCase):
     timestamp = int(round(time.time() * 1000))
 
     def test_next(self):
         q = Queue()
-        consumer = Consumer(q, 'e9c6a4fc-e275-4eda-b2f8-353ef196ddb7')
+        consumer = Consumer(q, API_KEY)
         q.put(1)
         next = consumer.next()
         self.assertEqual(next, [1])
@@ -22,7 +25,7 @@ class TestConsumer(unittest.TestCase):
     def test_next_limit(self):
         q = Queue()
         flush_at = 50
-        consumer = Consumer(q, 'e9c6a4fc-e275-4eda-b2f8-353ef196ddb7', flush_at)
+        consumer = Consumer(q, API_KEY, flush_at)
         for i in range(10000):
             q.put(i)
         next = consumer.next()
@@ -31,7 +34,7 @@ class TestConsumer(unittest.TestCase):
     def test_dropping_oversize_msg(self):
         '''For the moment we dont hanfle the case of oversized message'''
         q = Queue()
-        consumer = Consumer(q, 'e9c6a4fc-e275-4eda-b2f8-353ef196ddb7')
+        consumer = Consumer(q, API_KEY)
         oversize_msg = {'m': 'x' * MAX_MSG_SIZE}
         q.put(oversize_msg)
         next = consumer.next()
@@ -39,7 +42,7 @@ class TestConsumer(unittest.TestCase):
 
     def test_upload(self):
         q = Queue()
-        consumer = Consumer(q, 'e9c6a4fc-e275-4eda-b2f8-353ef196ddb7')
+        consumer = Consumer(q, API_KEY)
         meter = {
             'meterTimeInMillis': self.timestamp,
             'customerId': '123',
@@ -50,9 +53,8 @@ class TestConsumer(unittest.TestCase):
         success = consumer.upload()
         self.assertTrue(success)
 
-
     def test_request(self):
-        consumer = Consumer(None, 'e9c6a4fc-e275-4eda-b2f8-353ef196ddb7')
+        consumer = Consumer(None, API_KEY)
         meter = {
             'meterTimeInMillis': self.timestamp,
             'customerId': '123',
@@ -62,7 +64,7 @@ class TestConsumer(unittest.TestCase):
         consumer.request([meter])
 
     def test_pause(self):
-        consumer = Consumer(None, 'e9c6a4fc-e275-4eda-b2f8-353ef196ddb7')
+        consumer = Consumer(None, API_KEY)
         consumer.pause()
         self.assertFalse(consumer.running)
 

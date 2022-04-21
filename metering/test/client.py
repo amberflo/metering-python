@@ -1,6 +1,9 @@
+import os
 import unittest
 import time
 from metering.client import Client
+
+API_KEY = os.environ['TEST_API_KEY']
 
 
 class TestClient(unittest.TestCase):
@@ -11,7 +14,7 @@ class TestClient(unittest.TestCase):
 
     def setUp(self):
         self.failed = False
-        self.client = Client('e9c6a4fc-e275-4eda-b2f8-353ef196ddb7', on_error=self.fail)
+        self.client = Client(API_KEY, on_error=self.fail)
 
     def test_requires_write_key(self):
         with self.assertRaises(AssertionError):
