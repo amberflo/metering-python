@@ -9,7 +9,7 @@ except ImportError:
 
 from metering.consumer import Consumer, MAX_MSG_SIZE
 
-API_KEY = os.environ['TEST_API_KEY']
+API_KEY = os.environ["TEST_API_KEY"]
 
 
 class TestConsumer(unittest.TestCase):
@@ -32,10 +32,10 @@ class TestConsumer(unittest.TestCase):
         # self.assertEqual(next, list(range(flush_at)))
 
     def test_dropping_oversize_msg(self):
-        '''For the moment we dont hanfle the case of oversized message'''
+        """For the moment we dont hanfle the case of oversized message"""
         q = Queue()
         consumer = Consumer(q, API_KEY)
-        oversize_msg = {'m': 'x' * MAX_MSG_SIZE}
+        oversize_msg = {"m": "x" * MAX_MSG_SIZE}
         q.put(oversize_msg)
         next = consumer.next()
         self.assertEqual(next, [oversize_msg])
@@ -44,10 +44,10 @@ class TestConsumer(unittest.TestCase):
         q = Queue()
         consumer = Consumer(q, API_KEY)
         meter = {
-            'meterTimeInMillis': self.timestamp,
-            'customerId': '123',
-            'meterApiName': 'python event',
-            'meterValue': 3
+            "meterTimeInMillis": self.timestamp,
+            "customerId": "123",
+            "meterApiName": "python event",
+            "meterValue": 3,
         }
         q.put(meter)
         success = consumer.upload()
@@ -56,10 +56,10 @@ class TestConsumer(unittest.TestCase):
     def test_request(self):
         consumer = Consumer(None, API_KEY)
         meter = {
-            'meterTimeInMillis': self.timestamp,
-            'customerId': '123',
-            'meterApiName': 'python event',
-            'meterValue': 3
+            "meterTimeInMillis": self.timestamp,
+            "customerId": "123",
+            "meterApiName": "python event",
+            "meterValue": 3,
         }
         consumer.request([meter])
 
@@ -68,5 +68,6 @@ class TestConsumer(unittest.TestCase):
         consumer.pause()
         self.assertFalse(consumer.running)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

@@ -7,7 +7,6 @@ from metering import utils
 
 
 class TestUtils(unittest.TestCase):
-
     def test_timezone_utils(self):
         now = datetime.now()
         utcnow = datetime.now(tz=tzutc())
@@ -20,5 +19,6 @@ class TestUtils(unittest.TestCase):
         shouldnt_be_edited = utils.guess_timezone(utcnow)
         self.assertEqual(utcnow, shouldnt_be_edited)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

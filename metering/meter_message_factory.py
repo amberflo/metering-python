@@ -2,13 +2,20 @@ from uuid import uuid4, UUID
 from numbers import Number
 from metering.field_validator import FieldValidator
 
-class MeterFactory(object):
-    '''This class is responsible on creating a valid meter message.'''
 
+class MeterFactory(object):
+    """This class is responsible on creating a valid meter message."""
 
     @staticmethod
-    def create(meter_api_name, meter_value, meter_time_in_millis, customer_id, dimensions=None, unique_id=None):
-        '''
+    def create(
+        meter_api_name,
+        meter_value,
+        meter_time_in_millis,
+        customer_id,
+        dimensions=None,
+        unique_id=None,
+    ):
+        """
         Params:
         1. meter_api_name - String. Required (also can't be a whitespace)
         2. meter_value - Number (double/long). Required.
@@ -22,14 +29,16 @@ class MeterFactory(object):
         6. unique_id - Optional UUID (defualt to a random uuid). This parameter can help the
             server tell if the meter is indeed a dup or not in case there are two meters with
             the same name that are sent to the server at the same time.
-        '''
+        """
 
         # Validate the input
-        FieldValidator.require_string_value('customer_id', customer_id)
-        FieldValidator.require_string_value('meter_api_name', meter_api_name)
-        FieldValidator.require('meter_value', meter_value, Number, allow_none=False)
-        FieldValidator.require_string_dictionary('dimensions', dimensions)
-        FieldValidator.require('meter_time_in_millis', meter_time_in_millis, Number, allow_none=False)
+        FieldValidator.require_string_value("customer_id", customer_id)
+        FieldValidator.require_string_value("meter_api_name", meter_api_name)
+        FieldValidator.require("meter_value", meter_value, Number, allow_none=False)
+        FieldValidator.require_string_dictionary("dimensions", dimensions)
+        FieldValidator.require(
+            "meter_time_in_millis", meter_time_in_millis, Number, allow_none=False
+        )
 
         # Create the message
         # We use uuid1 as it also take into account the mac address in order to produce
@@ -38,14 +47,14 @@ class MeterFactory(object):
         processed_unique = str(unique_id or uuid4())
 
         message_dictionary = {
-            'uniqueId': processed_unique,
-            'meterApiName': meter_api_name,
-            'meterValue': meter_value,
-            'customerId': customer_id,
-            'meterTimeInMillis': meter_time_in_millis
+            "uniqueId": processed_unique,
+            "meterApiName": meter_api_name,
+            "meterValue": meter_value,
+            "customerId": customer_id,
+            "meterTimeInMillis": meter_time_in_millis,
         }
 
         if dimensions is not None and dimensions:
-            message_dictionary['dimensions'] = dimensions
+            message_dictionary["dimensions"] = dimensions
 
         return message_dictionary
