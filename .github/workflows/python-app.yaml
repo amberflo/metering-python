@@ -10,13 +10,16 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
+
 jobs:
   build:
 
     runs-on: ubuntu-latest
     strategy:
       matrix:
-          python: [3.5, 3.6, 3.7, 3.8, 3.8, 3.9]
+        python: [3.5, 3.6, 3.7, 3.8, 3.8, 3.9]
 
     steps:
     - uses: actions/checkout@v2
@@ -31,17 +34,8 @@ jobs:
     - name: Display Python version
       run: python -c "import sys; print(sys.version)"
     - name: Install dependencies
-      run: |
-        sudo pip3 install --upgrade pip
-        sudo pip3 --version
-        sudo pip3 install -U pip setuptools
-        sudo pip3 install pylint==2.0.1
-        sudo pip3 install requests backoff==1.10.0 python-dateutil
-        sudo pip3 install coverage flake8 mock==3.0.5
-        sudo pip3 install boto3==1.18.47
-        make test
+      run: pip install --user -r requirements.txt
+    - name: Run tests
+      run: make test
     - name: Run Coverage test
-      run: |
-        sudo pip3 install coverage
-        coverage report --show-missing | tee /tmp/coverage
-
+      run: coverage report --show-missing

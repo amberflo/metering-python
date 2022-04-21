@@ -54,10 +54,9 @@ install_requires = [
 
 
 tests_require = [
-    "mock==3.0.5",
-    "pylint==1.9.5", # http://pylint.pycqa.org/en/latest/whatsnew/2.0.html
-    "flake8==3.7.9", # https://pypi.org/project/flake8/#history
-    "coverage==4.5.4" # https://mock.readthedocs.io/en/latest/changelog.html
+    "pylint", # http://pylint.pycqa.org/en/latest/whatsnew/2.0.html
+    "flake8", # https://pypi.org/project/flake8/#history
+    "coverage" # https://mock.readthedocs.io/en/latest/changelog.html
 ]
 
 setup(
