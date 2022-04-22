@@ -66,7 +66,6 @@ setup(
     author_email="friends@amberflo.com",
     maintainer="Amberflo.io",
     maintainer_email="friends@amberflo.com",
-    test_suite="metering.test.all",
     packages=["metering", "metering.test"],
     license="MIT License",
     install_requires=install_requires,

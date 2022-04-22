@@ -84,7 +84,3 @@ class TestCustomer(unittest.TestCase):
         # delete
         response = self.client.delete(self.customer_id)
         self.assertEqual(response[customer_id_key], self.customer_id)
-
-
-if __name__ == "__main__":
-    unittest.main()

@@ -67,7 +67,3 @@ class TestConsumer(unittest.TestCase):
         consumer = Consumer(None, API_KEY)
         consumer.pause()
         self.assertFalse(consumer.running)
-
-
-if __name__ == "__main__":
-    unittest.main()

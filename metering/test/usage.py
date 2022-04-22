@@ -59,7 +59,3 @@ class TestUsage(unittest.TestCase):
         self.assertEqual(metadata_key in response, True)
         self.assertEqual(seconds_since_epoch_intervals_key in response, True)
         self.assertEqual(client_meters_key in response, True)
-
-
-if __name__ == "__main__":
-    unittest.main()

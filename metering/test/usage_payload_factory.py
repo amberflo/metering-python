@@ -130,7 +130,3 @@ class TestUsagePayloadFactory(unittest.TestCase):
                 usage_filter=None,
                 take=None,
             )
-
-
-if __name__ == "__main__":
-    unittest.main()
