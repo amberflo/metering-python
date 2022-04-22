@@ -27,6 +27,9 @@ class TestUsage(unittest.TestCase):
     group_by = ["customerId"]
     usage_filter = {"customerId": "1234"}
 
+    def setUp(self):
+        self.client = UsageClient(API_KEY)
+
     def test_valid_usage_query(self):
         message = UsagePayloadFactory.create(
             meter_api_name=self.meter_api_name,
@@ -37,9 +40,7 @@ class TestUsage(unittest.TestCase):
             usage_filter=None,
             take=None,
         )
-        client = UsageClient(API_KEY)
-        response = client.get_usage(message)
-        print(response)
+        response = self.client.get_usage(message)
         self.assertEqual(metadata_key in response, True)
         self.assertEqual(seconds_since_epoch_intervals_key in response, True)
         self.assertEqual(client_meters_key in response, True)
@@ -54,9 +55,7 @@ class TestUsage(unittest.TestCase):
             usage_filter=self.usage_filter,
             take=self.take,
         )
-        client = UsageClient(API_KEY)
-        response = client.get_usage(message)
-        print(response)
+        response = self.client.get_usage(message)
         self.assertEqual(metadata_key in response, True)
         self.assertEqual(seconds_since_epoch_intervals_key in response, True)
         self.assertEqual(client_meters_key in response, True)

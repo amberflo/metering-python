@@ -1,71 +1,65 @@
-import json
-import requests
-
-from metering.logger import Logger
-from metering.request import APIError
-
-url = "https://app.amberflo.io/customers"
+from metering.api_client import GenericApiClient
 
 
 class CustomerApiClient:
+    path = "/customers/"
+
     def __init__(self, api_key):
-        self.api_key = api_key
-        self.headers = {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "X-API-KEY": self.api_key,
-        }
-        self.logger = Logger()
+        self.client = GenericApiClient(api_key)
+        self.logger = self.client.logger
+
+    def list(self):
+        """
+        List all customers.
+        """
+        return self.client.get(self.path)
 
     def get(self, customer_id):
         """
         Get customer by id.
         """
-        endpoint = "{url}/?customerId={customer_id}".format(
-            url=url, customer_id=customer_id
+        params = {"customerId": customer_id}
+        return self.client.get(self.path, params=params)
+
+    def add(self, payload, create_customer_in_stripe=False):
+        """
+        Add a new customer.
+
+        `create_customer_in_stripe` will add a `stripeId` trait to the customer.
+        """
+        params = (
+            {"autoCreateCustomerInStripe": "true"}
+            if create_customer_in_stripe
+            else None
         )
-        self.logger.debug("Getting customer")
-        response = requests.get(endpoint, headers=self.headers)
+        return self.client.post(self.path, payload, params=params)
 
-        if response.status_code != 200:
-            self.logger.error(
-                "received response in looking up customer: %s", response.text
-            )
-            raise APIError(response.status_code, response.text, response.text)
+    def update(self, payload):
+        """
+        Update an existing customer.
 
-        return response.json()
+        This has PUT semantics (i.e. it discards existing data).
+        """
+        return self.client.put(self.path, payload)
+
+    def delete(self, customer_id):
+        """
+        Delete customer by id.
+        """
+        path = "{}{}".format(self.path, customer_id)
+        return self.client.delete(path)
 
     def add_or_update_customer(self, payload, create_customer_in_stripe=False):
         """
-        Creates a new or updates an existing customer.
+        Convenience method. Performs a `get` followed by either `add` or `update`.
 
         The update has PUT semantics (i.e. it discards existing data).
 
-        `create_customer_in_stripe` is only used when *creating* a new customer.
+        `create_customer_in_stripe` is only used when `add` is called.
         """
         customer = self.get(payload["customerId"])
 
         if "customerId" in customer:
-            self.logger.debug("Updating customer")
-            response = requests.put(url, data=json.dumps(payload), headers=self.headers)
+            return self.update(payload)
         else:
-            self.logger.debug("Creating customer")
-            params = (
-                {"autoCreateCustomerInStripe": "true"}
-                if create_customer_in_stripe
-                else None
-            )
-            response = requests.post(
-                url, data=json.dumps(payload), params=params, headers=self.headers
-            )
-
-        if response.status_code == 200:
-            self.logger.debug("API call successful")
-            return response.json()
-
-        self.logger.error("received error: %s", response.text)
-        raise APIError(
-            response.status_code,
-            response.text,
-            response.text,
-        )
+            return self.add(payload, create_customer_in_stripe)
