@@ -1,7 +1,22 @@
+import json
+import logging
+from gzip import compress
 from requests import Session
 
-from metering.logger import Logger
-from metering.request import APIError
+from metering.validators import require_string
+
+
+class ApiError(Exception):
+    def __init__(self, status_code, text):
+        self.status_code = status_code
+        self.text = text
+
+    def __str__(self):
+        return "{0}: {1}".format(self.status_code, self.text)
+
+
+def _gzip(payload):
+    return compress(json.dumps(payload).encode())
 
 
 class GenericApiClient:
@@ -20,13 +35,15 @@ class GenericApiClient:
     root_url = "https://app.amberflo.io"
 
     def __init__(self, api_key):
+        require_string("api_key", api_key)
+
         self.session = Session()
         self.session.headers = {
             "Content-Type": "application/json",
             "Accept": "application/json",
             "X-API-KEY": api_key,
         }
-        self.logger = Logger()
+        self.logger = logging.getLogger(__name__)
 
     def __del__(self):
         self.session.close()
@@ -53,9 +70,50 @@ class GenericApiClient:
         """
         if response.status_code != 200:
             self.logger.error("received error: %s", response.text)
-            raise APIError(
+            raise ApiError(
                 response.status_code,
-                response.text,
                 response.text,
             )
         return response.json()
+
+
+class RawApiClient:
+    """
+    Similar to the `GenericApiClient`, but for the data ingestion API.  I.e.:
+    - Requests are gzip encoded
+    - Returns the raw response bodies
+    """
+
+    root_url = "https://app.amberflo.io"
+
+    def __init__(self, api_key):
+        require_string("api_key", api_key)
+
+        self.session = Session()
+        self.session.headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "X-API-KEY": api_key,
+            "Content-Encoding": "gzip",
+        }
+        self.logger = logging.getLogger(__name__)
+
+    def __del__(self):
+        self.session.close()
+
+    def post(self, path, payload, params=None):
+        data = _gzip(payload)
+        response = self.session.post(self.root_url + path, data=data, params=params)
+        return self._parse(response)
+
+    def _parse(self, response, raw=False):
+        """
+        Returns the raw response or raise an exception on errors.
+        """
+        if response.status_code != 200:
+            self.logger.error("received error: %s", response.text)
+            raise ApiError(
+                response.status_code,
+                response.text,
+            )
+        return response.text

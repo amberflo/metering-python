@@ -1,3 +1,4 @@
+from metering import validators
 from metering.api_client import GenericApiClient
 
 
@@ -6,7 +7,6 @@ class CustomerApiClient:
 
     def __init__(self, api_key):
         self.client = GenericApiClient(api_key)
-        self.logger = self.client.logger
 
     def list(self):
         """
@@ -56,3 +56,48 @@ class CustomerApiClient:
             return self.update(payload)
         else:
             return self.add(payload, create_customer_in_stripe)
+
+
+def create_customer_payload(
+    customer_id,
+    customer_name,
+    customer_email=None,
+    enabled=None,
+    traits=None,
+):
+    """
+    customer_id: String.
+
+    customer_name: String.
+
+    customer_email: Optional. String. Defaults to `None`
+
+    enabled: Optional. Boolean. Defaults to `True`
+        Setting it to false deactivates the customer.
+
+    traits: Optional. Dictionary of String to String. Defaults to `None`
+        Reference metadata to integrate with external systems like billing.
+        Can also be used to filter usage data.
+    """
+
+    validators.require_string("customer_id", customer_id, allow_none=False)
+    validators.require_string("customer_name", customer_name, allow_none=False)
+    validators.require_string("customer_email", customer_email)
+    validators.require("enabled", enabled, bool)
+    validators.require_string_dictionary("traits", traits)
+
+    payload = {
+        "customerId": customer_id,
+        "customerName": customer_name,
+    }
+
+    if customer_email is not None:
+        payload["customerEmail"] = customer_email
+
+    if enabled is not None:
+        payload["enabled"] = enabled
+
+    if traits is not None:
+        payload["traits"] = traits
+
+    return payload
