@@ -8,7 +8,6 @@ on:
   push:
     branches: [ main ]
   pull_request:
-    branches: [ main ]
 
 env:
   TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
@@ -38,6 +37,6 @@ jobs:
     - name: Check code formatting
       run: black --check .
     - name: Run tests
-      run: coverage run --branch --include 'metering/*' --omit '*test*' setup.py test
+      run: coverage run --branch --include 'metering/*' --omit '*test*' -m unittest metering/test/*.py
     - name: Present coverage report
       run: coverage report --show-missing

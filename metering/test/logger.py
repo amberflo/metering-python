@@ -87,7 +87,3 @@ class TestLogger(unittest.TestCase):
 
         # no exception
         amberflo_log.debug(MESSAGE_WITH_ARGUMENT, "1", "too many args")
-
-
-if __name__ == "__main__":
-    unittest.main()

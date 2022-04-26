@@ -122,7 +122,3 @@ class TestClient(unittest.TestCase):
         )
         client.flush()
         self.assertTrue(self.failed)
-
-
-if __name__ == "__main__":
-    unittest.main()

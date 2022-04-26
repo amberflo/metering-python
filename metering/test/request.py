@@ -56,7 +56,3 @@ class TestRequests(unittest.TestCase):
                 ],
                 timeout=0.0001,
             ).post()
-
-
-if __name__ == "__main__":
-    unittest.main()

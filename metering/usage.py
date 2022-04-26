@@ -1,11 +1,6 @@
-import json
 from enum import Enum
-import requests
 
-from metering.logger import Logger
-from metering.request import APIError
-
-usage_url = "https://app.amberflo.io/usage"
+from metering.api_client import GenericApiClient
 
 
 class AggregationType(Enum):
@@ -34,25 +29,14 @@ class TimeRange:
 
 
 class UsageClient:
+    path = "/usage/"
+
     def __init__(self, api_key):
-        self.api_key = api_key
-        self.headers = {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "X-API-KEY": self.api_key,
-        }
-        self.logger = Logger()
+        self.client = GenericApiClient(api_key)
+        self.logger = self.client.logger
 
     def get_usage(self, payload):
-        log = self.logger
-        response = requests.post(
-            usage_url, data=json.dumps(payload), headers=self.headers
-        )
-        log.debug("calling usage api", payload)
-
-        if response.status_code == 200:
-            log.debug("API call successful")
-            return response.json()
-
-        log.debug("received response: %s", response.text)
-        raise APIError(response.status_code, response.text, response.text)
+        """
+        Gets usage data.
+        """
+        return self.client.post(self.path, payload)

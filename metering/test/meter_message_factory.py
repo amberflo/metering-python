@@ -159,7 +159,3 @@ class TestMeterFactory(unittest.TestCase):
         self.assertEqual(message[timestamp_key], self.timestamp)
         self.assertEqual(message[customer_id_key], self.customer_id)
         self.assertEqual(message[dimensions_key], dimensions)
-
-
-if __name__ == "__main__":
-    unittest.main()

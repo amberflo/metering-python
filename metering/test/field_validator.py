@@ -86,7 +86,3 @@ class TestFieldValidator(unittest.TestCase):
     def test_require_string_dictionary_map_key_is_a_number(self):
         with self.assertRaises(AssertionError):
             FieldValidator.require_string_dictionary(var_name, {55: "value"})
-
-
-if __name__ == "__main__":
-    unittest.main()
