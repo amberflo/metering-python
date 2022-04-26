@@ -3,9 +3,10 @@ import logging
 from metering.logger import Logger
 from metering.test.logging_test_handler import TestHandler, Matcher
 
-MESSAGE = 'my message'
-MESSAGE_WITH_ARGUMENT = 'error uploading: %s'
-AMBERFLO_LOGGER = 'amberflo'
+MESSAGE = "my message"
+MESSAGE_WITH_ARGUMENT = "error uploading: %s"
+AMBERFLO_LOGGER = "amberflo"
+
 
 class TestLogger(unittest.TestCase):
     """Test class for Logger"""
@@ -14,7 +15,7 @@ class TestLogger(unittest.TestCase):
         self.handler = TestHandler(Matcher())
         self.pythonLogger = logging.getLogger()
         self.pythonLogger.addHandler(self.handler)
-        
+
     def tearDown(self):
         self.pythonLogger.removeHandler(self.handler)
         self.handler.close()
@@ -28,7 +29,6 @@ class TestLogger(unittest.TestCase):
     #     self.assertTrue(handler.matches(levelno=logging.DEBUG))
     #     self.assertTrue(handler.matches(msg=MESSAGE))
 
-
     def test_warn(self):
         amberflo_log = Logger()
         amberflo_log.warn(MESSAGE)
@@ -36,7 +36,6 @@ class TestLogger(unittest.TestCase):
         handler = self.handler
         self.assertTrue(handler.matches(levelno=logging.WARNING))
         self.assertTrue(handler.matches(msg=MESSAGE))
-
 
     def test_error(self):
         amberflo_log = Logger()
@@ -46,7 +45,6 @@ class TestLogger(unittest.TestCase):
         self.assertTrue(handler.matches(levelno=logging.ERROR))
         self.assertTrue(handler.matches(msg=MESSAGE))
 
-
     # def test_debug_with_arguments(self):
     #     amberflo_log = Logger()
     #     amberflo_log.debug(MESSAGE_WITH_ARGUMENT, '1')
@@ -55,19 +53,17 @@ class TestLogger(unittest.TestCase):
     #     self.assertTrue(handler.matches(levelno=logging.DEBUG))
     #     self.assertTrue(handler.matches(msg=MESSAGE_WITH_ARGUMENT))
 
-
     def test_warn_with_arguments(self):
         amberflo_log = Logger()
-        amberflo_log.warn(MESSAGE_WITH_ARGUMENT, '1')
+        amberflo_log.warn(MESSAGE_WITH_ARGUMENT, "1")
 
         handler = self.handler
         self.assertTrue(handler.matches(levelno=logging.WARN))
         self.assertTrue(handler.matches(msg=MESSAGE_WITH_ARGUMENT))
 
-
     def test_error_with_arguments(self):
         amberflo_log = Logger()
-        amberflo_log.error(MESSAGE_WITH_ARGUMENT, '1')
+        amberflo_log.error(MESSAGE_WITH_ARGUMENT, "1")
 
         handler = self.handler
         self.assertTrue(handler.matches(levelno=logging.ERROR))
@@ -78,21 +74,20 @@ class TestLogger(unittest.TestCase):
         amberflo_log.debugMode()
 
         # no exception
-        amberflo_log.debug(MESSAGE_WITH_ARGUMENT, '1', 'too many args')
-
+        amberflo_log.debug(MESSAGE_WITH_ARGUMENT, "1", "too many args")
 
     def test_warn_with_arguments_throws_exception(self):
         amberflo_log = Logger()
 
         # no exception
-        amberflo_log.debug(MESSAGE_WITH_ARGUMENT, '1', 'too many args')
-
+        amberflo_log.debug(MESSAGE_WITH_ARGUMENT, "1", "too many args")
 
     def test_error_with_arguments_throws_exception(self):
         amberflo_log = Logger()
 
         # no exception
-        amberflo_log.debug(MESSAGE_WITH_ARGUMENT, '1', 'too many args')
+        amberflo_log.debug(MESSAGE_WITH_ARGUMENT, "1", "too many args")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

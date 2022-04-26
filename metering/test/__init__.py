@@ -6,7 +6,7 @@ import sys
 
 def all_names():
     for _, modname, _ in pkgutil.iter_modules(__path__):
-        yield 'metering.test.' + modname
+        yield "metering.test." + modname
 
 
 def all():

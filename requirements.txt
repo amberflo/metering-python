@@ -1,0 +1,11 @@
+requests>=2.20,<3.0
+backoff==1.10.0
+python-dateutil>=2.5
+boto3>=1.18.47
+
+# dev
+setuptools
+pylint
+flake8
+coverage
+black

@@ -2,6 +2,7 @@ from datetime import datetime
 
 from dateutil.tz import tzlocal, tzutc
 
+
 def is_naive(dt):
     """Determines if a given datetime.datetime is naive."""
     return dt.tzinfo is None or dt.tzinfo.utcoffset(dt) is None
@@ -10,8 +11,7 @@ def is_naive(dt):
 def total_seconds(delta):
     """Determines total seconds with python < 2.7 compat."""
     # http://stackoverflow.com/questions/3694835/python-2-6-5-divide-timedelta-with-timedelta
-    return (delta.microseconds
-            + (delta.seconds + delta.days * 24 * 3600) * 1e6) / 1e6
+    return (delta.microseconds + (delta.seconds + delta.days * 24 * 3600) * 1e6) / 1e6
 
 
 def guess_timezone(dt):
@@ -32,6 +32,6 @@ def guess_timezone(dt):
 
 
 def remove_trailing_slash(host):
-    if host.endswith('/'):
+    if host.endswith("/"):
         return host[:-1]
     return host

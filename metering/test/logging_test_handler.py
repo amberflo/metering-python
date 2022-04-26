@@ -1,10 +1,11 @@
 from logging.handlers import BufferingHandler
 
+
 class TestHandler(BufferingHandler):
-    '''
+    """
     This class gives us a way to test the logging component in python 2.
     More info at: http://plumberjack.blogspot.com/2010/09/unit-testing-and-logging.html
-    '''
+    """
 
     def __init__(self, matcher):
         # BufferingHandler takes a "capacity" argument
@@ -32,9 +33,10 @@ class TestHandler(BufferingHandler):
                 break
         return result
 
+
 class Matcher(object):
 
-    _partial_matches = ('msg', 'message')
+    _partial_matches = ("msg", "message")
 
     def matches(self, d, **kwargs):
         """
@@ -60,7 +62,7 @@ class Matcher(object):
         if type(v) != type(dv):
             result = False
         elif type(dv) is not str or k not in self._partial_matches:
-            result = (v == dv)
+            result = v == dv
         else:
             result = dv.find(v) >= 0
         return result
