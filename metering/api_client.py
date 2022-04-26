@@ -5,6 +5,17 @@ from metering.request import APIError
 
 
 class GenericApiClient:
+    """
+    This class is a thin wrapper around `requests.Session`, to facilitate
+    implementing the individual API clients. It handles:
+
+    - Standard headers (including authorization)
+    - Root URL for the APIs
+    - Parsing responses (returning either the JSON for good responses or an
+      exception for errors)
+
+    Public methods expose the usual HTTP methods.
+    """
 
     root_url = "https://app.amberflo.io"
 
@@ -37,6 +48,9 @@ class GenericApiClient:
         return self._parse(response)
 
     def _parse(self, response):
+        """
+        Returns the parsed JSON response or raise an exception on errors.
+        """
         if response.status_code != 200:
             self.logger.error("received error: %s", response.text)
             raise APIError(
