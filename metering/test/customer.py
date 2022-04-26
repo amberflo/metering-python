@@ -19,6 +19,14 @@ class TestCustomer(unittest.TestCase):
         self.customer_name = "Test Customer Name"
         self.traits = {"region": "midwest"}
 
+    def _delete(self, customer_id):
+        """
+        Delete customer, though we don't exposed this on the SDK.
+        """
+        path = "{}{}".format(self.client.path, customer_id)
+        response = self.client.client.delete(path)
+        self.assertEqual(response[customer_id_key], customer_id)
+
     def test_can_create_list_and_delete_customers(self):
         # create
         message = CustomerPayloadFactory.create(
@@ -38,8 +46,7 @@ class TestCustomer(unittest.TestCase):
         self.assertEqual(response[customer_name_key], self.customer_name)
 
         # delete
-        response = self.client.delete(self.customer_id)
-        self.assertEqual(response[customer_id_key], self.customer_id)
+        self._delete(self.customer_id)
 
     def test_can_upsert_with_traits(self):
         # upsert (add)
@@ -63,8 +70,7 @@ class TestCustomer(unittest.TestCase):
         self.assertFalse(response.get(traits_key))
 
         # delete
-        response = self.client.delete(self.customer_id)
-        self.assertEqual(response[customer_id_key], self.customer_id)
+        self._delete(self.customer_id)
 
     def test_can_create_customer_in_stripe(self):
         """
@@ -82,5 +88,4 @@ class TestCustomer(unittest.TestCase):
         self.assertIn("stripeId", response[traits_key])
 
         # delete
-        response = self.client.delete(self.customer_id)
-        self.assertEqual(response[customer_id_key], self.customer_id)
+        self._delete(self.customer_id)

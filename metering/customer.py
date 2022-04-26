@@ -42,13 +42,6 @@ class CustomerApiClient:
         """
         return self.client.put(self.path, payload)
 
-    def delete(self, customer_id):
-        """
-        Delete customer by id.
-        """
-        path = "{}{}".format(self.path, customer_id)
-        return self.client.delete(path)
-
     def add_or_update_customer(self, payload, create_customer_in_stripe=False):
         """
         Convenience method. Performs a `get` followed by either `add` or `update`.
