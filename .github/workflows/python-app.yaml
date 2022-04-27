@@ -39,6 +39,6 @@ jobs:
     - name: Lint code
       run: flake8 --config setup.cfg --max-complexity=10 metering simulator.py
     - name: Run tests
-      run: coverage run --branch --include 'metering/*' --omit '*test*' -m unittest metering/test/*.py
-    - name: Present coverage report
+      run: coverage run --branch --include 'metering/*' --omit 'tests/*' -m unittest discover
+    - name: Report coverage
       run: coverage report --show-missing
