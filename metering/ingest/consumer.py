@@ -16,15 +16,15 @@ def _random_string(n=5):
     )
 
 
-def _should_give_up(exc):
+def _should_give_up(error):
     """
     Retry on API errors:
     - server errors (500s)
     - rate limited (429)
     And on all other errors.
     """
-    if isinstance(exc, ApiError):
-        return (400 <= exc.status_code < 500) and exc.status != 429
+    if isinstance(error, ApiError):
+        return (400 <= error.status_code < 500) and error.status != 429
     return False
 
 
