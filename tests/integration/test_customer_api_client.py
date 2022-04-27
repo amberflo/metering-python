@@ -7,13 +7,14 @@ from metering.customer import (
     create_customer_payload,
 )
 
-API_KEY = os.environ["TEST_API_KEY"]
+API_KEY = os.environ.get("TEST_API_KEY")
 
 customer_id_key = "customerId"
 customer_name_key = "customerName"
 traits_key = "traits"
 
 
+@unittest.skipIf(API_KEY is None, "Needs Amberflo's API key")
 class TestCustomerApiClient(unittest.TestCase):
     def setUp(self):
         self.client = CustomerApiClient(API_KEY)

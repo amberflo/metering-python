@@ -5,9 +5,10 @@ from uuid import uuid4
 from metering.session import ApiError, ApiSession
 
 
-API_KEY = os.environ["TEST_API_KEY"]
+API_KEY = os.environ.get("TEST_API_KEY")
 
 
+@unittest.skipIf(API_KEY is None, "Needs Amberflo's API key")
 class TestApiSession(unittest.TestCase):
     def test_good_response_is_parsed(self):
         client = ApiSession(API_KEY)

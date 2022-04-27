@@ -10,6 +10,7 @@ ACCESS_KEY = os.environ.get("TEST_ACCESS_KEY")
 SECRET_KEY = os.environ.get("TEST_SECRET_KEY")
 
 
+@unittest.skipIf(BUCKET_NAME is None, "Needs S3 credentials")
 class TestIngestS3Client(unittest.TestCase):
     """
     When running these tests, Python will show warnings:
@@ -38,12 +39,10 @@ class TestIngestS3Client(unittest.TestCase):
             for i in range(10)
         ]
 
-    @unittest.skipIf(BUCKET_NAME is None, "Needs S3 credentials")
     def test_can_send_one_meter(self):
         response = self.client.send(self.meters[0])
         self.assertEqual(response["ResponseMetadata"]["HTTPStatusCode"], 200)
 
-    @unittest.skipIf(BUCKET_NAME is None, "Needs S3 credentials")
     def test_can_send_many_meters(self):
         response = self.client.send(self.meters)
         self.assertEqual(response["ResponseMetadata"]["HTTPStatusCode"], 200)

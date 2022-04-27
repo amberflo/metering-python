@@ -11,13 +11,14 @@ from metering.usage import (
     create_all_usage_request,
 )
 
-API_KEY = os.environ["TEST_API_KEY"]
+API_KEY = os.environ.get("TEST_API_KEY")
 
 metadata_key = "metadata"
 seconds_since_epoch_intervals_key = "secondsSinceEpochIntervals"
 client_meters_key = "clientMeters"
 
 
+@unittest.skipIf(API_KEY is None, "Needs Amberflo's API key")
 class TestUsageApiClient(unittest.TestCase):
     meter_api_name = "my_meter"
     start_time_in_seconds = int(round(time.time())) - (24 * 60 * 60)
