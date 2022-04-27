@@ -17,7 +17,7 @@ class IngestApiClient:
         return self.client.post(self.path, payload)
 
 
-def create_meter_payload(
+def create_ingest_payload(
     meter_api_name,
     meter_value,
     meter_time_in_millis,

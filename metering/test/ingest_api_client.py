@@ -4,7 +4,7 @@ from time import time
 
 from metering.ingest import (
     IngestApiClient,
-    create_meter_payload,
+    create_ingest_payload,
 )
 
 API_KEY = os.environ["TEST_API_KEY"]
@@ -20,7 +20,7 @@ class TestIngestApiClient(unittest.TestCase):
         timestamp = int(round(time() * 1000))
 
         self.meters = [
-            create_meter_payload(
+            create_ingest_payload(
                 meter_api_name=meter_api_name,
                 meter_value=meter_float_value,
                 meter_time_in_millis=timestamp + 10 * i,

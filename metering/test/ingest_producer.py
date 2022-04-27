@@ -20,7 +20,7 @@ class TestIngestConsumer(unittest.TestCase):
             batch_size=10,
         )
 
-    def test_normal_usage(self):
+    def test_shutdown_after_sending_some_items(self):
         with patch.object(_DummyBackend, "send") as mock_send:
             for i in range(90):
                 self.client.send(i)

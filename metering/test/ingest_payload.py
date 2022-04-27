@@ -2,7 +2,7 @@ import unittest
 import time
 from uuid import uuid4
 
-from metering.ingest import create_meter_payload
+from metering.ingest import create_ingest_payload
 
 meter_api_name_key = "meterApiName"
 meter_value_key = "meterValue"
@@ -12,8 +12,7 @@ unique_id_key = "uniqueId"
 dimensions_key = "dimensions"
 
 
-class TestMeterPayloadFactory(unittest.TestCase):
-    """Test class for MeterFactory"""
+class TestIngestPayloadFactory(unittest.TestCase):
 
     meter_api_name = "my meter"
     meter_float_value = 1.2
@@ -23,7 +22,7 @@ class TestMeterPayloadFactory(unittest.TestCase):
 
     def test_no_meter_name(self):
         with self.assertRaises(AssertionError):
-            create_meter_payload(
+            create_ingest_payload(
                 meter_api_name=None,
                 meter_value=self.meter_float_value,
                 meter_time_in_millis=self.timestamp,
@@ -32,7 +31,7 @@ class TestMeterPayloadFactory(unittest.TestCase):
 
     def test_no_meter_value(self):
         with self.assertRaises(AssertionError):
-            create_meter_payload(
+            create_ingest_payload(
                 meter_api_name=self.meter_api_name,
                 meter_value=None,
                 meter_time_in_millis=self.timestamp,
@@ -41,7 +40,7 @@ class TestMeterPayloadFactory(unittest.TestCase):
 
     def test_empty_meter_name(self):
         with self.assertRaises(AssertionError):
-            create_meter_payload(
+            create_ingest_payload(
                 meter_api_name="",
                 meter_value=self.meter_float_value,
                 meter_time_in_millis=self.timestamp,
@@ -50,7 +49,7 @@ class TestMeterPayloadFactory(unittest.TestCase):
 
     def test_empty_meter_value(self):
         with self.assertRaises(AssertionError):
-            create_meter_payload(
+            create_ingest_payload(
                 meter_api_name=self.meter_api_name,
                 meter_value="",
                 meter_time_in_millis=self.timestamp,
@@ -59,7 +58,7 @@ class TestMeterPayloadFactory(unittest.TestCase):
 
     def test_customer_id_is_an_int(self):
         with self.assertRaises(AssertionError):
-            create_meter_payload(
+            create_ingest_payload(
                 meter_api_name=self.meter_api_name,
                 meter_value=self.meter_float_value,
                 meter_time_in_millis=self.timestamp,
@@ -68,7 +67,7 @@ class TestMeterPayloadFactory(unittest.TestCase):
 
     def test_customer_id_is_none(self):
         with self.assertRaises(AssertionError):
-            create_meter_payload(
+            create_ingest_payload(
                 meter_api_name=self.meter_api_name,
                 meter_value=self.meter_float_value,
                 meter_time_in_millis=self.timestamp,
@@ -77,7 +76,7 @@ class TestMeterPayloadFactory(unittest.TestCase):
 
     def test_unique_id_is_an_int(self):
         with self.assertRaises(AssertionError):
-            create_meter_payload(
+            create_ingest_payload(
                 meter_api_name=self.meter_api_name,
                 meter_value=self.meter_float_value,
                 meter_time_in_millis=self.timestamp,
@@ -87,7 +86,7 @@ class TestMeterPayloadFactory(unittest.TestCase):
 
     def test_timestamp_is_an_string(self):
         with self.assertRaises(AssertionError):
-            create_meter_payload(
+            create_ingest_payload(
                 meter_api_name=self.meter_api_name,
                 meter_value=self.meter_float_value,
                 meter_time_in_millis="3",
@@ -96,7 +95,7 @@ class TestMeterPayloadFactory(unittest.TestCase):
 
     def test_timestamp_is_none(self):
         with self.assertRaises(AssertionError):
-            create_meter_payload(
+            create_ingest_payload(
                 meter_api_name=self.meter_api_name,
                 meter_value=self.meter_float_value,
                 meter_time_in_millis=None,
@@ -104,7 +103,7 @@ class TestMeterPayloadFactory(unittest.TestCase):
             )
 
     def test_with_meter_name_value_time_and_customer_id_and_name_only(self):
-        message = create_meter_payload(
+        message = create_ingest_payload(
             meter_api_name=self.meter_api_name,
             meter_value=self.meter_float_value,
             meter_time_in_millis=self.timestamp,
@@ -118,7 +117,7 @@ class TestMeterPayloadFactory(unittest.TestCase):
         self.assertEqual(message[timestamp_key], self.timestamp)
 
     def test_with_unique_id(self):
-        message = create_meter_payload(
+        message = create_ingest_payload(
             meter_api_name=self.meter_api_name,
             meter_value=self.meter_float_value,
             meter_time_in_millis=self.timestamp,
@@ -134,7 +133,7 @@ class TestMeterPayloadFactory(unittest.TestCase):
 
     def test_with_dimensions(self):
         dimensions = {"key1": "value"}
-        message = create_meter_payload(
+        message = create_ingest_payload(
             meter_api_name=self.meter_api_name,
             meter_value=self.meter_float_value,
             meter_time_in_millis=self.timestamp,

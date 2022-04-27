@@ -2,7 +2,7 @@ import os
 import unittest
 from time import time
 
-from metering.ingest import create_meter_payload
+from metering.ingest import create_ingest_payload
 from metering.ingest import IngestS3Client
 
 BUCKET_NAME = os.environ.get("TEST_BUCKET_NAME")
@@ -29,7 +29,7 @@ class TestIngestS3Client(unittest.TestCase):
         timestamp = int(round(time() * 1000))
 
         self.meters = [
-            create_meter_payload(
+            create_ingest_payload(
                 meter_api_name=meter_api_name,
                 meter_value=meter_float_value,
                 meter_time_in_millis=timestamp + 10 * i,
