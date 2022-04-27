@@ -1,11 +1,10 @@
-requests>=2.20,<3.0
-backoff==1.10.0
-python-dateutil>=2.5
+requests>=2.20
+backoff>=1.10.0
 boto3>=1.18.47
 
 # dev
+virtualenv
 setuptools
-pylint
 flake8
 coverage
 black

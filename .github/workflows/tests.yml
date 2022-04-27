@@ -1,0 +1,52 @@
+# See https://docs.github.com/en/actions/guides/building-and-testing-python
+
+name: Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+env:
+  TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Display Python version
+      run: python -c "import sys; print(sys.version)"
+
+    - name: Install dependencies
+      run: pip install --user -r requirements.txt
+
+    - name: Check code formatting
+      run: black --check .
+
+    - name: Lint code
+      run: flake8 --config setup.cfg --max-complexity=10 .
+
+    - name: Run tests
+      run: coverage run --branch --include 'metering/*' --omit 'tests/*' -m unittest discover
+
+    - name: Report coverage
+      run: coverage report --show-missing
+
+    - name: Test package installation
+      run: |
+        python -m virtualenv venv
+        . venv/bin/activate
+        pip install .
+        pip freeze
