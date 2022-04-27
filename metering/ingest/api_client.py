@@ -1,14 +1,14 @@
 from uuid import uuid4
 
 from metering import validators
-from metering.api_client import RawApiClient
+from metering.session import IngestSession
 
 
 class IngestApiClient:
     path = "/ingest/"
 
     def __init__(self, api_key):
-        self.client = RawApiClient(api_key)
+        self.client = IngestSession(api_key)
 
     def send(self, payload):
         """

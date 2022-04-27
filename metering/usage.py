@@ -1,7 +1,7 @@
 from enum import Enum
 
 from metering import validators
-from metering.api_client import GenericApiClient
+from metering.session import ApiSession
 
 
 class AggregationType(Enum):
@@ -68,7 +68,7 @@ class UsageApiClient:
     path = "/usage/"
 
     def __init__(self, api_key):
-        self.client = GenericApiClient(api_key)
+        self.client = ApiSession(api_key)
 
     def get_usage(self, payload):
         """

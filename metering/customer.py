@@ -1,12 +1,12 @@
 from metering import validators
-from metering.api_client import GenericApiClient
+from metering.session import ApiSession
 
 
 class CustomerApiClient:
     path = "/customers/"
 
     def __init__(self, api_key):
-        self.client = GenericApiClient(api_key)
+        self.client = ApiSession(api_key)
 
     def list(self):
         """

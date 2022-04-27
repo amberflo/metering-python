@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch
 from queue import Queue
 
-from metering.api_client import ApiError
+from metering.session import ApiError
 from metering.ingest.consumer import ThreadedConsumer
 
 

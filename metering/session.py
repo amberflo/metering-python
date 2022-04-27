@@ -19,7 +19,7 @@ def _gzip(payload):
     return compress(json.dumps(payload).encode())
 
 
-class GenericApiClient:
+class ApiSession:
     """
     This class is a thin wrapper around `requests.Session`, to facilitate
     implementing the individual API clients. It handles:
@@ -77,11 +77,11 @@ class GenericApiClient:
         return response.json()
 
 
-class RawApiClient:
+class IngestSession:
     """
-    Similar to the `GenericApiClient`, but for the data ingestion API.  I.e.:
+    Similar to the `ApiSession`, but for the data ingestion API.  I.e.:
     - Requests are gzip encoded
-    - Returns the raw response bodies
+    - Returns the raw response text
     """
 
     root_url = "https://app.amberflo.io"
