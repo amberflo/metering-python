@@ -11,6 +11,15 @@ SECRET_KEY = os.environ.get("TEST_SECRET_KEY")
 
 
 class TestIngestS3Client(unittest.TestCase):
+    """
+    When running these tests, Python will show warnings:
+    > ResourceWarning: unclosed
+
+    This is not ideal, but also not a problem.
+    See:
+        https://github.com/boto/boto3/issues/454#issuecomment-1047277122
+    """
+
     def setUp(self):
         self.client = IngestS3Client(BUCKET_NAME, ACCESS_KEY, SECRET_KEY)
 
