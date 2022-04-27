@@ -69,7 +69,7 @@ class ApiSession:
         Returns the parsed JSON response or raise an exception on errors.
         """
         if response.status_code != 200:
-            self.logger.error("received error: %s", response.text)
+            self.logger.error("%s: %s", response.status_code, response.text)
             raise ApiError(
                 response.status_code,
                 response.text,
@@ -111,7 +111,7 @@ class IngestSession:
         Returns the raw response or raise an exception on errors.
         """
         if response.status_code != 200:
-            self.logger.error("received error: %s", response.text)
+            self.logger.error("%s: %s", response.status_code, response.text)
             raise ApiError(
                 response.status_code,
                 response.text,
