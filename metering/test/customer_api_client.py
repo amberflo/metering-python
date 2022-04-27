@@ -34,7 +34,7 @@ class TestCustomerApiClient(unittest.TestCase):
         message = create_customer_payload(
             customer_id=self.customer_id, customer_name=self.customer_name
         )
-        response = self.client.add_or_update_customer(message)
+        response = self.client.add_or_update(message)
         self.assertEqual(response[customer_id_key], self.customer_id)
         self.assertEqual(response[customer_name_key], self.customer_name)
 
@@ -57,7 +57,7 @@ class TestCustomerApiClient(unittest.TestCase):
             customer_name=self.customer_name,
             traits=self.traits,
         )
-        response = self.client.add_or_update_customer(message)
+        response = self.client.add_or_update(message)
         self.assertEqual(response[customer_id_key], self.customer_id)
         self.assertEqual(response[customer_name_key], self.customer_name)
         self.assertEqual(response[traits_key], self.traits)
@@ -66,7 +66,7 @@ class TestCustomerApiClient(unittest.TestCase):
         message = create_customer_payload(
             customer_id=self.customer_id, customer_name="Another Test Name"
         )
-        response = self.client.add_or_update_customer(message)
+        response = self.client.add_or_update(message)
         self.assertEqual(response[customer_id_key], self.customer_id)
         self.assertEqual(response[customer_name_key], "Another Test Name")
         self.assertFalse(response.get(traits_key))
@@ -74,7 +74,7 @@ class TestCustomerApiClient(unittest.TestCase):
         # delete
         self._delete(self.customer_id)
 
-    def test_can_create_customer_in_stripe(self):
+    def test_can_create_in_stripe(self):
         """
         NOTE: Needs API_KEY with Stripe integration configured
         """
@@ -83,9 +83,7 @@ class TestCustomerApiClient(unittest.TestCase):
             customer_id=self.customer_id,
             customer_name=self.customer_name,
         )
-        response = self.client.add_or_update_customer(
-            message, create_customer_in_stripe=True
-        )
+        response = self.client.add_or_update(message, create_in_stripe=True)
         self.assertEqual(response[customer_id_key], self.customer_id)
         self.assertIn("stripeId", response[traits_key])
 

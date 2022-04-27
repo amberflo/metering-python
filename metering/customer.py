@@ -21,17 +21,15 @@ class CustomerApiClient:
         params = {"customerId": customer_id}
         return self.client.get(self.path, params=params)
 
-    def add(self, payload, create_customer_in_stripe=False):
+    def add(self, payload, create_in_stripe=False):
         """
         Add a new customer.
 
-        `create_customer_in_stripe` will add a `stripeId` trait to the customer.
+        `create_in_stripe` will add a `stripeId` trait to the customer.
+
+        See: https://docs.amberflo.io/reference/post_customers
         """
-        params = (
-            {"autoCreateCustomerInStripe": "true"}
-            if create_customer_in_stripe
-            else None
-        )
+        params = {"autoCreateCustomerInStripe": "true"} if create_in_stripe else None
         return self.client.post(self.path, payload, params=params)
 
     def update(self, payload):
@@ -39,23 +37,25 @@ class CustomerApiClient:
         Update an existing customer.
 
         This has PUT semantics (i.e. it discards existing data).
+
+        See: https://docs.amberflo.io/reference/put_customers-customer-id
         """
         return self.client.put(self.path, payload)
 
-    def add_or_update_customer(self, payload, create_customer_in_stripe=False):
+    def add_or_update(self, payload, create_in_stripe=False):
         """
         Convenience method. Performs a `get` followed by either `add` or `update`.
 
         The update has PUT semantics (i.e. it discards existing data).
 
-        `create_customer_in_stripe` is only used when `add` is called.
+        `create_in_stripe` is only used when `add` is called.
         """
         customer = self.get(payload["customerId"])
 
         if "customerId" in customer:
             return self.update(payload)
         else:
-            return self.add(payload, create_customer_in_stripe)
+            return self.add(payload, create_in_stripe)
 
 
 def create_customer_payload(
@@ -78,6 +78,8 @@ def create_customer_payload(
     traits: Optional. Dictionary of String to String. Defaults to `None`
         Reference metadata to integrate with external systems like billing.
         Can also be used to filter usage data.
+
+    See: https://docs.amberflo.io/reference/post_customers
     """
 
     validators.require_string("customer_id", customer_id, allow_none=False)
