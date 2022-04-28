@@ -36,6 +36,8 @@ jobs:
       run: pip install --user -r requirements.txt
     - name: Check code formatting
       run: black --check .
+    - name: Lint code
+      run: flake8 --config setup.cfg --max-complexity=10 metering simulator.py
     - name: Run tests
       run: coverage run --branch --include 'metering/*' --omit '*test*' -m unittest metering/test/*.py
     - name: Present coverage report

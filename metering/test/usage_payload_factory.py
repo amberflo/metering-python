@@ -1,10 +1,14 @@
 import unittest
 import time
 
-from metering.usage_payload_factory import UsagePayloadFactory
-from metering.usage import AggregationType, TimeGroupingInterval, TimeRange, Take
+from metering.usage import (
+    AggregationType,
+    Take,
+    TimeGroupingInterval,
+    TimeRange,
+    create_usage_payload,
+)
 
-# consts
 meter_api_name_key = "meterApiName"
 aggregation_key = "aggregation"
 time_grouping_interval_key = "timeGroupingInterval"
@@ -19,19 +23,18 @@ filter_key = "filter"
 
 
 class TestUsagePayloadFactory(unittest.TestCase):
-    """Test class for UsagePayloadFactory"""
 
     meter_api_name = "my_meter"
     start_time_in_seconds = int(round(time.time())) - (24 * 60 * 60)
-    aggregation = AggregationType(AggregationType.SUM)
-    time_grouping_interval = TimeGroupingInterval(TimeGroupingInterval.DAY)
+    aggregation = AggregationType.SUM
+    time_grouping_interval = TimeGroupingInterval.DAY
     time_range = TimeRange(start_time_in_seconds=start_time_in_seconds)
     take = Take(limit=10, is_ascending=False)
     group_by = ["customerId"]
-    usage_filter = {"customerId": "1234"}
+    usage_filter = {"customerId": ["1234"]}
 
     def test_with_required_arguments(self):
-        message = UsagePayloadFactory.create(
+        message = create_usage_payload(
             meter_api_name=self.meter_api_name,
             aggregation=self.aggregation,
             time_grouping_interval=self.time_grouping_interval,
@@ -56,7 +59,7 @@ class TestUsagePayloadFactory(unittest.TestCase):
         self.assertEqual(take_key in message, False)
 
     def test_with_group_by_and_filter_and_take(self):
-        message = UsagePayloadFactory.create(
+        message = create_usage_payload(
             meter_api_name=self.meter_api_name,
             aggregation=self.aggregation,
             time_grouping_interval=self.time_grouping_interval,
@@ -65,8 +68,6 @@ class TestUsagePayloadFactory(unittest.TestCase):
             usage_filter=self.usage_filter,
             take=self.take,
         )
-
-        print(message)
 
         self.assertEqual(message[meter_api_name_key], self.meter_api_name)
         self.assertEqual(message[aggregation_key], self.aggregation.value)
@@ -85,7 +86,7 @@ class TestUsagePayloadFactory(unittest.TestCase):
 
     def test_no_meter_api_name(self):
         with self.assertRaises(AssertionError):
-            UsagePayloadFactory.create(
+            create_usage_payload(
                 meter_api_name=None,
                 aggregation=self.aggregation,
                 time_grouping_interval=self.time_grouping_interval,
@@ -97,7 +98,7 @@ class TestUsagePayloadFactory(unittest.TestCase):
 
     def test_no_aggregation(self):
         with self.assertRaises(AssertionError):
-            UsagePayloadFactory.create(
+            create_usage_payload(
                 meter_api_name=self.meter_api_name,
                 aggregation=None,
                 time_grouping_interval=self.time_grouping_interval,
@@ -109,7 +110,7 @@ class TestUsagePayloadFactory(unittest.TestCase):
 
     def test_no_time_grouping_interval(self):
         with self.assertRaises(AssertionError):
-            UsagePayloadFactory.create(
+            create_usage_payload(
                 meter_api_name=self.meter_api_name,
                 aggregation=self.aggregation,
                 time_grouping_interval=None,
@@ -121,7 +122,7 @@ class TestUsagePayloadFactory(unittest.TestCase):
 
     def test_no_time_range(self):
         with self.assertRaises(AssertionError):
-            UsagePayloadFactory.create(
+            create_usage_payload(
                 meter_api_name=self.meter_api_name,
                 aggregation=self.aggregation,
                 time_grouping_interval=self.time_grouping_interval,

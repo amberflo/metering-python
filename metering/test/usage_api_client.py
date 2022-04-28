@@ -2,13 +2,13 @@ import os
 import unittest
 import time
 from metering.usage import (
-    UsageClient,
     AggregationType,
+    Take,
     TimeGroupingInterval,
     TimeRange,
-    Take,
+    UsageApiClient,
+    create_usage_payload,
 )
-from metering.usage_payload_factory import UsagePayloadFactory
 
 API_KEY = os.environ["TEST_API_KEY"]
 
@@ -17,7 +17,7 @@ seconds_since_epoch_intervals_key = "secondsSinceEpochIntervals"
 client_meters_key = "clientMeters"
 
 
-class TestUsage(unittest.TestCase):
+class TestUsageApiClient(unittest.TestCase):
     meter_api_name = "my_meter"
     start_time_in_seconds = int(round(time.time())) - (24 * 60 * 60)
     aggregation = AggregationType(AggregationType.SUM)
@@ -25,13 +25,13 @@ class TestUsage(unittest.TestCase):
     time_range = TimeRange(start_time_in_seconds=start_time_in_seconds)
     take = Take(limit=10, is_ascending=False)
     group_by = ["customerId"]
-    usage_filter = {"customerId": "1234"}
+    usage_filter = {"customerId": ["1234"]}
 
     def setUp(self):
-        self.client = UsageClient(API_KEY)
+        self.client = UsageApiClient(API_KEY)
 
     def test_valid_usage_query(self):
-        message = UsagePayloadFactory.create(
+        message = create_usage_payload(
             meter_api_name=self.meter_api_name,
             aggregation=self.aggregation,
             time_grouping_interval=self.time_grouping_interval,
@@ -46,7 +46,7 @@ class TestUsage(unittest.TestCase):
         self.assertEqual(client_meters_key in response, True)
 
     def test_with_filter_and_group_and_take(self):
-        message = UsagePayloadFactory.create(
+        message = create_usage_payload(
             meter_api_name=self.meter_api_name,
             aggregation=self.aggregation,
             time_grouping_interval=self.time_grouping_interval,

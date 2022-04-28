@@ -2,8 +2,10 @@ import os
 import unittest
 from uuid import uuid4
 
-from metering.customer import CustomerApiClient
-from metering.customer_payload_factory import CustomerPayloadFactory
+from metering.customer import (
+    CustomerApiClient,
+    create_customer_payload,
+)
 
 API_KEY = os.environ["TEST_API_KEY"]
 
@@ -12,7 +14,7 @@ customer_name_key = "customerName"
 traits_key = "traits"
 
 
-class TestCustomer(unittest.TestCase):
+class TestCustomerApiClient(unittest.TestCase):
     def setUp(self):
         self.client = CustomerApiClient(API_KEY)
         self.customer_id = str(uuid4())
@@ -29,7 +31,7 @@ class TestCustomer(unittest.TestCase):
 
     def test_can_create_list_and_delete_customers(self):
         # create
-        message = CustomerPayloadFactory.create(
+        message = create_customer_payload(
             customer_id=self.customer_id, customer_name=self.customer_name
         )
         response = self.client.add_or_update_customer(message)
@@ -50,7 +52,7 @@ class TestCustomer(unittest.TestCase):
 
     def test_can_upsert_with_traits(self):
         # upsert (add)
-        message = CustomerPayloadFactory.create(
+        message = create_customer_payload(
             customer_id=self.customer_id,
             customer_name=self.customer_name,
             traits=self.traits,
@@ -61,7 +63,7 @@ class TestCustomer(unittest.TestCase):
         self.assertEqual(response[traits_key], self.traits)
 
         # upsert (update)
-        message = CustomerPayloadFactory.create(
+        message = create_customer_payload(
             customer_id=self.customer_id, customer_name="Another Test Name"
         )
         response = self.client.add_or_update_customer(message)
@@ -77,7 +79,7 @@ class TestCustomer(unittest.TestCase):
         NOTE: Needs API_KEY with Stripe integration configured
         """
         # upsert (add)
-        message = CustomerPayloadFactory.create(
+        message = create_customer_payload(
             customer_id=self.customer_id,
             customer_name=self.customer_name,
         )
