@@ -1,8 +1,7 @@
 import unittest
 from time import time
 
-
-from metering.customer import create_customer_product_plan_payload
+from metering.customer_product_plan import create_customer_product_plan_payload
 
 
 class TestCreateCustomerProductPlanPayload(unittest.TestCase):

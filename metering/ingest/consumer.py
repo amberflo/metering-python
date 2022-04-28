@@ -7,7 +7,7 @@ from queue import Empty
 from time import sleep
 from threading import Thread
 
-from metering.session import ApiError
+from metering.exceptions import ApiError
 
 
 def _random_string(n=5):

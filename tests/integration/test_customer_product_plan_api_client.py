@@ -2,8 +2,7 @@ import os
 import unittest
 
 from metering.session import ApiSession
-
-from metering.customer import (
+from metering.customer_product_plan import (
     CustomerProductPlanApiClient,
     create_customer_product_plan_payload,
 )
