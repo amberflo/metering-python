@@ -48,5 +48,5 @@ jobs:
       run: |
         python -m virtualenv venv
         . venv/bin/activate
-        pip install .
+        pip install .[s3]
         pip freeze

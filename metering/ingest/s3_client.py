@@ -1,8 +1,12 @@
 import json
-import boto3
 import logging
 from uuid import uuid4
 from datetime import datetime
+
+try:
+    import boto3
+except ImportError:
+    boto3 = None
 
 
 class IngestS3Client:
@@ -14,6 +18,9 @@ class IngestS3Client:
     def __init__(self, bucket_name, access_key=None, secret_key=None):
         self.bucket_name = bucket_name
         self.logger = logging.getLogger(__name__)
+
+        if not boto3:
+            raise ImportError("boto3 is required to use the IngestS3Client")
 
         self.s3 = boto3.resource(
             "s3",

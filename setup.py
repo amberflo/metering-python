@@ -16,8 +16,13 @@ with open(os.path.join(current_dir, "README.md")) as f:
 install_requires = [
     "requests>=2.20",  # https://docs.python-requests.org/
     "backoff>=1.10.0",  # https://pypi.org/project/backoff/
-    "boto3>=1.18.47",  # https://boto3.amazonaws.com/v1/documentation/api/latest/index.html
 ]
+
+extras_require = {
+    "s3": [
+        "boto3>=1.18.47",  # https://boto3.amazonaws.com/v1/documentation/api/latest/index.html
+    ],
+}
 
 packages = [p for p in find_packages() if "tests" not in p]
 
@@ -33,6 +38,7 @@ setup(
     packages=packages,
     license="MIT License",
     install_requires=install_requires,
+    extras_require=extras_require,
     description="Integrate Amberflo into any Python 3 application.",
     long_description=long_description,
     long_description_content_type="text/markdown",

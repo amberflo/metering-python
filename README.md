@@ -110,6 +110,16 @@ However, every call does not result in a HTTP request, but is queued in memory
 instead. Messages are batched and flushed in the background, allowing for much
 faster operation. The size of batch and rate of flush can be customized.
 
+### Ingesting through the S3 bucket
+
+The SDK provides a `metering.ingest.IngestS3Client` so you can send your meter
+records to us via the S3 bucket.
+
+Use of this feature is enabled if you install the library with the `s3` option:
+```
+pip install amberflo-metering-python[s3]
+```
+
 ## :book: Documentation
 
 General documentation on how to use Amberflo is available at [Product Walkthrough](https://docs.amberflo.io/docs/product-walkthrough).
