@@ -44,6 +44,11 @@ class Take:
 
 class TimeRange:
     def __init__(self, start_time_in_seconds, end_time_in_seconds=None):
+        """
+        start_time_in_seconds: Positive integer. Unix epoch time.
+
+        end_time_in_seconds: Optional. Positive integer. Unix epoch time.
+        """
         validators.require_positive_int(
             "start_time_in_seconds",
             start_time_in_seconds,

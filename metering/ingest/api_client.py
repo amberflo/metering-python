@@ -32,7 +32,7 @@ def create_ingest_payload(
 
     meter_value: Number.
 
-    meter_time_in_millis: Integer.
+    meter_time_in_millis: Positive integer. Unix epoch time.
         Pay attention for this argument as two meters (with the same name) that
         are sent to Amberflo at the exact same time (and have the same unique
         id) will be deduped by the server.

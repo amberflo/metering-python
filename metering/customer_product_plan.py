@@ -51,9 +51,9 @@ def create_customer_product_plan_payload(
 
     product_id: Optional. String.
 
-    start_time_in_seconds: Optional. Integer.
+    start_time_in_seconds: Optional. Integer. Unix epoch time.
 
-    end_time_in_seconds: Optional. Integer.
+    end_time_in_seconds: Optional. Integer. Unix epoch time.
 
     See https://docs.amberflo.io/reference/post_payments-pricing-amberflo-customer-pricing
     """
