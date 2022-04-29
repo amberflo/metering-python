@@ -72,6 +72,18 @@ def require_positive_int(name, value, allow_none=True):
     assert value > 0, "{0!r} must be 1 or greater".format(name)
 
 
+def require_positive_number(name, value, allow_none=True):
+    """
+    Verifies that a given value is a positive number (integer or float).
+    """
+    require(name, value, (int, float), allow_none)
+
+    if value is None:
+        return
+
+    assert value > 0, "{0!r} must be greater than 0".format(name)
+
+
 def require(name, value, data_type, allow_none=True):
     """
     Verifies that a given value is of the provided data_type (or a sub class of it).

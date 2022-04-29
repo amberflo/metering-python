@@ -3,6 +3,7 @@ import unittest
 from metering.validators import (
     require,
     require_positive_int,
+    require_positive_number,
     require_string,
     require_string_dictionary,
     require_string_list,
@@ -31,6 +32,9 @@ class TestValidators(unittest.TestCase):
         require_positive_int(name, 100, allow_none=False)
 
         with self.assertRaises(AssertionError):
+            require_positive_int(name, "100", allow_none=False)
+
+        with self.assertRaises(AssertionError):
             require_positive_int(name, -100, allow_none=False)
 
         with self.assertRaises(AssertionError):
@@ -41,6 +45,26 @@ class TestValidators(unittest.TestCase):
 
         with self.assertRaises(AssertionError):
             require_positive_int(name, None, allow_none=False)
+
+    def test_require_positive_number(self):
+        # does not raise
+        require_positive_number(name, 100.0, allow_none=False)
+        require_positive_number(name, 100, allow_none=False)
+
+        with self.assertRaises(AssertionError):
+            require_positive_number(name, "100", allow_none=False)
+
+        with self.assertRaises(AssertionError):
+            require_positive_number(name, -100, allow_none=False)
+
+        with self.assertRaises(AssertionError):
+            require_positive_number(name, -100, allow_none=True)
+
+        # does not raise
+        require_positive_number(name, None, allow_none=True)
+
+        with self.assertRaises(AssertionError):
+            require_positive_number(name, None, allow_none=False)
 
     def test_require_string(self):
         # does not raise
