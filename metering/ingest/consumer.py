@@ -24,7 +24,7 @@ def _should_give_up(error):
     And on all other errors.
     """
     if isinstance(error, ApiError):
-        return (400 <= error.status_code < 500) and error.status != 429
+        return (400 <= error.status_code < 500) and error.status_code != 429
     return False
 
 
@@ -46,6 +46,7 @@ class ThreadedConsumer:
         batch_size=100,
         send_interval_in_secs=0.5,
         sleep_interval_in_secs=0.1,
+        on_error=None,
     ):
         """
         backend:
@@ -68,6 +69,12 @@ class ThreadedConsumer:
         sleep_interval_in_secs:
             How long to wait after a failure to consume a batch happens (or
             after empty batches).
+
+        on_error:
+            Callback function to handle errors when sending a batch of items.
+            It will be called as `on_error(exception_instance, items_in_batch)`.
+            It should be thread-safe, as it might be used by multiple consumers
+            at the same time.
         """
         self.queue = queue
         self.backend = backend
@@ -75,6 +82,7 @@ class ThreadedConsumer:
         self.batch_size = batch_size
         self.send_interval = send_interval_in_secs
         self.sleep_interval = sleep_interval_in_secs
+        self.on_error = on_error
         self.name = _random_string()
         self.thread = Thread(target=self._run, daemon=True, name=self.name)
         self.logger = logging.getLogger("{}.{}".format(__name__, self.name))
@@ -120,6 +128,8 @@ class ThreadedConsumer:
             self.logger.debug("Sent batch of %s", len(batch))
         except Exception as e:
             self.logger.exception("Failed to send batch of %s: %s", len(batch), e)
+            if self.on_error:
+                self.on_error(e, batch)
             n = -n
         finally:
             for item in batch:
