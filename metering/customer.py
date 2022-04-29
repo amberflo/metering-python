@@ -18,6 +18,7 @@ class CustomerApiClient:
         """
         Get customer by id.
         """
+        validators.require_string("customer_id", customer_id, allow_none=False)
         params = {"customerId": customer_id}
         return self.client.get(self.path, params=params)
 
@@ -29,6 +30,7 @@ class CustomerApiClient:
 
         See: https://docs.amberflo.io/reference/post_customers
         """
+        validators.require("create_in_stripe", create_in_stripe, bool, allow_none=False)
         params = {"autoCreateCustomerInStripe": "true"} if create_in_stripe else None
         return self.client.post(self.path, payload, params=params)
 

@@ -14,6 +14,7 @@ class CustomerProductPlanApiClient:
         """
         List the entire history of product plans of the given customer.
         """
+        validators.require_string("customer_id", customer_id, allow_none=False)
         params = {"CustomerId": customer_id}
         return self.client.get(self.path_all, params=params)
 
@@ -21,6 +22,7 @@ class CustomerProductPlanApiClient:
         """
         Get the latest product plan of the given customer.
         """
+        validators.require_string("customer_id", customer_id, allow_none=False)
         params = {"CustomerId": customer_id}
         return self.client.get(self.path, params=params)
 
