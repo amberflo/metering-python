@@ -126,3 +126,21 @@ class TestIngestThreadedConsumerWithErrorCallback(unittest.TestCase):
         self.consumer.consume()
 
         self.on_error_callback.assert_not_called()
+
+
+class TestIngestThreadedConsumerShortSendInterval(unittest.TestCase):
+    def test_respects_send_interval_even_if_queue_has_items(self):
+        queue = Queue()
+        consumer = ThreadedConsumer(
+            queue,
+            _DummyBackend(),
+            batch_size=1000,
+            send_interval_in_secs=0.001,
+        )
+
+        for i in range(1000):
+            queue.put(i)
+
+        n = consumer.consume()
+
+        self.assertLess(n, 1000)
