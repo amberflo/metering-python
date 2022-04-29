@@ -6,8 +6,8 @@ from metering.usage import (
     Take,
     TimeGroupingInterval,
     TimeRange,
-    create_usage_request,
-    create_all_usage_request,
+    create_usage_query,
+    create_all_usage_query,
 )
 
 meter_api_name_key = "meterApiName"
@@ -26,7 +26,7 @@ group_by_customer_id_key = "groupBy"
 filter_by_customer_id_key = "customerId"
 
 
-class TestCreateUsageRequest(unittest.TestCase):
+class TestCreateUsageQuery(unittest.TestCase):
 
     meter_api_name = "my_meter"
     start_time_in_seconds = int(round(time.time())) - (24 * 60 * 60)
@@ -38,7 +38,7 @@ class TestCreateUsageRequest(unittest.TestCase):
     usage_filter = {"customerId": ["1234"]}
 
     def test_with_required_arguments(self):
-        message = create_usage_request(
+        message = create_usage_query(
             meter_api_name=self.meter_api_name,
             aggregation=self.aggregation,
             time_grouping_interval=self.time_grouping_interval,
@@ -63,7 +63,7 @@ class TestCreateUsageRequest(unittest.TestCase):
         self.assertNotIn(take_key, message)
 
     def test_with_group_by_and_filter_and_take(self):
-        message = create_usage_request(
+        message = create_usage_query(
             meter_api_name=self.meter_api_name,
             aggregation=self.aggregation,
             time_grouping_interval=self.time_grouping_interval,
@@ -90,7 +90,7 @@ class TestCreateUsageRequest(unittest.TestCase):
 
     def test_no_meter_api_name(self):
         with self.assertRaises(AssertionError):
-            create_usage_request(
+            create_usage_query(
                 meter_api_name=None,
                 aggregation=self.aggregation,
                 time_grouping_interval=self.time_grouping_interval,
@@ -102,7 +102,7 @@ class TestCreateUsageRequest(unittest.TestCase):
 
     def test_no_aggregation(self):
         with self.assertRaises(AssertionError):
-            create_usage_request(
+            create_usage_query(
                 meter_api_name=self.meter_api_name,
                 aggregation=None,
                 time_grouping_interval=self.time_grouping_interval,
@@ -114,7 +114,7 @@ class TestCreateUsageRequest(unittest.TestCase):
 
     def test_no_time_grouping_interval(self):
         with self.assertRaises(AssertionError):
-            create_usage_request(
+            create_usage_query(
                 meter_api_name=self.meter_api_name,
                 aggregation=self.aggregation,
                 time_grouping_interval=None,
@@ -126,7 +126,7 @@ class TestCreateUsageRequest(unittest.TestCase):
 
     def test_no_time_range(self):
         with self.assertRaises(AssertionError):
-            create_usage_request(
+            create_usage_query(
                 meter_api_name=self.meter_api_name,
                 aggregation=self.aggregation,
                 time_grouping_interval=self.time_grouping_interval,
@@ -137,7 +137,7 @@ class TestCreateUsageRequest(unittest.TestCase):
             )
 
 
-class TestCreateAllUsageRequest(unittest.TestCase):
+class TestCreateAllUsageQuery(unittest.TestCase):
 
     start_time_in_seconds = int(round(time.time())) - (24 * 60 * 60)
     time_grouping_interval = TimeGroupingInterval.DAY
@@ -145,7 +145,7 @@ class TestCreateAllUsageRequest(unittest.TestCase):
     customer_id = "1234"
 
     def test_with_required_arguments(self):
-        message = create_all_usage_request(
+        message = create_all_usage_query(
             time_grouping_interval=self.time_grouping_interval,
             time_range=self.time_range,
         )
@@ -161,7 +161,7 @@ class TestCreateAllUsageRequest(unittest.TestCase):
         self.assertNotIn(filter_by_customer_id_key, message)
 
     def test_with_filter_and_group(self):
-        message = create_all_usage_request(
+        message = create_all_usage_query(
             time_grouping_interval=self.time_grouping_interval,
             time_range=self.time_range,
             filter_by_customer_id=self.customer_id,

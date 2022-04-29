@@ -7,8 +7,8 @@ from metering.usage import (
     TimeGroupingInterval,
     TimeRange,
     UsageApiClient,
-    create_usage_request,
-    create_all_usage_request,
+    create_usage_query,
+    create_all_usage_query,
 )
 
 API_KEY = os.environ.get("TEST_API_KEY")
@@ -34,7 +34,7 @@ class TestUsageApiClient(unittest.TestCase):
         self.client = UsageApiClient(API_KEY)
 
     def test_usage(self):
-        message = create_usage_request(
+        message = create_usage_query(
             meter_api_name=self.meter_api_name,
             aggregation=self.aggregation,
             time_grouping_interval=self.time_grouping_interval,
@@ -47,7 +47,7 @@ class TestUsageApiClient(unittest.TestCase):
         self.assertIn(client_meters_key, response)
 
     def test_usage_with_filter_and_group_and_take(self):
-        message = create_usage_request(
+        message = create_usage_query(
             meter_api_name=self.meter_api_name,
             aggregation=self.aggregation,
             time_grouping_interval=self.time_grouping_interval,
@@ -63,13 +63,13 @@ class TestUsageApiClient(unittest.TestCase):
 
     def test_batch_usage(self):
         message = [
-            create_usage_request(
+            create_usage_query(
                 meter_api_name=self.meter_api_name,
                 aggregation=self.aggregation,
                 time_grouping_interval=self.time_grouping_interval,
                 time_range=self.time_range,
             ),
-            create_usage_request(
+            create_usage_query(
                 meter_api_name="my_other_meter",
                 aggregation=self.aggregation,
                 time_grouping_interval=self.time_grouping_interval,
@@ -84,7 +84,7 @@ class TestUsageApiClient(unittest.TestCase):
             self.assertIn(client_meters_key, report)
 
     def test_all_usage(self):
-        message = create_all_usage_request(
+        message = create_all_usage_query(
             time_grouping_interval=self.time_grouping_interval,
             time_range=self.time_range,
         )
@@ -96,7 +96,7 @@ class TestUsageApiClient(unittest.TestCase):
             self.assertIn(client_meters_key, report)
 
     def test_all_usage_with_group_and_filter(self):
-        message = create_all_usage_request(
+        message = create_all_usage_query(
             time_grouping_interval=self.time_grouping_interval,
             time_range=self.time_range,
             filter_by_customer_id=self.customer_id,

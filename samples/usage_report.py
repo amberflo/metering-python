@@ -10,7 +10,7 @@ from metering.usage import (
     TimeGroupingInterval,
     TimeRange,
     UsageApiClient,
-    create_usage_request,
+    create_usage_query,
 )
 
 
@@ -38,7 +38,7 @@ def main():
     usage_filter = {"customerId": ["1234", "sample-customer-123"]}
 
     # 4. create usage request
-    request = create_usage_request(
+    request = create_usage_query(
         meter_api_name="my_meter",
         aggregation=AggregationType.SUM,
         time_grouping_interval=TimeGroupingInterval.DAY,

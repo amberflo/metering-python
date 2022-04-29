@@ -81,13 +81,13 @@ client.send(event)
 import os
 from time import time
 from metering.usage import (AggregationType, Take, TimeGroupingInterval,
-                            TimeRange, UsageApiClient, create_usage_request)
+                            TimeRange, UsageApiClient, create_usage_query)
 
 client = UsageApiClient(os.environ.get("API_KEY"))
 
 since_two_days_ago = TimeRange(int(time()) - 60 * 60 * 24 * 2)
 
-request = create_usage_request(
+request = create_usage_query(
     meter_api_name="my_meter",
     aggregation=AggregationType.SUM,
     time_grouping_interval=TimeGroupingInterval.DAY,
