@@ -1,6 +1,7 @@
 import unittest
 from time import time
 
+from metering.constants import DEFAULT_PRODUCT_ID
 from metering.customer_product_plan import create_customer_product_plan_payload
 
 
@@ -20,7 +21,7 @@ class TestCreateCustomerProductPlanPayload(unittest.TestCase):
 
         self.assertEqual(message["customerId"], self.customer_id)
         self.assertEqual(message["productPlanId"], self.product_plan_id)
-        self.assertEqual(message["productId"], "1")
+        self.assertEqual(message["productId"], DEFAULT_PRODUCT_ID)
 
         self.assertNotIn("startTimeInSeconds", message)
         self.assertNotIn("endTimeInSeconds", message)

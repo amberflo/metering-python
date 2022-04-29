@@ -1,5 +1,6 @@
 from metering import validators
 from metering.session import ApiSession
+from metering.constants import DEFAULT_PRODUCT_ID
 
 
 class CustomerProductPlanApiClient:
@@ -32,15 +33,13 @@ class CustomerProductPlanApiClient:
         return self.client.post(self.path, payload)
 
 
-DEFAULT_PRODUCT_ID = "1"
-
 ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 
 def create_customer_product_plan_payload(
     customer_id,
     product_plan_id,
-    product_id=DEFAULT_PRODUCT_ID,
+    product_id=None,
     end_time_in_seconds=None,
     start_time_in_seconds=None,
 ):
@@ -59,7 +58,7 @@ def create_customer_product_plan_payload(
     """
     validators.require_string("customer_id", customer_id, allow_none=False)
     validators.require_string("product_plan_id", product_plan_id, allow_none=False)
-    validators.require_string("product_id", product_id, allow_none=False)
+    validators.require_string("product_id", product_id)
 
     validators.require_positive_int(
         "start_time_in_seconds",
@@ -77,7 +76,7 @@ def create_customer_product_plan_payload(
     payload = {
         "customerId": customer_id,
         "productPlanId": product_plan_id,
-        "productId": product_id,
+        "productId": product_id or DEFAULT_PRODUCT_ID,
     }
 
     if start_time_in_seconds:
