@@ -1,8 +1,18 @@
 #!/usr/bin/env python3
 
 """
+This is an example of a simple CLI tool for ingesting individual meter records.
+This uses the Amberflo Ingestion API directly (in a synchronous manner).
+
+For batch ingestion in the background, see `./ingest_meter.py`.
+
 USAGE:
-    ./cli_metering.py --api-key $API_KEY --meter-api-name 'ApiCall' --meter-value '1' --customer-id 'cus-123' --dimensions '{"Name": "region", "Value": "us-east-1"}'
+    ./cli_metering.py \
+        --api-key $API_KEY \
+        --meter-api-name 'ApiCall' \
+        --meter-value '1' \
+        --customer-id 'cus-123' \
+        --dimensions '{"Name": "region", "Value": "us-east-1"}'
 """
 
 import argparse

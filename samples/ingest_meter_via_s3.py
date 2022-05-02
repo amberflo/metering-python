@@ -1,5 +1,17 @@
 #!/usr/bin/env python3
 
+"""
+This sample shows an example of meter record ingestion. Ingestion is done in
+batches on a background thread for high-throughput. This pattern is
+particularly useful in the context of a web server, as it moves the ingestion
+outside of the request-response cycle.
+
+It uses the S3 meter record sink, instead of the Amberflo API.
+
+See https://docs.amberflo.io/docs/s3-ingestion
+and https://docs.amberflo.io/reference/post_ingest
+"""
+
 import os
 from time import time
 from random import random

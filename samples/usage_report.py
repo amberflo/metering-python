@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
 
+"""
+This sample shows an example of custom usage report. It queries the usage of
+"my_meter" per day, for the past two days, for two specific customers, grouping
+by customer.
+
+See https://docs.amberflo.io/reference/post_usage
+"""
+
 import os
 import json
 from time import time

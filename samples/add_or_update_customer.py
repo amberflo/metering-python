@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+"""
+This sample shows an example of creating or updating a "customer".
+
+See https://docs.amberflo.io/reference/post_customers
+"""
+
 import os
 import json
 

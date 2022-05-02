@@ -1,6 +1,8 @@
 # Sample Code
 
-Here you can find many examples of how to use this SDK.
+In this folder you can find many examples of how to use this SDK.
+
+Each sample starts with a docstring explaining it.
 
 ## How to run
 
