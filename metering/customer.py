@@ -137,7 +137,7 @@ class CustomerProductPlanApiClient:
 
 DEFAULT_PRODUCT_ID = "1"
 
-ONE_DAY = 60 * 60 * 24
+ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 
 def create_customer_product_plan_payload(
@@ -175,7 +175,7 @@ def create_customer_product_plan_payload(
 
     if start_time_in_seconds is not None and end_time_in_seconds is not None:
         msg = "'end_time_in_seconds' must come at least 1 day after the 'start_time_in_seconds'"
-        assert end_time_in_seconds >= start_time_in_seconds + ONE_DAY, msg
+        assert end_time_in_seconds >= start_time_in_seconds + ONE_DAY_IN_SECONDS, msg
 
     payload = {
         "customerId": customer_id,

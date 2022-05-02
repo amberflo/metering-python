@@ -14,7 +14,7 @@ API_KEY = os.environ["TEST_API_KEY"]
 class TestCustomerProductPlanApiClient(unittest.TestCase):
     def setUp(self):
         self.generic = ApiSession(API_KEY)
-        self.customer_id = self.generic.get("/customers/")[0]
+        self.customer_id = self.generic.get("/customers/")[0]["customerId"]
 
         self.client = CustomerProductPlanApiClient(API_KEY)
 
