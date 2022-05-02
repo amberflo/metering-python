@@ -77,26 +77,26 @@ class UsageApiClient:
     def __init__(self, api_key):
         self.client = ApiSession(api_key)
 
-    def get(self, payload):
+    def get(self, query):
         """
         Gets usage data. Supports either a single request or a list of requests
         and returns a single report or a list of reports accordingly.
 
         See: https://docs.amberflo.io/reference/post_usage
         """
-        if isinstance(payload, list):
-            return self.client.post(self.path_batch, payload)
+        if isinstance(query, list):
+            return self.client.post(self.path_batch, query)
         else:
-            return self.client.post(self.path, payload)
+            return self.client.post(self.path, query)
 
-    def get_all(self, params):
+    def get_all(self, query):
         """
         Get a usage report including all meters. Because it incudes all meters,
         this is more limited than `get`. Returns a list of usage reports.
 
         See: https://docs.amberflo.io/reference/post_usage-batch
         """
-        return self.client.get(self.path_all, params=params)
+        return self.client.get(self.path_all, params=query)
 
 
 def create_usage_query(
