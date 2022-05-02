@@ -1,5 +1,5 @@
 import unittest
-import time
+from time import time
 
 from metering.usage import (
     AggregationType,
@@ -29,7 +29,7 @@ filter_by_customer_id_key = "customerId"
 class TestCreateUsageQuery(unittest.TestCase):
 
     meter_api_name = "my_meter"
-    start_time_in_seconds = int(round(time.time())) - (24 * 60 * 60)
+    start_time_in_seconds = int(round(time())) - (24 * 60 * 60)
     aggregation = AggregationType.SUM
     time_grouping_interval = TimeGroupingInterval.DAY
     time_range = TimeRange(start_time_in_seconds=start_time_in_seconds)
@@ -43,9 +43,6 @@ class TestCreateUsageQuery(unittest.TestCase):
             aggregation=self.aggregation,
             time_grouping_interval=self.time_grouping_interval,
             time_range=self.time_range,
-            group_by=None,
-            usage_filter=None,
-            take=None,
         )
 
         self.assertEqual(message[meter_api_name_key], self.meter_api_name)
@@ -87,6 +84,27 @@ class TestCreateUsageQuery(unittest.TestCase):
         self.assertEqual(message[filter_key], self.usage_filter)
         self.assertEqual(message[take_key][limit_key], self.take.limit)
         self.assertEqual(message[take_key][is_ascending_key], self.take.is_ascending)
+
+    def test_with_end_time(self):
+        time_range = TimeRange(
+            start_time_in_seconds=self.start_time_in_seconds,
+            end_time_in_seconds=int(round(time())),
+        )
+        message = create_usage_query(
+            meter_api_name=self.meter_api_name,
+            aggregation=self.aggregation,
+            time_grouping_interval=self.time_grouping_interval,
+            time_range=time_range,
+        )
+
+        self.assertEqual(
+            message[time_range_key][start_time_in_seconds_key],
+            time_range.start_time_in_seconds,
+        )
+        self.assertEqual(
+            message[time_range_key][end_time_in_seconds_key],
+            time_range.end_time_in_seconds,
+        )
 
     def test_no_meter_api_name(self):
         with self.assertRaises(AssertionError):
@@ -139,7 +157,7 @@ class TestCreateUsageQuery(unittest.TestCase):
 
 class TestCreateAllUsageQuery(unittest.TestCase):
 
-    start_time_in_seconds = int(round(time.time())) - (24 * 60 * 60)
+    start_time_in_seconds = int(round(time())) - (24 * 60 * 60)
     time_grouping_interval = TimeGroupingInterval.DAY
     time_range = TimeRange(start_time_in_seconds=start_time_in_seconds)
     customer_id = "1234"

@@ -60,7 +60,7 @@ class TimeRange:
     def payload(self):
         payload = {"startTimeInSeconds": self.start_time_in_seconds}
         if self.end_time_in_seconds:
-            payload["endTimeInSeconds"]: self.end_time_in_seconds
+            payload["endTimeInSeconds"] = self.end_time_in_seconds
         return payload
 
 
