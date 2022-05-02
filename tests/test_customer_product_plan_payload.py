@@ -10,7 +10,7 @@ class TestCreateCustomerProductPlanPayload(unittest.TestCase):
     product_plan_id = "bar"
     product_id = "bum"
     start_time_in_seconds = int(time())
-    end_time_in_seconds = start_time_in_seconds + 100_000
+    end_time_in_seconds = start_time_in_seconds + 100000
 
     def test_with_required_arguments(self):
         message = create_customer_product_plan_payload(
@@ -47,5 +47,5 @@ class TestCreateCustomerProductPlanPayload(unittest.TestCase):
                 product_plan_id=self.product_plan_id,
                 product_id=self.product_id,
                 start_time_in_seconds=self.start_time_in_seconds,
-                end_time_in_seconds=self.start_time_in_seconds + 10_000,
+                end_time_in_seconds=self.start_time_in_seconds + 10000,
             )

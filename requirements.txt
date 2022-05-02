@@ -1,6 +1,6 @@
-requests>=2.20
-backoff>=1.10.0
-boto3>=1.18.47
+requests
+backoff
+boto3
 
 # dev
 virtualenv

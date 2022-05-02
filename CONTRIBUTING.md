@@ -1,6 +1,6 @@
 # Contributors Guide
 
-- We support Python 3.6 to 3.10.
+- We support Python 3.5 to 3.10.
 
 ## Setting up the dev environment
 

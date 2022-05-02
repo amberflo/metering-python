@@ -14,13 +14,13 @@ with open(os.path.join(current_dir, "README.md")) as f:
     long_description = f.read()
 
 install_requires = [
-    "requests>=2.20",  # https://docs.python-requests.org/
-    "backoff>=1.10.0",  # https://pypi.org/project/backoff/
+    "requests",  # https://docs.python-requests.org/
+    "backoff",  # https://pypi.org/project/backoff/
 ]
 
 extras_require = {
     "s3": [
-        "boto3>=1.18.47",  # https://boto3.amazonaws.com/v1/documentation/api/latest/index.html
+        "boto3",  # https://boto3.amazonaws.com/v1/documentation/api/latest/index.html
     ],
 }
 
