@@ -58,9 +58,9 @@ customer = client.add_or_update(message)
 ```python3
 import os
 from time import time
-from metering.ingest import ThreadedProducer, create_ingest_payload
+from metering.ingest import get_ingest_client, create_ingest_payload
 
-client = ThreadedProducer({"api_key": os.environ.get("API_KEY")})
+client = get_ingest_client(api_key=os.environ["API_KEY"])
 
 dimensions = {"region": "us-east-1"}
 customer_id = "sample-customer-123"

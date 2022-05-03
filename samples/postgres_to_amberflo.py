@@ -15,7 +15,7 @@ from datetime import timezone
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
-from metering.ingest import ThreadedProducer, create_ingest_payload
+from metering.ingest import get_ingest_client, create_ingest_payload
 
 
 def get_conn():
@@ -29,15 +29,10 @@ def get_conn():
 
 
 def main():
-    # 1. obtain your API key
-    params = {
-        "api_key": os.environ.get("API_KEY"),
-    }
+    # 1. initialize the threaded ingestion client
+    client = get_ingest_client(api_key=os.environ["API_KEY"])
 
-    # 2. initialize the threaded ingestion client
-    client = ThreadedProducer(params)
-
-    # 3. get events from postgres
+    # 2. get events from postgres
     conn = get_conn()
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute(
@@ -56,7 +51,7 @@ def main():
     )
     records = cur.fetchall()
 
-    # 4. ingest the events
+    # 3. ingest the events
     for record in records:
         completed_at = record["completed_at"].replace(tzinfo=timezone.utc)
 
@@ -72,11 +67,11 @@ def main():
         )
         client.send(event)
 
-    # 5. close postgres connection
+    # 4. close postgres connection
     cur.close()
     conn.close()
 
-    # 6. ensure all events are sent and safely stop the background threads
+    # 5. ensure all events are sent and safely stop the background threads
     client.shutdown()
 
 

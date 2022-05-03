@@ -15,7 +15,7 @@ from datetime import datetime
 from elasticsearch import Elasticsearch
 
 from metering.exceptions import ApiError
-from metering.ingest import ThreadedProducer, create_ingest_payload
+from metering.ingest import get_ingest_client, create_ingest_payload
 from metering.customer import CustomerApiClient
 
 
@@ -67,21 +67,16 @@ def get_hits():
 
 
 def main():
-    # 1. obtain your API key
-    params = {
-        "api_key": os.environ.get("API_KEY"),
-    }
+    # 1. initialize the threaded ingestion client
+    client = get_ingest_client(api_key=os.environ["API_KEY"])
 
-    # 2. initialize the threaded ingestion client
-    client = ThreadedProducer(params)
+    # 2. initialize Customer Api Client (for creating customers)
+    customer_api_client = CustomerApiClient(os.environ["API_KEY"])
 
-    # 3. initialize Customer Api Client (for creating customers)
-    customer_api_client = CustomerApiClient(os.environ.get("API_KEY"))
-
-    # 4. query elasticsearch
+    # 3. query elasticsearch
     hits = get_hits()
 
-    # 5. ingest the events
+    # 4. ingest the events
     added_customers = set()  # keep track of customers already added
 
     for hit in hits:
@@ -98,7 +93,7 @@ def main():
         host = data["host"]
         environment_name = data["environment_name"]
 
-        # 5.1 create the customer if needed
+        # 4.1 create the customer if needed
         if account_id not in added_customers:
             try:
                 customer_api_client.add(
@@ -108,7 +103,7 @@ def main():
                 pass
             added_customers.add(account_id)
 
-        # 5.2 ingest meter record
+        # 4.2 ingest meter record
         event = create_ingest_payload(
             meter_api_name="api_calls_to_salesforce",
             meter_value=1,
@@ -123,7 +118,7 @@ def main():
         )
         client.send(event)
 
-    # 6. ensure all events are sent and safely stop the background threads
+    # 5. ensure all events are sent and safely stop the background threads
     client.shutdown()
 
 
