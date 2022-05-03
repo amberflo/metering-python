@@ -51,8 +51,7 @@ def meter(*args, **kwargs):
     Build and enqueue a meter record to be sent. Returns whether it was
     successful or not.
 
-    See `metering.ingest.api_client.create_ingest_payload` for details on
-    the payload.
+    See `metering.ingest.create_ingest_payload` for details on the payload.
     """
     return _get_default_client().meter(*args, **kwargs)
 

@@ -67,8 +67,7 @@ class ThreadedProducer:
         """
         Enqueue a payload to be sent. Returns whether it was successful or not.
 
-        See `metering.ingest.api_client.IngestApiClient.send` for details on
-        the payload.
+        See `metering.ingest.IngestApiClient.send` for details on the payload.
         """
         try:
             self.queue.put(payload, block=False)
@@ -83,8 +82,7 @@ class ThreadedProducer:
         Build and enqueue a meter record to be sent. Returns whether it was
         successful or not.
 
-        See `metering.ingest.api_client.create_ingest_payload` for details on
-        the payload.
+        See `metering.ingest.create_ingest_payload` for details on the payload.
         """
         payload = create_ingest_payload(*args, **kwargs)
         return self.send(payload)
