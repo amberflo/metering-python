@@ -57,7 +57,7 @@ def require_string(name, value, allow_none=True):
     if value is None:
         return
 
-    assert value and value.strip(), "{0} may not be an empty string".format(name)
+    assert value and value.strip(), "{0!r} may not be an empty string".format(name)
 
 
 def require_positive_int(name, value, allow_none=True):
@@ -69,7 +69,7 @@ def require_positive_int(name, value, allow_none=True):
     if value is None:
         return
 
-    assert value > 0, "{0} must be 1 or greater".format(name)
+    assert value > 0, "{0!r} must be 1 or greater".format(name)
 
 
 def require(name, value, data_type, allow_none=True):
@@ -77,11 +77,13 @@ def require(name, value, data_type, allow_none=True):
     Verifies that a given value is of the provided data_type (or a sub class of it).
     """
 
-    assert value is not None or allow_none, "{0} may not be None".format(name)
+    assert value is not None or allow_none, "{0!r} may not be None".format(name)
 
     if value is None:
         return
 
-    assert isinstance(value, data_type), "{0} must be {1}, but is: {2}".format(
-        name, data_type, value.__class__
+    assert isinstance(value, data_type), "{0!r} must be {1}, but is: {2}".format(
+        name,
+        data_type,
+        value.__class__,
     )

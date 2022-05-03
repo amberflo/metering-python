@@ -12,7 +12,9 @@ class IngestApiClient:
 
     def send(self, payload):
         """
-        Send one or many meter events
+        Send one or many meter events.
+
+        See: https://docs.amberflo.io/reference/post_ingest
         """
         return self.client.post(self.path, payload)
 
@@ -45,6 +47,8 @@ def create_ingest_payload(
     dimensions: Optional. Dictionary of String to String.
         Here you can specify more partition properies which which can help you
         analize your data.
+
+    See: https://docs.amberflo.io/reference/post_ingest
     """
 
     validators.require_string("meter_api_name", meter_api_name, allow_none=False)

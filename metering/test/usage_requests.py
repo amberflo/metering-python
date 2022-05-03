@@ -6,7 +6,8 @@ from metering.usage import (
     Take,
     TimeGroupingInterval,
     TimeRange,
-    create_usage_payload,
+    create_usage_request,
+    create_all_usage_request,
 )
 
 meter_api_name_key = "meterApiName"
@@ -21,8 +22,11 @@ limit_key = "limit"
 is_ascending_key = "isAscending"
 filter_key = "filter"
 
+group_by_customer_id_key = "groupBy"
+filter_by_customer_id_key = "customerId"
 
-class TestUsagePayloadFactory(unittest.TestCase):
+
+class TestCreateUsageRequest(unittest.TestCase):
 
     meter_api_name = "my_meter"
     start_time_in_seconds = int(round(time.time())) - (24 * 60 * 60)
@@ -34,7 +38,7 @@ class TestUsagePayloadFactory(unittest.TestCase):
     usage_filter = {"customerId": ["1234"]}
 
     def test_with_required_arguments(self):
-        message = create_usage_payload(
+        message = create_usage_request(
             meter_api_name=self.meter_api_name,
             aggregation=self.aggregation,
             time_grouping_interval=self.time_grouping_interval,
@@ -53,13 +57,13 @@ class TestUsagePayloadFactory(unittest.TestCase):
             message[time_range_key][start_time_in_seconds_key],
             self.time_range.start_time_in_seconds,
         )
-        self.assertEqual(end_time_in_seconds_key in message[time_range_key], False)
-        self.assertEqual(group_by_key in message, False)
-        self.assertEqual(filter_key in message, False)
-        self.assertEqual(take_key in message, False)
+        self.assertNotIn(end_time_in_seconds_key, message[time_range_key])
+        self.assertNotIn(group_by_key, message)
+        self.assertNotIn(filter_key, message)
+        self.assertNotIn(take_key, message)
 
     def test_with_group_by_and_filter_and_take(self):
-        message = create_usage_payload(
+        message = create_usage_request(
             meter_api_name=self.meter_api_name,
             aggregation=self.aggregation,
             time_grouping_interval=self.time_grouping_interval,
@@ -78,7 +82,7 @@ class TestUsagePayloadFactory(unittest.TestCase):
             message[time_range_key][start_time_in_seconds_key],
             self.time_range.start_time_in_seconds,
         )
-        self.assertEqual(end_time_in_seconds_key in message[time_range_key], False)
+        self.assertNotIn(end_time_in_seconds_key, message[time_range_key])
         self.assertEqual(message[group_by_key], self.group_by)
         self.assertEqual(message[filter_key], self.usage_filter)
         self.assertEqual(message[take_key][limit_key], self.take.limit)
@@ -86,7 +90,7 @@ class TestUsagePayloadFactory(unittest.TestCase):
 
     def test_no_meter_api_name(self):
         with self.assertRaises(AssertionError):
-            create_usage_payload(
+            create_usage_request(
                 meter_api_name=None,
                 aggregation=self.aggregation,
                 time_grouping_interval=self.time_grouping_interval,
@@ -98,7 +102,7 @@ class TestUsagePayloadFactory(unittest.TestCase):
 
     def test_no_aggregation(self):
         with self.assertRaises(AssertionError):
-            create_usage_payload(
+            create_usage_request(
                 meter_api_name=self.meter_api_name,
                 aggregation=None,
                 time_grouping_interval=self.time_grouping_interval,
@@ -110,7 +114,7 @@ class TestUsagePayloadFactory(unittest.TestCase):
 
     def test_no_time_grouping_interval(self):
         with self.assertRaises(AssertionError):
-            create_usage_payload(
+            create_usage_request(
                 meter_api_name=self.meter_api_name,
                 aggregation=self.aggregation,
                 time_grouping_interval=None,
@@ -122,7 +126,7 @@ class TestUsagePayloadFactory(unittest.TestCase):
 
     def test_no_time_range(self):
         with self.assertRaises(AssertionError):
-            create_usage_payload(
+            create_usage_request(
                 meter_api_name=self.meter_api_name,
                 aggregation=self.aggregation,
                 time_grouping_interval=self.time_grouping_interval,
@@ -131,3 +135,45 @@ class TestUsagePayloadFactory(unittest.TestCase):
                 usage_filter=None,
                 take=None,
             )
+
+
+class TestCreateAllUsageRequest(unittest.TestCase):
+
+    start_time_in_seconds = int(round(time.time())) - (24 * 60 * 60)
+    time_grouping_interval = TimeGroupingInterval.DAY
+    time_range = TimeRange(start_time_in_seconds=start_time_in_seconds)
+    customer_id = "1234"
+
+    def test_with_required_arguments(self):
+        message = create_all_usage_request(
+            time_grouping_interval=self.time_grouping_interval,
+            time_range=self.time_range,
+        )
+
+        self.assertEqual(
+            message[time_grouping_interval_key], self.time_grouping_interval.value
+        )
+        self.assertEqual(
+            message[start_time_in_seconds_key],
+            self.time_range.start_time_in_seconds,
+        )
+        self.assertNotIn(group_by_customer_id_key, message)
+        self.assertNotIn(filter_by_customer_id_key, message)
+
+    def test_with_filter_and_group(self):
+        message = create_all_usage_request(
+            time_grouping_interval=self.time_grouping_interval,
+            time_range=self.time_range,
+            filter_by_customer_id=self.customer_id,
+            group_by_customer_id=True,
+        )
+
+        self.assertEqual(
+            message[time_grouping_interval_key], self.time_grouping_interval.value
+        )
+        self.assertEqual(
+            message[start_time_in_seconds_key],
+            self.time_range.start_time_in_seconds,
+        )
+        self.assertEqual(message[group_by_customer_id_key], "customerId")
+        self.assertEqual(message[filter_by_customer_id_key], self.customer_id)

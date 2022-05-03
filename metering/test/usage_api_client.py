@@ -7,7 +7,8 @@ from metering.usage import (
     TimeGroupingInterval,
     TimeRange,
     UsageApiClient,
-    create_usage_payload,
+    create_usage_request,
+    create_all_usage_request,
 )
 
 API_KEY = os.environ["TEST_API_KEY"]
@@ -25,28 +26,27 @@ class TestUsageApiClient(unittest.TestCase):
     time_range = TimeRange(start_time_in_seconds=start_time_in_seconds)
     take = Take(limit=10, is_ascending=False)
     group_by = ["customerId"]
-    usage_filter = {"customerId": ["1234"]}
+    customer_id = "1234"
+    usage_filter = {"customerId": [customer_id]}
 
     def setUp(self):
         self.client = UsageApiClient(API_KEY)
 
-    def test_valid_usage_query(self):
-        message = create_usage_payload(
+    def test_usage(self):
+        message = create_usage_request(
             meter_api_name=self.meter_api_name,
             aggregation=self.aggregation,
             time_grouping_interval=self.time_grouping_interval,
             time_range=self.time_range,
-            group_by=None,
-            usage_filter=None,
-            take=None,
         )
-        response = self.client.get_usage(message)
-        self.assertEqual(metadata_key in response, True)
-        self.assertEqual(seconds_since_epoch_intervals_key in response, True)
-        self.assertEqual(client_meters_key in response, True)
+        response = self.client.get(message)
+        self.assertIsInstance(response, dict)
+        self.assertIn(metadata_key, response)
+        self.assertIn(seconds_since_epoch_intervals_key, response)
+        self.assertIn(client_meters_key, response)
 
-    def test_with_filter_and_group_and_take(self):
-        message = create_usage_payload(
+    def test_usage_with_filter_and_group_and_take(self):
+        message = create_usage_request(
             meter_api_name=self.meter_api_name,
             aggregation=self.aggregation,
             time_grouping_interval=self.time_grouping_interval,
@@ -55,7 +55,55 @@ class TestUsageApiClient(unittest.TestCase):
             usage_filter=self.usage_filter,
             take=self.take,
         )
-        response = self.client.get_usage(message)
-        self.assertEqual(metadata_key in response, True)
-        self.assertEqual(seconds_since_epoch_intervals_key in response, True)
-        self.assertEqual(client_meters_key in response, True)
+        response = self.client.get(message)
+        self.assertIn(metadata_key, response)
+        self.assertIn(seconds_since_epoch_intervals_key, response)
+        self.assertIn(client_meters_key, response)
+
+    def test_batch_usage(self):
+        message = [
+            create_usage_request(
+                meter_api_name=self.meter_api_name,
+                aggregation=self.aggregation,
+                time_grouping_interval=self.time_grouping_interval,
+                time_range=self.time_range,
+            ),
+            create_usage_request(
+                meter_api_name="my_other_meter",
+                aggregation=self.aggregation,
+                time_grouping_interval=self.time_grouping_interval,
+                time_range=self.time_range,
+            ),
+        ]
+        response = self.client.get(message)
+        self.assertIsInstance(response, list)
+        for report in response:
+            self.assertIn(metadata_key, report)
+            self.assertIn(seconds_since_epoch_intervals_key, report)
+            self.assertIn(client_meters_key, report)
+
+    def test_all_usage(self):
+        message = create_all_usage_request(
+            time_grouping_interval=self.time_grouping_interval,
+            time_range=self.time_range,
+        )
+        response = self.client.get_all(message)
+        self.assertIsInstance(response, list)
+        for report in response:
+            self.assertIn(metadata_key, report)
+            self.assertIn(seconds_since_epoch_intervals_key, report)
+            self.assertIn(client_meters_key, report)
+
+    def test_all_usage_with_group_and_filter(self):
+        message = create_all_usage_request(
+            time_grouping_interval=self.time_grouping_interval,
+            time_range=self.time_range,
+            filter_by_customer_id=self.customer_id,
+            group_by_customer_id=True,
+        )
+        response = self.client.get_all(message)
+        self.assertIsInstance(response, list)
+        for report in response:
+            self.assertIn(metadata_key, report)
+            self.assertIn(seconds_since_epoch_intervals_key, report)
+            self.assertIn(client_meters_key, report)

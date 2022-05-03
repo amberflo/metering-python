@@ -66,18 +66,35 @@ class TimeRange:
 
 class UsageApiClient:
     path = "/usage/"
+    path_batch = path + "batch"
+    path_all = path + "all"
 
     def __init__(self, api_key):
         self.client = ApiSession(api_key)
 
-    def get_usage(self, payload):
+    def get(self, payload):
         """
-        Gets usage data.
+        Gets usage data. Supports either a single request or a list of requests
+        and returns a single report or a list of reports accordingly.
+
+        See: https://docs.amberflo.io/reference/post_usage
         """
-        return self.client.post(self.path, payload)
+        if isinstance(payload, list):
+            return self.client.post(self.path_batch, payload)
+        else:
+            return self.client.post(self.path, payload)
+
+    def get_all(self, params):
+        """
+        Get a usage report including all meters. Because it incudes all meters,
+        this is more limited than `get`. Returns a list of usage reports.
+
+        See: https://docs.amberflo.io/reference/post_usage-batch
+        """
+        return self.client.get(self.path_all, params=params)
 
 
-def create_usage_payload(
+def create_usage_request(
     aggregation,
     meter_api_name,
     time_grouping_interval,
@@ -100,6 +117,8 @@ def create_usage_payload(
     usage_filter: Optional. Dictionary of String to List of Strings.
 
     take: Optional. Take.
+
+    See: https://docs.amberflo.io/reference/post_usage
     """
     validators.require("aggregation", aggregation, AggregationType, allow_none=False)
     validators.require_string("meter_api_name", meter_api_name, allow_none=False)
@@ -132,3 +151,46 @@ def create_usage_payload(
         payload["take"] = take.payload
 
     return payload
+
+
+def create_all_usage_request(
+    time_grouping_interval,
+    time_range,
+    filter_by_customer_id=None,
+    group_by_customer_id=False,
+):
+    """
+    time_grouping_interval: TimeGroupingInterval.
+
+    time_range: TimeRange.
+
+    filter_by_customer_id. Optional. String.
+
+    group_by_customer_id. Optional. Boolean.
+
+    See: https://docs.amberflo.io/reference/post_usage-batch
+    """
+    validators.require(
+        "time_grouping_interval",
+        time_grouping_interval,
+        TimeGroupingInterval,
+        allow_none=False,
+    )
+    validators.require("time_range", time_range, TimeRange, allow_none=False)
+
+    validators.require_string("filter_by_customer_id", filter_by_customer_id)
+    validators.require(
+        "group_by_customer_id", group_by_customer_id, bool, allow_none=False
+    )
+
+    params = time_range.payload
+
+    params["timeGroupingInterval"] = time_grouping_interval.value
+
+    if group_by_customer_id:
+        params["groupBy"] = "customerId"
+
+    if filter_by_customer_id:
+        params["customerId"] = filter_by_customer_id
+
+    return params
