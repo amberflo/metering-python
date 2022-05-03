@@ -5,14 +5,23 @@ from metering.session import IngestSession
 
 
 class IngestApiClient:
+    """
+    See: https://docs.amberflo.io/reference/post_ingest
+    """
+
     path = "/ingest/"
 
     def __init__(self, api_key):
+        """
+        Initialize the API client session.
+        """
         self.client = IngestSession(api_key)
 
     def send(self, payload):
         """
         Send one or many meter events.
+
+        Create a payload using the `create_ingest_payload` function.
 
         See: https://docs.amberflo.io/reference/post_ingest
         """
@@ -32,7 +41,7 @@ def create_ingest_payload(
 
     meter_value: Number.
 
-    meter_time_in_millis: Integer.
+    meter_time_in_millis: Positive integer. Unix epoch time.
         Pay attention for this argument as two meters (with the same name) that
         are sent to Amberflo at the exact same time (and have the same unique
         id) will be deduped by the server.

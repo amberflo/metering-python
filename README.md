@@ -110,6 +110,29 @@ However, every call does not result in a HTTP request, but is queued in memory
 instead. Messages are batched and flushed in the background, allowing for much
 faster operation. The size of batch and rate of flush can be customized.
 
+The SDK allows you to set up a `on_error` callback function for handling errors
+when trying to send a batch.
+
+```python3
+def on_error_callback(error, batch):
+    ...
+
+client = ThreadedProducer(
+    {'api_key': API_KEY},
+    max_queue_size=200000,  # max number of items in the queue before rejecting new items
+    threads=3,  # number of worker threads doing the sending
+    retries=4,  # max number of retries after failures
+    batch_size=1000,  # max number of meter records in a batch
+    send_interval_in_secs=0.7,  # wait time before sending an incomplete batch
+    sleep_interval_in_secs=0.5,  # wait time after failure to send or queue empty
+    on_error=on_error_callback,  # handle failures to send a batch
+)
+
+...
+
+client.send(meter_event)
+```
+
 ### Ingesting through the S3 bucket
 
 The SDK provides a `metering.ingest.IngestS3Client` so you can send your meter

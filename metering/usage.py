@@ -4,6 +4,47 @@ from metering import validators
 from metering.session import ApiSession
 
 
+class UsageApiClient:
+    """
+    See: https://docs.amberflo.io/reference/post_usage
+    """
+
+    path = "/usage/"
+    path_batch = path + "batch"
+    path_all = path + "all"
+
+    def __init__(self, api_key):
+        """
+        Initialize the API client session.
+        """
+        self.client = ApiSession(api_key)
+
+    def get(self, query):
+        """
+        Gets usage data. Supports either a single request or a list of requests
+        and returns a single report or a list of reports accordingly.
+
+        Create a query using the `create_usage_query` function.
+
+        See: https://docs.amberflo.io/reference/post_usage
+        """
+        if isinstance(query, list):
+            return self.client.post(self.path_batch, query)
+        else:
+            return self.client.post(self.path, query)
+
+    def get_all(self, query):
+        """
+        Get a usage report including all meters. Because it incudes all meters,
+        this is more limited than `get`. Returns a list of usage reports.
+
+        Create a query using the `create_all_usage_query` function.
+
+        See: https://docs.amberflo.io/reference/post_usage-batch
+        """
+        return self.client.get(self.path_all, params=query)
+
+
 class AggregationType(Enum):
     SUM = "SUM"
     COUNT = "COUNT"
@@ -20,6 +61,11 @@ class TimeGroupingInterval(Enum):
 
 class Take:
     def __init__(self, limit, is_ascending=False):
+        """
+        limit: Positive integer.
+
+        is_ascending: Boolean. Defaults to false.
+        """
         validators.require_positive_int(
             "limit",
             limit,
@@ -44,6 +90,11 @@ class Take:
 
 class TimeRange:
     def __init__(self, start_time_in_seconds, end_time_in_seconds=None):
+        """
+        start_time_in_seconds: Positive integer. Unix epoch time.
+
+        end_time_in_seconds: Optional. Positive integer. Unix epoch time.
+        """
         validators.require_positive_int(
             "start_time_in_seconds",
             start_time_in_seconds,
@@ -62,36 +113,6 @@ class TimeRange:
         if self.end_time_in_seconds:
             payload["endTimeInSeconds"] = self.end_time_in_seconds
         return payload
-
-
-class UsageApiClient:
-    path = "/usage/"
-    path_batch = path + "batch"
-    path_all = path + "all"
-
-    def __init__(self, api_key):
-        self.client = ApiSession(api_key)
-
-    def get(self, payload):
-        """
-        Gets usage data. Supports either a single request or a list of requests
-        and returns a single report or a list of reports accordingly.
-
-        See: https://docs.amberflo.io/reference/post_usage
-        """
-        if isinstance(payload, list):
-            return self.client.post(self.path_batch, payload)
-        else:
-            return self.client.post(self.path, payload)
-
-    def get_all(self, params):
-        """
-        Get a usage report including all meters. Because it incudes all meters,
-        this is more limited than `get`. Returns a list of usage reports.
-
-        See: https://docs.amberflo.io/reference/post_usage-batch
-        """
-        return self.client.get(self.path_all, params=params)
 
 
 def create_usage_query(

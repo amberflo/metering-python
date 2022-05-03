@@ -1,6 +1,6 @@
 import unittest
 from time import sleep
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 from metering.ingest import ThreadedProducer
 
@@ -85,3 +85,29 @@ class TestIngestConsumerQueueIsFull(unittest.TestCase):
 
         self.assertTrue(self.client.send(1))
         self.assertFalse(self.client.send(2))
+
+
+class TestIngestConsumerWithErrorCallback(unittest.TestCase):
+    def test_error_callback_is_called_if_there_is_an_error(self):
+        on_error_callback = Mock(return_value=None)
+
+        client = ThreadedProducer(
+            {},
+            _DummyBackend,
+            max_queue_size=100,
+            threads=1,
+            batch_size=10,
+            on_error=on_error_callback,
+        )
+
+        error = Exception()
+
+        with patch.object(_DummyBackend, "send") as mock_send:
+            mock_send.side_effect = error
+
+            for i in range(15):
+                client.send(i)
+
+            client.join()
+
+        on_error_callback.assert_called_once_with(error, list(range(10)))

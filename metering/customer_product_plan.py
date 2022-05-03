@@ -1,18 +1,27 @@
 from metering import validators
 from metering.session import ApiSession
+from metering.constants import DEFAULT_PRODUCT_ID
 
 
 class CustomerProductPlanApiClient:
+    """
+    See https://docs.amberflo.io/reference/post_payments-pricing-amberflo-customer-pricing
+    """
+
     path = "/payments/pricing/amberflo/customer-pricing"
     path_all = path + "/list"
 
     def __init__(self, api_key):
+        """
+        Initialize the API client session.
+        """
         self.client = ApiSession(api_key)
 
     def list(self, customer_id):
         """
         List the entire history of product plans of the given customer.
         """
+        validators.require_string("customer_id", customer_id, allow_none=False)
         params = {"CustomerId": customer_id}
         return self.client.get(self.path_all, params=params)
 
@@ -20,6 +29,7 @@ class CustomerProductPlanApiClient:
         """
         Get the latest product plan of the given customer.
         """
+        validators.require_string("customer_id", customer_id, allow_none=False)
         params = {"CustomerId": customer_id}
         return self.client.get(self.path, params=params)
 
@@ -27,12 +37,12 @@ class CustomerProductPlanApiClient:
         """
         Relates the customer to a product plan.
 
+        Create a payload using the `create_customer_product_plan_payload` function.
+
         See https://docs.amberflo.io/reference/post_payments-pricing-amberflo-customer-pricing
         """
         return self.client.post(self.path, payload)
 
-
-DEFAULT_PRODUCT_ID = "1"
 
 ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
@@ -40,7 +50,7 @@ ONE_DAY_IN_SECONDS = 60 * 60 * 24
 def create_customer_product_plan_payload(
     customer_id,
     product_plan_id,
-    product_id=DEFAULT_PRODUCT_ID,
+    product_id=None,
     end_time_in_seconds=None,
     start_time_in_seconds=None,
 ):
@@ -51,15 +61,15 @@ def create_customer_product_plan_payload(
 
     product_id: Optional. String.
 
-    start_time_in_seconds: Optional. Integer.
+    start_time_in_seconds: Optional. Integer. Unix epoch time.
 
-    end_time_in_seconds: Optional. Integer.
+    end_time_in_seconds: Optional. Integer. Unix epoch time.
 
     See https://docs.amberflo.io/reference/post_payments-pricing-amberflo-customer-pricing
     """
     validators.require_string("customer_id", customer_id, allow_none=False)
     validators.require_string("product_plan_id", product_plan_id, allow_none=False)
-    validators.require_string("product_id", product_id, allow_none=False)
+    validators.require_string("product_id", product_id)
 
     validators.require_positive_int(
         "start_time_in_seconds",
@@ -77,7 +87,7 @@ def create_customer_product_plan_payload(
     payload = {
         "customerId": customer_id,
         "productPlanId": product_plan_id,
-        "productId": product_id,
+        "productId": product_id or DEFAULT_PRODUCT_ID,
     }
 
     if start_time_in_seconds:
