@@ -4,10 +4,17 @@ from metering.constants import DEFAULT_PRODUCT_ID
 
 
 class CustomerProductPlanApiClient:
+    """
+    See https://docs.amberflo.io/reference/post_payments-pricing-amberflo-customer-pricing
+    """
+
     path = "/payments/pricing/amberflo/customer-pricing"
     path_all = path + "/list"
 
     def __init__(self, api_key):
+        """
+        Initialize the API client session.
+        """
         self.client = ApiSession(api_key)
 
     def list(self, customer_id):
@@ -29,6 +36,8 @@ class CustomerProductPlanApiClient:
     def add_or_update(self, payload):
         """
         Relates the customer to a product plan.
+
+        Create a payload using the `create_customer_product_plan_payload` function.
 
         See https://docs.amberflo.io/reference/post_payments-pricing-amberflo-customer-pricing
         """

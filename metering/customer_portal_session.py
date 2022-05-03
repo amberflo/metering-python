@@ -3,14 +3,25 @@ from metering.session import ApiSession
 
 
 class CustomerPortalSessionApiClient:
+    """
+    See https://docs.amberflo.io/reference/post_session
+    """
+
     path = "/session"
 
     def __init__(self, api_key):
+        """
+        Initialize the API client session.
+        """
         self.client = ApiSession(api_key)
 
     def get(self, payload):
         """
         Get a `url` and `session token` for the customer portal.
+
+        Create a payload using the `create_customer_portal_session_payload` function.
+
+        See https://docs.amberflo.io/reference/post_session
         """
         return self.client.post(self.path, payload)
 

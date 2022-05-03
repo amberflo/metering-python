@@ -3,9 +3,16 @@ from metering.session import ApiSession
 
 
 class CustomerApiClient:
+    """
+    See: https://docs.amberflo.io/reference/post_customers
+    """
+
     path = "/customers/"
 
     def __init__(self, api_key):
+        """
+        Initialize the API client session.
+        """
         self.client = ApiSession(api_key)
 
     def list(self):
@@ -26,6 +33,8 @@ class CustomerApiClient:
         """
         Add a new customer.
 
+        Create a payload using the `create_customer_payload` function.
+
         `create_in_stripe` will add a `stripeId` trait to the customer.
 
         See: https://docs.amberflo.io/reference/post_customers
@@ -37,6 +46,8 @@ class CustomerApiClient:
     def update(self, payload):
         """
         Update an existing customer.
+
+        Create a payload using the `create_customer_payload` function.
 
         This has PUT semantics (i.e. it discards existing data).
 
@@ -51,6 +62,8 @@ class CustomerApiClient:
         The update has PUT semantics (i.e. it discards existing data).
 
         `create_in_stripe` is only used when `add` is called.
+
+        Create a payload using the `create_customer_payload` function.
         """
         customer = self.get(payload["customerId"])
 

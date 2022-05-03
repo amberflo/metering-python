@@ -8,14 +8,23 @@ DEFAULT_OFFER_VERSION = -1
 
 
 class CustomerPrepaidOrderApiClient:
+    """
+    See https://docs.amberflo.io/reference/post_payments-pricing-amberflo-customer-prepaid
+    """
+
     path = "/payments/pricing/amberflo/customer-prepaid"
     path_list = path + "/list"
 
     def __init__(self, api_key):
+        """
+        Initialize the API client session.
+        """
         self.client = ApiSession(api_key)
 
     def list_active(self, customer_id, product_id=DEFAULT_PRODUCT_ID):
         """
+        List active prepaid orders of the given customer.
+
         See https://docs.amberflo.io/reference/get_payments-pricing-amberflo-customer-prepaid-list
         """
         validators.require_string("customer_id", customer_id, allow_none=False)
@@ -28,6 +37,10 @@ class CustomerPrepaidOrderApiClient:
 
     def add(self, payload):
         """
+        Add a new prepaid order to a customer.
+
+        Create a payload using the `create_customer_prepaid_order_payload` function.
+
         See https://docs.amberflo.io/reference/post_payments-pricing-amberflo-customer-prepaid
         """
         return self.client.post(self.path, payload)

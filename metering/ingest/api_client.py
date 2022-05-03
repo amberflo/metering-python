@@ -5,14 +5,23 @@ from metering.session import IngestSession
 
 
 class IngestApiClient:
+    """
+    See: https://docs.amberflo.io/reference/post_ingest
+    """
+
     path = "/ingest/"
 
     def __init__(self, api_key):
+        """
+        Initialize the API client session.
+        """
         self.client = IngestSession(api_key)
 
     def send(self, payload):
         """
         Send one or many meter events.
+
+        Create a payload using the `create_ingest_payload` function.
 
         See: https://docs.amberflo.io/reference/post_ingest
         """

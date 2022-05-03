@@ -6,15 +6,24 @@ from metering.constants import DEFAULT_PRODUCT_ID
 
 
 class CustomerProductInvoiceApiClient:
+    """
+    See https://docs.amberflo.io/reference/get_payments-billing-customer-product-invoice
+    """
+
     path = "/payments/billing/customer-product-invoice"
     path_all = path + "/all"
 
     def __init__(self, api_key):
+        """
+        Initialize the API client session.
+        """
         self.client = ApiSession(api_key)
 
     def get_all(self, query):
         """
         Get all invoices of the specified customer.
+
+        Create a query using the `create_all_invoices_query` function.
 
         See https://docs.amberflo.io/reference/get_payments-billing-customer-product-invoice-all
         """
@@ -23,6 +32,8 @@ class CustomerProductInvoiceApiClient:
     def get(self, query):
         """
         Get a existing invoice of the specified customer.
+
+        Create a query using either the `create_latest_invoice_query` or the `create_invoice_query` functions.
 
         See https://docs.amberflo.io/reference/get_payments-billing-customer-product-invoice
         """
