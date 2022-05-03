@@ -3,6 +3,7 @@ import logging
 from gzip import compress
 from requests import Session
 
+from metering.version import USER_AGENT
 from metering.validators import require_string
 from metering.exceptions import ApiError
 
@@ -37,6 +38,7 @@ class IngestSession:
             "Accept": "application/json",
             "X-API-KEY": api_key,
             "Content-Encoding": "gzip",
+            "User-Agent": USER_AGENT,
         }
         self.logger = logging.getLogger(__name__)
 
