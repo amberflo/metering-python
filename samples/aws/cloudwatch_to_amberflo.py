@@ -13,7 +13,7 @@ import time
 from metering.ingest import get_ingest_client
 
 
-def lambda_handler(records, context):
+def lambda_handler(records, context):  # noqa: C901
     client = get_ingest_client(api_key=os.environ["API_KEY"])
 
     # print(records)

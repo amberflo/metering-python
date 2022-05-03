@@ -14,7 +14,7 @@ def lambda_handler(event, context):
     aws_cost_explorer_pull()
 
 
-def aws_cost_explorer_pull():
+def aws_cost_explorer_pull():  # noqa: C901
     client = get_ingest_client(api_key=os.environ["API_KEY"])
 
     now = datetime.datetime.utcnow()
