@@ -2,7 +2,7 @@
 
 <p>
     <a href="https://github.com/amberflo/metering-python/actions">
-        <img alt="CI Status" src="https://github.com/amberflo/metering-python/actions/workflows/tests.yml/badge.svg?branch=part-5-reorganize-tests-samples">
+        <img alt="CI Status" src="https://github.com/amberflo/metering-python/actions/workflows/tests.yml/badge.svg?branch=main">
     </a>
     <a href="https://pypi.org/project/amberflo-metering-python/">
         <img alt="PyPI" src="https://img.shields.io/pypi/v/amberflo-metering-python">
@@ -157,3 +157,85 @@ Code samples covering different scenarios are available in the [./samples](https
 Feel free to open issues and send a pull request.
 
 Also, check out [CONTRIBUTING.md](https://github.com/amberflo/metering-python/blob/main/CONTRIBUTING.md).
+
+## :bookmark_tabs: Reference
+
+### API Clients
+
+#### [Ingest](https://docs.amberflo.io/reference/post_ingest)
+
+```python3
+from metering.ingest import (
+    create_ingest_payload,
+    create_ingest_client,
+)
+```
+
+#### [Customer](https://docs.amberflo.io/reference/post_customers)
+
+```python3
+from metering.customer import (
+    CustomerApiClient,
+    create_customer_payload,
+)
+```
+
+#### [Usage](https://docs.amberflo.io/reference/post_usage)
+
+```python3
+from metering.usage import (
+    AggregationType,
+    Take,
+    TimeGroupingInterval,
+    TimeRange,
+    UsageApiClient,
+    create_usage_query,
+    create_all_usage_query,
+)
+```
+
+#### [Customer Portal Session](https://docs.amberflo.io/reference/post_session)
+
+```python3
+from metering.customer_portal_session import (
+    CustomerPortalSessionApiClient,
+    create_customer_portal_session_payload,
+)
+```
+
+#### [Customer Prepaid Order](https://docs.amberflo.io/reference/post_payments-pricing-amberflo-customer-prepaid)
+
+```python3
+from metering.customer_prepaid_order import (
+    BillingPeriod,
+    BillingPeriodUnit,
+    CustomerPrepaidOrderApiClient,
+    create_customer_prepaid_order_payload,
+)
+```
+
+#### [Customer Product Invoice](https://docs.amberflo.io/reference/get_payments-billing-customer-product-invoice)
+
+```python3
+from metering.customer_product_invoice import (
+    CustomerProductInvoiceApiClient,
+    create_all_invoices_query,
+    create_latest_invoice_query,
+    create_invoice_query,
+)
+```
+
+#### [Customer Product Plan](https://docs.amberflo.io/reference/post_payments-pricing-amberflo-customer-pricing)
+
+```python3
+from metering.customer_product_plan import (
+    CustomerProductPlanApiClient,
+    create_customer_product_plan_payload,
+)
+```
+
+### Exceptions
+
+```python3
+from metering.exceptions import ApiError
+```
