@@ -2,7 +2,7 @@ import os
 import boto3
 import datetime
 
-from metering.ingest import get_ingest_client, create_ingest_payload
+from metering.ingest import create_ingest_client, create_ingest_payload
 
 # This sample code takes the tag customer_id_tag_name and insert meters to
 # amberflo using the aws service name as the meter name and the tag value as
@@ -15,7 +15,7 @@ def lambda_handler(event, context):
 
 
 def aws_cost_explorer_pull():  # noqa: C901
-    client = get_ingest_client(api_key=os.environ["API_KEY"])
+    client = create_ingest_client(api_key=os.environ["API_KEY"])
 
     now = datetime.datetime.utcnow()
     start = (now - datetime.timedelta(days=3)).strftime("%Y-%m-%d")

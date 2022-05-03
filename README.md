@@ -58,21 +58,20 @@ customer = client.add_or_update(message)
 ```python3
 import os
 from time import time
-from metering.ingest import get_ingest_client, create_ingest_payload
+from metering.ingest import create_ingest_client, create_ingest_payload
 
-client = get_ingest_client(api_key=os.environ["API_KEY"])
+client = create_ingest_client(api_key=os.environ["API_KEY"])
 
 dimensions = {"region": "us-east-1"}
 customer_id = "sample-customer-123"
 
-event = create_ingest_payload(
+client.meter(
     meter_api_name="sample-meter",
     meter_value=5,
     meter_time_in_millis=int(time() * 1000),
     customer_id=customer_id,
     dimensions=dimensions,
 )
-client.send(event)
 ```
 
 5. Query usage

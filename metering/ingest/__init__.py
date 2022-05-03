@@ -3,11 +3,15 @@ from metering.ingest.s3_client import IngestS3Client
 from metering.ingest.producer import ThreadedProducer
 
 
-def get_ingest_client(
+def create_ingest_client(
     api_key=None, bucket_name=None, access_key=None, secret_key=None, **kwargs
 ):
     """
     Convenience method to instantiate a threaded ingest client.
+
+    Provide either:
+    - `api_key` to use the Amberflor API, or
+    - `bucket_name`, `access_key` and `secret_key` to use the AWS S3 bucket.
     """
     if api_key:
         return ThreadedProducer({"api_key": api_key}, **kwargs)

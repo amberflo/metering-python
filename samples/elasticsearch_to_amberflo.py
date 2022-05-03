@@ -15,7 +15,7 @@ from datetime import datetime
 from elasticsearch import Elasticsearch
 
 from metering.exceptions import ApiError
-from metering.ingest import get_ingest_client, create_ingest_payload
+from metering.ingest import create_ingest_client, create_ingest_payload
 from metering.customer import CustomerApiClient
 
 
@@ -68,7 +68,7 @@ def get_hits():
 
 def main():
     # 1. initialize the threaded ingestion client
-    client = get_ingest_client(api_key=os.environ["API_KEY"])
+    client = create_ingest_client(api_key=os.environ["API_KEY"])
 
     # 2. initialize Customer Api Client (for creating customers)
     customer_api_client = CustomerApiClient(os.environ["API_KEY"])

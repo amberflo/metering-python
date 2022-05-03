@@ -15,7 +15,7 @@ from datetime import timezone
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
-from metering.ingest import get_ingest_client, create_ingest_payload
+from metering.ingest import create_ingest_client, create_ingest_payload
 
 
 def get_conn():
@@ -30,7 +30,7 @@ def get_conn():
 
 def main():
     # 1. initialize the threaded ingestion client
-    client = get_ingest_client(api_key=os.environ["API_KEY"])
+    client = create_ingest_client(api_key=os.environ["API_KEY"])
 
     # 2. get events from postgres
     conn = get_conn()
