@@ -7,9 +7,10 @@ from metering.ingest import (
     create_ingest_payload,
 )
 
-API_KEY = os.environ["TEST_API_KEY"]
+API_KEY = os.environ.get("TEST_API_KEY")
 
 
+@unittest.skipIf(API_KEY is None, "Needs Amberflo's API key")
 class TestIngestApiClient(unittest.TestCase):
     def setUp(self):
         self.client = IngestApiClient(API_KEY)

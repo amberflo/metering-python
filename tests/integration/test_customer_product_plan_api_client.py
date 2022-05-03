@@ -2,15 +2,15 @@ import os
 import unittest
 
 from metering.session import ApiSession
-
-from metering.customer import (
+from metering.customer_product_plan import (
     CustomerProductPlanApiClient,
     create_customer_product_plan_payload,
 )
 
-API_KEY = os.environ["TEST_API_KEY"]
+API_KEY = os.environ.get("TEST_API_KEY")
 
 
+@unittest.skipIf(API_KEY is None, "Needs Amberflo's API key")
 class TestCustomerProductPlanApiClient(unittest.TestCase):
     def setUp(self):
         self.generic = ApiSession(API_KEY)

@@ -1,6 +1,7 @@
-.PHONY: test
-test:
-	coverage run --branch --include 'metering/*' --omit '*test*' -m unittest metering/test/*.py
+.PHONY: coverage
+coverage:
+	coverage run --branch --include 'metering/*' --omit 'tests/*' -m unittest discover
+	coverage report --show-missing
 
 .PHONY: release
 release:

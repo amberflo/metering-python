@@ -60,7 +60,7 @@ class TimeRange:
     def payload(self):
         payload = {"startTimeInSeconds": self.start_time_in_seconds}
         if self.end_time_in_seconds:
-            payload["endTimeInSeconds"]: self.end_time_in_seconds
+            payload["endTimeInSeconds"] = self.end_time_in_seconds
         return payload
 
 
@@ -94,7 +94,7 @@ class UsageApiClient:
         return self.client.get(self.path_all, params=params)
 
 
-def create_usage_request(
+def create_usage_query(
     aggregation,
     meter_api_name,
     time_grouping_interval,
@@ -153,7 +153,7 @@ def create_usage_request(
     return payload
 
 
-def create_all_usage_request(
+def create_all_usage_query(
     time_grouping_interval,
     time_range,
     filter_by_customer_id=None,

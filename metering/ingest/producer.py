@@ -19,9 +19,9 @@ class ThreadedProducer:
         self,
         backend_params,
         backend_class=IngestApiClient,
-        max_queue_size=100_000,
+        max_queue_size=100000,
         threads=1,
-        **consumer_args,
+        **consumer_args
     ):
         """
         backend_class:
