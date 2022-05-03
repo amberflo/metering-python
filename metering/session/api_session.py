@@ -1,6 +1,7 @@
 import logging
 from requests import Session
 
+from metering.version import USER_AGENT
 from metering.validators import require_string
 from metering.exceptions import ApiError
 
@@ -28,6 +29,7 @@ class ApiSession:
             "Content-Type": "application/json",
             "Accept": "application/json",
             "X-API-KEY": api_key,
+            "User-Agent": USER_AGENT,
         }
         self.logger = logging.getLogger(__name__)
 
