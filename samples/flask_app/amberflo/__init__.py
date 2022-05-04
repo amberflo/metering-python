@@ -1,15 +1,11 @@
 import os
 from time import time
 
-from metering.ingest import ThreadedProducer
+from metering.ingest import create_ingest_client
 
 
 # Single global instance for background batch ingestion of meter records.
-ingest_client = ThreadedProducer(
-    {
-        "api_key": os.environ["AMBERFLO_API_KEY"],
-    }
-)
+ingest_client = create_ingest_client(api_key=os.environ["AMBERFLO_API_KEY"])
 
 
 def now_in_millis():

@@ -116,8 +116,8 @@ when trying to send a batch.
 def on_error_callback(error, batch):
     ...
 
-client = ThreadedProducer(
-    {'api_key': API_KEY},
+client = create_ingest_client(
+    api_key=API_KEY,
     max_queue_size=200000,  # max number of items in the queue before rejecting new items
     threads=3,  # number of worker threads doing the sending
     retries=4,  # max number of retries after failures

@@ -13,7 +13,7 @@ import os
 from time import time
 from random import random
 
-from metering.ingest import ThreadedProducer, create_ingest_payload
+from metering.ingest import create_ingest_client, create_ingest_payload
 
 
 def now_in_millis():
@@ -21,15 +21,10 @@ def now_in_millis():
 
 
 def main():
-    # 1. obtain your API key
-    params = {
-        "api_key": os.environ.get("API_KEY"),
-    }
+    # 1. initialize the threaded ingestion client
+    client = create_ingest_client(api_key=os.environ.get("API_KEY"))
 
-    # 2. initialize the threaded ingestion client
-    client = ThreadedProducer(params)
-
-    # 3. send some meter events
+    # 2. send some meter events
     dimensions = {"region": "us-east-1"}
     customer_id = "sample-customer-123"
 
@@ -43,7 +38,7 @@ def main():
         )
         client.send(event)
 
-    # 4. ensure all events are sent and safely stop the background threads
+    # 3. ensure all events are sent and safely stop the background threads
     client.shutdown()
 
 
