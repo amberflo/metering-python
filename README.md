@@ -109,8 +109,16 @@ However, every call does not result in a HTTP request, but is queued in memory
 instead. Messages are batched and flushed in the background, allowing for much
 faster operation. The size of batch and rate of flush can be customized.
 
-The SDK allows you to set up a `on_error` callback function for handling errors
-when trying to send a batch.
+**Flush on demand:** For example, at the end of your program, you'll want to
+flush to make sure there's nothing left in the queue. Calling this method will
+block the calling thread until there are no messages left in the queue. So,
+you'll want to use it as part of your cleanup scripts and avoid using it as
+part of the request lifecycle.
+
+**Error handling:** The SDK allows you to set up a `on_error` callback function
+for handling errors when trying to send a batch.
+
+Here is a complete example, showing the default values of all options:
 
 ```python3
 def on_error_callback(error, batch):
@@ -118,19 +126,27 @@ def on_error_callback(error, batch):
 
 client = create_ingest_client(
     api_key=API_KEY,
-    max_queue_size=200000,  # max number of items in the queue before rejecting new items
-    threads=3,  # number of worker threads doing the sending
-    retries=4,  # max number of retries after failures
-    batch_size=1000,  # max number of meter records in a batch
-    send_interval_in_secs=0.7,  # wait time before sending an incomplete batch
-    sleep_interval_in_secs=0.5,  # wait time after failure to send or queue empty
+    max_queue_size=100000,  # max number of items in the queue before rejecting new items
+    threads=2,  # number of worker threads doing the sending
+    retries=2,  # max number of retries after failures
+    batch_size=100,  # max number of meter records in a batch
+    send_interval_in_secs=0.5,  # wait time before sending an incomplete batch
+    sleep_interval_in_secs=0.1,  # wait time after failure to send or queue empty
     on_error=on_error_callback,  # handle failures to send a batch
 )
 
 ...
 
-client.send(meter_event)
+client.meter(...)
+
+client.flush()  # block and make sure all messages are sent
 ```
+
+### What happens if there are just too many messages?
+
+If the module detects that it can't flush faster than it's receiving messages,
+it'll simply stop accepting new messages. This allows your program to
+continually run without ever crashing due to a backed up metering queue.
 
 ### Ingesting through the S3 bucket
 
@@ -140,6 +156,15 @@ records to us via the S3 bucket.
 Use of this feature is enabled if you install the library with the `s3` option:
 ```
 pip install amberflo-metering-python[s3]
+```
+
+Just pass the S3 bucket credentials to the factory function:
+```python3
+client = create_ingest_client(
+    bucket_name=os.environ.get("BUCKET_NAME"),
+    access_key=os.environ.get("ACCESS_KEY"),
+    secret_key=os.environ.get("SECRET_KEY"),
+)
 ```
 
 ## :book: Documentation
@@ -239,3 +264,16 @@ from metering.customer_product_plan import (
 ```python3
 from metering.exceptions import ApiError
 ```
+
+### Logging
+
+`amberflo-metering-python` uses the standard Python logging framework. By
+default, logging is and set at the `WARNING` level.
+
+The following loggers are used:
+
+- `metering.ingest.producer`
+- `metering.ingest.s3_client`
+- `metering.ingest.consumer`
+- `metering.session.ingest_session`
+- `metering.session.api_session`
