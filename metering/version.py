@@ -1,6 +1,7 @@
 import sys
 
 
+# This line is parsed by setup.py to get the version
 VERSION = "3.0.0"
 
 USER_AGENT = "Amberflo.io SDK {}; Python {}".format(
