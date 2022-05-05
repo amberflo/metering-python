@@ -1,50 +1,120 @@
-import json
-import requests
-
-from metering.logger import Logger
-from metering.request import APIError
-
-url = 'https://app.amberflo.io/customers'
+from metering import validators
+from metering.session import ApiSession
 
 
 class CustomerApiClient:
+    """
+    See: https://docs.amberflo.io/reference/post_customers
+    """
+
+    path = "/customers/"
+
     def __init__(self, api_key):
-        self.api_key = api_key
-        self.headers = {'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-API-KEY': self.api_key
-                        }
-        self.logger = Logger()
+        """
+        Initialize the API client session.
+        """
+        self.client = ApiSession(api_key)
 
-    def add_or_update_customer(self, payload):
-        log = self.logger
-        log.debug('calling customers api', payload)
+    def list(self):
+        """
+        List all customers.
+        """
+        return self.client.get(self.path)
 
-        endpoint = "{url}/?customerId={customerId}".format(
-            url=url, customerId=payload['customerId'])
-        response = requests.get(endpoint,  headers=self.headers)
+    def get(self, customer_id):
+        """
+        Get customer by id.
+        """
+        validators.require_string("customer_id", customer_id, allow_none=False)
+        params = {"customerId": customer_id}
+        return self.client.get(self.path, params=params)
 
-        if response.status_code == 200:
-            updated_response = None
-            customer = response.json()
-            if 'customerId' in customer:
-                log.debug('Updating customer')
-                updated_response = requests.put(
-                    url,  data=json.dumps(payload), headers=self.headers)
-            else:
-                log.debug('Creating customer')
-                updated_response = requests.post(
-                    url,  data=json.dumps(payload), headers=self.headers)
+    def add(self, payload, create_in_stripe=False):
+        """
+        Add a new customer.
 
-            if updated_response.status_code == 200:
-                log.debug('API call successful')
-                return updated_response.json()
+        Create a payload using the `create_customer_payload` function.
 
-            log.error('received error: %s', updated_response.text)
-            raise APIError(updated_response.status_code,
-                           updated_response.text, updated_response.text)
+        `create_in_stripe` will add a `stripeId` trait to the customer.
 
+        See: https://docs.amberflo.io/reference/post_customers
+        """
+        validators.require("create_in_stripe", create_in_stripe, bool, allow_none=False)
+        params = {"autoCreateCustomerInStripe": "true"} if create_in_stripe else None
+        return self.client.post(self.path, payload, params=params)
+
+    def update(self, payload):
+        """
+        Update an existing customer.
+
+        Create a payload using the `create_customer_payload` function.
+
+        This has PUT semantics (i.e. it discards existing data).
+
+        See: https://docs.amberflo.io/reference/put_customers-customer-id
+        """
+        return self.client.put(self.path, payload)
+
+    def add_or_update(self, payload, create_in_stripe=False):
+        """
+        Convenience method. Performs a `get` followed by either `add` or `update`.
+
+        The update has PUT semantics (i.e. it discards existing data).
+
+        `create_in_stripe` is only used when `add` is called.
+
+        Create a payload using the `create_customer_payload` function.
+        """
+        customer = self.get(payload["customerId"])
+
+        if "customerId" in customer:
+            return self.update(payload)
         else:
-            log.error('received response in looking up customer: %s',
-                      response.text)
-            raise APIError(response.status_code, response.text, response.text)
+            return self.add(payload, create_in_stripe)
+
+
+def create_customer_payload(
+    customer_id,
+    customer_name,
+    customer_email=None,
+    enabled=None,
+    traits=None,
+):
+    """
+    customer_id: String.
+
+    customer_name: String.
+
+    customer_email: Optional. String. Defaults to `None`
+
+    enabled: Optional. Boolean. Defaults to `True`
+        Setting it to false deactivates the customer.
+
+    traits: Optional. Dictionary of String to String. Defaults to `None`
+        Reference metadata to integrate with external systems like billing.
+        Can also be used to filter usage data.
+
+    See: https://docs.amberflo.io/reference/post_customers
+    """
+
+    validators.require_string("customer_id", customer_id, allow_none=False)
+    validators.require_string("customer_name", customer_name, allow_none=False)
+    validators.require_string("customer_email", customer_email)
+    validators.require("enabled", enabled, bool)
+    validators.require_string_dictionary("traits", traits)
+
+    payload = {
+        "customerId": customer_id,
+        "customerName": customer_name,
+    }
+
+    if customer_email is not None:
+        payload["customerEmail"] = customer_email
+
+    if enabled is not None:
+        payload["enabled"] = enabled
+
+    if traits is not None:
+        payload["traits"] = traits
+
+    return payload

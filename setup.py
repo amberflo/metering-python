@@ -1,91 +1,65 @@
-
 import os
-import sys
+from setuptools import setup, find_packages
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+current_dir = os.path.dirname(__file__)
 
-# Don't import metering-python module here, since deps may not be installed
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'metering'))
-from metering.version import VERSION
 
-long_description = '''
-Amberflo is the simplest way to integrate metering into your application.
+# Can't import module here, because dependencies might not be available, so we
+# parse it manually.
+def _get_version():
+    with open(os.path.join(current_dir, "metering/version.py")) as f:
+        for line in f.readlines():
+            if line.startswith("VERSION"):
+                start = line.find('"') + 1
+                end = line.rfind('"')
+                return line[start:end]
 
-This is the official python client that wraps the Amberflo REST API (https://amberflo.io).
 
-Samples:
+version = _get_version()
 
-# dedup is happening on a full record
 
-metering.meter(options.meter_api_name, \
-    int(options.meter_value), \
-    meter_time_in_millis=current_time, \
-    customer_id=options.customer_id)
-
-# adding dimensions
-
-metering.meter(options.meter_api_name, \
-    int(options.meter_value), \
-    meter_time_in_millis=current_time, \
-    customer_id=options.customer_id, \
-    dimensions=dimensions)
-
-# adding unique id
-
-metering.meter(options.meter_api_name, \
-    int(options.meter_value), \
-    meter_time_in_millis=current_time, \
-    customer_id=options.customer_id, \
-    dimensions=dimensions, \
-    unique_id = uuid1())
-
-Documentation and more details at https://github.com/amberflo/metering-python
-'''
+with open(os.path.join(current_dir, "README.md")) as f:
+    long_description = f.read()
 
 install_requires = [
-    "requests>=2.20,<3.0", # https://requests.readthedocs.io/en/latest/community/updates/#release-history
-    "backoff==1.10.0", # https://pypi.org/project/backoff/
-    "python-dateutil>=2.5", # https://dateutil.readthedocs.io/en/stable/changelog.html
-    "boto3>=1.18.47"
+    "requests",  # https://docs.python-requests.org/
+    "backoff",  # https://pypi.org/project/backoff/
 ]
 
+extras_require = {
+    "s3": [
+        "boto3",  # https://boto3.amazonaws.com/v1/documentation/api/latest/index.html
+    ],
+}
 
-tests_require = [
-    "mock==3.0.5",
-    "pylint==1.9.5", # http://pylint.pycqa.org/en/latest/whatsnew/2.0.html
-    "flake8==3.7.9", # https://pypi.org/project/flake8/#history
-    "coverage==4.5.4" # https://mock.readthedocs.io/en/latest/changelog.html
-]
+packages = [p for p in find_packages() if "tests" not in p]
+
 
 setup(
-    name='amberflo-metering-python',
-    version=VERSION,
-    url='https://github.com/amberflo/metering-python',
-    author='Amberflo',
-    author_email='friends@amberflo.com',
-    maintainer='Amberflo.io',
-    maintainer_email='friends@amberflo.com',
-    test_suite='metering.test.all',
-    packages=['metering', 'metering.test'],
-    license='MIT License',
+    name="amberflo-metering-python",
+    version=version,
+    url="https://github.com/amberflo/metering-python",
+    author="Amberflo",
+    author_email="friends@amberflo.com",
+    maintainer="Amberflo.io",
+    maintainer_email="friends@amberflo.com",
+    packages=packages,
+    license="MIT License",
     install_requires=install_requires,
-    extras_require={
-        'test': tests_require
-    },
-    description='Integrate amberflo into any python application.',
+    extras_require=extras_require,
+    description="Integrate Amberflo into any Python 3 application.",
     long_description=long_description,
+    long_description_content_type="text/markdown",
+    include_package_data=True,
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
     ],
 )

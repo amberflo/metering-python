@@ -1,0 +1,10 @@
+requests
+backoff
+boto3
+
+# dev
+virtualenv
+setuptools
+flake8
+coverage
+black

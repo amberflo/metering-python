@@ -1,0 +1,4 @@
+amberflo-metering-python
+psycopg2
+boto3
+elasticsearch
