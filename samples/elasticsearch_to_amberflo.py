@@ -16,8 +16,7 @@ from elasticsearch import Elasticsearch
 
 from metering.exceptions import ApiError
 from metering.ingest import create_ingest_client, create_ingest_payload
-from metering.customer import CustomerApiClient
-
+from metering.customer import CustomerApiClient, create_customer_payload
 
 def get_hits():
     client = Elasticsearch("http://localhost:9200", api_key=("id", "api_key"))
@@ -96,9 +95,11 @@ def main():
         # 4.1 create the customer if needed
         if account_id not in added_customers:
             try:
-                customer_api_client.add(
-                    customer_id=account_id, customer_name=account_id
+                message = create_customer_payload(
+                    customer_id=account_id,
+                    customer_name=account_id
                 )
+                customer_api_client.add(message)
             except ApiError:
                 pass
             added_customers.add(account_id)
