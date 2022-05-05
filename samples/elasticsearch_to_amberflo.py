@@ -109,7 +109,7 @@ def main():
             meter_value=1,
             meter_time_in_millis=meter_time_in_millis,
             customer_id=account_id,
-            unique_id=meter_time_in_millis,  # use `unique_id` if you want Amberflo to dedup repeated records
+            unique_id=str(meter_time_in_millis),  # use `unique_id` if you want Amberflo to dedup repeated records
             dimensions={
                 "service_id": service_id,
                 "host": host,

@@ -132,7 +132,7 @@ def aws_cost_explorer_pull():  # noqa: C901
                 result_by_time["TimePeriod"]["End"], "%Y-%m-%d"
             )
             # print(date_time_obj)
-            time_in_millis = date_time_obj.timestamp() * 1000
+            time_in_millis = int(date_time_obj.timestamp() * 1000)
             # time_in_millis = int(round(time.time() * 1000))
             # we ingest to amberflo with dedup on the date, so we can run this multiple times a day without duplicates
             dimensions = {}
@@ -141,7 +141,7 @@ def aws_cost_explorer_pull():  # noqa: C901
                 event = create_ingest_payload(
                     service_name.replace(" ", "_"),
                     (float(amount)),
-                    unique_id=time_in_millis,
+                    unique_id=str(time_in_millis),
                     meter_time_in_millis=time_in_millis,
                     customer_id=customer_id,
                     dimensions=dimensions,
@@ -152,7 +152,7 @@ def aws_cost_explorer_pull():  # noqa: C901
                 event = create_ingest_payload(
                     service_name.replace(" ", "_") + "_cost",
                     (float(cost_amount)),
-                    unique_id=time_in_millis,
+                    unique_id=str(time_in_millis),
                     meter_time_in_millis=time_in_millis,
                     customer_id=customer_id,
                     dimensions=dimensions,
