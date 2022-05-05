@@ -31,6 +31,10 @@ class IngestS3Client:
     def send(self, payload):
         """
         Uploads the payload to S3.
+
+        The payload should be a list of meter records.
+
+        Create meter records with `metering.ingest.create_ingest_payload`.
         """
 
         data = json.dumps(payload)

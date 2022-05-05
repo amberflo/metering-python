@@ -1,13 +1,21 @@
 import os
-import sys
 from setuptools import setup, find_packages
 
 current_dir = os.path.dirname(__file__)
 
 
-# Don't import entire module here, since deps may not be installed
-sys.path.insert(0, os.path.join(current_dir, "metering"))
-from metering.version import VERSION  # noqa
+# Can't import module here, because dependencies might not be available, so we
+# parse it manually.
+def _get_version():
+    with open(os.path.join(current_dir, "metering/version.py")) as f:
+        for line in f.readlines():
+            if line.startswith("VERSION"):
+                start = line.find('"') + 1
+                end = line.rfind('"')
+                return line[start:end]
+
+
+version = _get_version()
 
 
 with open(os.path.join(current_dir, "README.md")) as f:
@@ -29,7 +37,7 @@ packages = [p for p in find_packages() if "tests" not in p]
 
 setup(
     name="amberflo-metering-python",
-    version=VERSION,
+    version=version,
     url="https://github.com/amberflo/metering-python",
     author="Amberflo",
     author_email="friends@amberflo.com",

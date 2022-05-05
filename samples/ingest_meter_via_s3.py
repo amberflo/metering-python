@@ -16,7 +16,7 @@ import os
 from time import time
 from random import random
 
-from metering.ingest import get_ingest_client, create_ingest_payload
+from metering.ingest import create_ingest_client, create_ingest_payload
 
 
 def now_in_millis():
@@ -25,7 +25,7 @@ def now_in_millis():
 
 def main():
     # 1. initialize the threaded ingestion client
-    client = get_ingest_client(
+    client = create_ingest_client(
         bucket_name=os.environ.get("BUCKET_NAME"),
         access_key=os.environ.get("ACCESS_KEY"),
         secret_key=os.environ.get("SECRET_KEY"),

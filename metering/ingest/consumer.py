@@ -85,7 +85,7 @@ class ThreadedConsumer:
         self.on_error = on_error
         self.name = _random_string()
         self.thread = Thread(target=self._run, daemon=True, name=self.name)
-        self.logger = logging.getLogger("{}.{}".format(__name__, self.name))
+        self.logger = logging.getLogger(__name__)
 
     def start(self):
         """
@@ -119,6 +119,7 @@ class ThreadedConsumer:
         """
         batch = self._next_batch()
         if not batch:
+            self.logger.debug("Empty batch, nothing to do")
             return 0
 
         n = len(batch)

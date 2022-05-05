@@ -2,7 +2,7 @@ import atexit
 import logging
 from queue import Queue, Full
 
-from metering.ingest.api_client import IngestApiClient
+from metering.ingest.api_client import IngestApiClient, create_ingest_payload
 from metering.ingest.consumer import ThreadedConsumer
 
 
@@ -20,7 +20,7 @@ class ThreadedProducer:
         backend_params,
         backend_class=IngestApiClient,
         max_queue_size=100000,
-        threads=1,
+        threads=2,
         **consumer_args
     ):
         """
@@ -67,8 +67,7 @@ class ThreadedProducer:
         """
         Enqueue a payload to be sent. Returns whether it was successful or not.
 
-        See `metering.ingest.api_client.IngestApiClient.send` for details on
-        the payload.
+        See `metering.ingest.IngestApiClient.send` for details on the payload.
         """
         try:
             self.queue.put(payload, block=False)
@@ -77,6 +76,16 @@ class ThreadedProducer:
             self.logger.warning("Queue is full!")
 
         return False
+
+    def meter(self, *args, **kwargs):
+        """
+        Build and enqueue a meter record to be sent. Returns whether it was
+        successful or not.
+
+        See `metering.ingest.create_ingest_payload` for details on the payload.
+        """
+        payload = create_ingest_payload(*args, **kwargs)
+        return self.send(payload)
 
     def flush(self):
         """

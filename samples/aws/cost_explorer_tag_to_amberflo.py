@@ -2,7 +2,7 @@ import os
 import boto3
 import datetime
 
-from metering.ingest import get_ingest_client, create_ingest_payload
+from metering.ingest import create_ingest_client, create_ingest_payload
 
 
 # This sample code takes the tag customer_id_tag_name and insert meters to
@@ -16,7 +16,7 @@ def lambda_handler(event, context):
 
 
 def aws_cost_explorer_pull():
-    client = get_ingest_client(api_key=os.environ["API_KEY"])
+    client = create_ingest_client(api_key=os.environ["API_KEY"])
 
     now = datetime.datetime.utcnow()
     start = (now - datetime.timedelta(days=10)).strftime(r"%Y-%m-%d")

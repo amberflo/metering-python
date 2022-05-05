@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
 """
-This sample shows an example of meter record ingestion. Ingestion is done in
-batches on a background thread for high-throughput. This pattern is
-particularly useful in the context of a web server, as it moves the ingestion
-outside of the request-response cycle.
+This sample shows how to ingest meter records on quick and dirty scripts.
+
+It uses the provided convenience functions and default ingest client.
 
 See https://docs.amberflo.io/reference/post_ingest
 """
@@ -12,8 +11,11 @@ See https://docs.amberflo.io/reference/post_ingest
 import os
 from time import time
 from random import random
+import logging
 
-from metering.ingest import create_ingest_client, create_ingest_payload
+import metering
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 def now_in_millis():
@@ -21,25 +23,24 @@ def now_in_millis():
 
 
 def main():
-    # 1. initialize the threaded ingestion client
-    client = create_ingest_client(api_key=os.environ.get("API_KEY"))
+    # 1. obtain your API key
+    metering.app_key = os.environ.get("TEST_API_KEY")
 
     # 2. send some meter events
     dimensions = {"region": "us-east-1"}
     customer_id = "sample-customer-123"
 
     for i in range(100):
-        event = create_ingest_payload(
+        metering.meter(
             meter_api_name="sample-meter",
             meter_value=5 + random(),
             meter_time_in_millis=now_in_millis(),
             customer_id=customer_id,
             dimensions=dimensions,
         )
-        client.send(event)
 
     # 3. ensure all events are sent and safely stop the background threads
-    client.shutdown()
+    metering.shutdown()
 
 
 if __name__ == "__main__":

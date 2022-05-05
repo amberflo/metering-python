@@ -1,6 +1,26 @@
 # Release History
 
-## (WIP) 3.0.0
+## 3.0.0
+
+**Breaking Changes:**
+- Module layout has changed, as well as some class names and methods
+- The package level interfaces (e.g. `metering.add_or_update_customer`) have been deprecated; some global methods like `metering.meter` are still available, but not all of them; their use is discouraged.
+
+Features:
+- More APIs were added
+    - Customer Product Plan
+    - Customer Portal Session
+    - Customer Prepaid Order
+    - Customer Product Invoice
+- Existing APIs were improved
+    - Customer (list, get, add, update, create_in_stripe option)
+    - Usage (get multiple requests at once)
+- It is now possible to control logging at the module level
+
+Miscelaneous:
+- Improved payload validation on factory functions
+- Test suite was improved
+- Collected and updated all samples into this repository
 
 ## 2.3.0
 

@@ -1,4 +1,4 @@
-from uuid import uuid4
+from uuid import uuid4, UUID
 
 from metering import validators
 from metering.session import IngestSession
@@ -66,6 +66,9 @@ def create_ingest_payload(
         "meter_time_in_millis", meter_time_in_millis, allow_none=False
     )
     validators.require_string("customer_id", customer_id, allow_none=False)
+
+    if isinstance(unique_id, UUID):
+        unique_id = str(unique_id)
 
     validators.require_string("unique_id", unique_id)
     validators.require_string_dictionary("dimensions", dimensions)
