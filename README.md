@@ -36,7 +36,7 @@ pip install amberflo-metering-python
 
 3. Create a customer
 
-```python3
+```python
 import os
 from metering.customer import CustomerApiClient, create_customer_payload
 
@@ -55,10 +55,10 @@ customer = client.add_or_update(message)
 
 4. Ingest meter events
 
-```python3
+```python
 import os
 from time import time
-from metering.ingest import create_ingest_client, create_ingest_payload
+from metering.ingest import create_ingest_client
 
 client = create_ingest_client(api_key=os.environ["API_KEY"])
 
@@ -76,7 +76,7 @@ client.meter(
 
 5. Query usage
 
-```python3
+```python
 import os
 from time import time
 from metering.usage import (AggregationType, Take, TimeGroupingInterval,
@@ -86,7 +86,7 @@ client = UsageApiClient(os.environ.get("API_KEY"))
 
 since_two_days_ago = TimeRange(int(time()) - 60 * 60 * 24 * 2)
 
-request = create_usage_query(
+query = create_usage_query(
     meter_api_name="my_meter",
     aggregation=AggregationType.SUM,
     time_grouping_interval=TimeGroupingInterval.DAY,
@@ -95,7 +95,7 @@ request = create_usage_query(
     usage_filter={"customerId": ["some-customer-321", "sample-customer-123"]},
     take=Take(limit=10, is_ascending=False),
 )
-report = client.get(request)
+report = client.get(query)
 ```
 
 ## :zap: High throughput ingestion
@@ -120,7 +120,7 @@ for handling errors when trying to send a batch.
 
 Here is a complete example, showing the default values of all options:
 
-```python3
+```python
 def on_error_callback(error, batch):
     ...
 
@@ -159,7 +159,7 @@ pip install amberflo-metering-python[s3]
 ```
 
 Just pass the S3 bucket credentials to the factory function:
-```python3
+```python
 client = create_ingest_client(
     bucket_name=os.environ.get("BUCKET_NAME"),
     access_key=os.environ.get("ACCESS_KEY"),
@@ -189,7 +189,7 @@ Also, check out [CONTRIBUTING.md](https://github.com/amberflo/metering-python/bl
 
 #### [Ingest](https://docs.amberflo.io/reference/post_ingest)
 
-```python3
+```python
 from metering.ingest import (
     create_ingest_payload,
     create_ingest_client,
@@ -198,7 +198,7 @@ from metering.ingest import (
 
 #### [Customer](https://docs.amberflo.io/reference/post_customers)
 
-```python3
+```python
 from metering.customer import (
     CustomerApiClient,
     create_customer_payload,
@@ -207,7 +207,7 @@ from metering.customer import (
 
 #### [Usage](https://docs.amberflo.io/reference/post_usage)
 
-```python3
+```python
 from metering.usage import (
     AggregationType,
     Take,
@@ -221,7 +221,7 @@ from metering.usage import (
 
 #### [Customer Portal Session](https://docs.amberflo.io/reference/post_session)
 
-```python3
+```python
 from metering.customer_portal_session import (
     CustomerPortalSessionApiClient,
     create_customer_portal_session_payload,
@@ -230,7 +230,7 @@ from metering.customer_portal_session import (
 
 #### [Customer Prepaid Order](https://docs.amberflo.io/reference/post_payments-pricing-amberflo-customer-prepaid)
 
-```python3
+```python
 from metering.customer_prepaid_order import (
     BillingPeriod,
     BillingPeriodUnit,
@@ -241,7 +241,7 @@ from metering.customer_prepaid_order import (
 
 #### [Customer Product Invoice](https://docs.amberflo.io/reference/get_payments-billing-customer-product-invoice)
 
-```python3
+```python
 from metering.customer_product_invoice import (
     CustomerProductInvoiceApiClient,
     create_all_invoices_query,
@@ -252,7 +252,7 @@ from metering.customer_product_invoice import (
 
 #### [Customer Product Plan](https://docs.amberflo.io/reference/post_payments-pricing-amberflo-customer-pricing)
 
-```python3
+```python
 from metering.customer_product_plan import (
     CustomerProductPlanApiClient,
     create_customer_product_plan_payload,
@@ -261,7 +261,7 @@ from metering.customer_product_plan import (
 
 ### Exceptions
 
-```python3
+```python
 from metering.exceptions import ApiError
 ```
 

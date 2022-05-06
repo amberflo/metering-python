@@ -35,12 +35,10 @@ class UsageApiClient:
 
     def get_all(self, query):
         """
-        Get a usage report including all meters. Because it incudes all meters,
+        Get usage reports for all meters. Because it incudes all meters,
         this is more limited than `get`. Returns a list of usage reports.
 
         Create a query using the `create_all_usage_query` function.
-
-        See: https://docs.amberflo.io/reference/post_usage-batch
         """
         return self.client.get(self.path_all, params=query)
 

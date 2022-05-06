@@ -46,7 +46,7 @@ def main():
     usage_filter = {"customerId": ["1234", "sample-customer-123"]}
 
     # 4. create usage request
-    request = create_usage_query(
+    query = create_usage_query(
         meter_api_name="my_meter",
         aggregation=AggregationType.SUM,
         time_grouping_interval=TimeGroupingInterval.DAY,
@@ -57,7 +57,7 @@ def main():
     )
 
     # 5. get and print your report
-    report = client.get(request)
+    report = client.get(query)
     print(json.dumps(report, indent=4))
 
 

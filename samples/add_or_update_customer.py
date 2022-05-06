@@ -24,7 +24,7 @@ def main():
         customer_id="sample-customer-123",
         customer_email="customer-123@sample.com",
         customer_name="Sample Customer",
-        # `traits` can be used as filters or aggregation buckets
+        # Traits are optional. They can be used as filters or aggregation buckets
         traits={
             "region": "us-east-1",
             "stripeId": "cus_AJ6bY3VqcaLAEs",
