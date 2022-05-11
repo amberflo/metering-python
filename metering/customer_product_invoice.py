@@ -33,7 +33,9 @@ class CustomerProductInvoiceApiClient:
         """
         Get a existing invoice of the specified customer.
 
-        Create a query using either the `create_latest_invoice_query` or the `create_invoice_query` functions.
+        Create a query using either the functions:
+        - `create_latest_invoice_query` (for the currently open invoice), or
+        - `create_invoice_query` (for a previous invoice)
 
         See https://docs.amberflo.io/reference/get_payments-billing-customer-product-invoice
         """
