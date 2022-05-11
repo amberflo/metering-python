@@ -99,6 +99,9 @@ class TestValidators(unittest.TestCase):
             require_string_list(name, None, allow_none=False)
 
         with self.assertRaises(AssertionError):
+            require_string_list(name, [], allow_none=False)
+
+        with self.assertRaises(AssertionError):
             require_string_list(name, ["foo", 100], allow_none=False)
 
         with self.assertRaises(AssertionError):
