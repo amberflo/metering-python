@@ -75,4 +75,4 @@ git commit -m "Release X.Y.Z."
 ```
 git tag "vX.Y.Z"
 ```
-5. Push and then create a release in [Github](https://github.com/amberflo/metering-typescript/releases). Once you publish it, the Github action will publish the package to NPM.
+5. Push and then create a release in [Github](https://github.com/amberflo/metering-python/releases). Once you publish it, the Github action will publish the package to PyPI.
