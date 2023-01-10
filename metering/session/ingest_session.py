@@ -27,7 +27,7 @@ class IngestSession:
     Public methods expose the usual HTTP methods.
     """
 
-    root_url = "https://app.amberflo.io"
+    root_url = "https://ingest.amberflo.io"
 
     def __init__(self, api_key):
         require_string("api_key", api_key)
