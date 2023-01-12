@@ -21,11 +21,23 @@ def _should_give_up(error):
     Retry on API errors:
     - server errors (500s)
     - rate limited (429)
-    And on all other errors.
+    And on all other (non-http) errors.
     """
     if isinstance(error, ApiError):
         return (400 <= error.status_code < 500) and error.status_code != 429
     return False
+
+
+# Sequence of times to wait between requests.
+_backoff_delays = [None, 2, 6, 12, 20, 40, 80]
+
+
+def backoff_delay(*args, **kwargs):
+    for d in _backoff_delays:
+        yield d
+
+    while True:
+        yield _backoff_delays[-1]
 
 
 class ThreadedConsumer:
@@ -42,11 +54,12 @@ class ThreadedConsumer:
         self,
         queue,
         backend,
-        retries=2,
+        retries=6,
         batch_size=100,
         send_interval_in_secs=0.5,
         sleep_interval_in_secs=0.1,
         on_error=None,
+        backoff_delay=backoff_delay,
     ):
         """
         backend:
@@ -75,6 +88,14 @@ class ThreadedConsumer:
             It will be called as `on_error(exception_instance, items_in_batch)`.
             It should be thread-safe, as it might be used by multiple consumers
             at the same time.
+
+        backoff_delay:
+            Generator function yielding the amount of time in seconds to wait
+            for the next attempt to make the request.
+            Default sequence: None, 2, 6, 12, 20, 40, 80, 80, 80...
+            Note that we use "full jitter" on these values, so on average the
+            wait time will be half of the nominal one.
+            (see https://github.com/litl/backoff#jitter)
         """
         self.queue = queue
         self.backend = backend
@@ -83,6 +104,7 @@ class ThreadedConsumer:
         self.send_interval = send_interval_in_secs
         self.sleep_interval = sleep_interval_in_secs
         self.on_error = on_error
+        self.backoff_delay = backoff_delay
         self.name = _random_string()
         self.thread = Thread(target=self._run, daemon=True, name=self.name)
         self.logger = logging.getLogger(__name__)
@@ -161,11 +183,11 @@ class ThreadedConsumer:
 
     def _send(self, batch):
         """
-        Try sending with exponential back-off.
+        Try sending with back-off strategy.
         """
 
         @backoff.on_exception(
-            backoff.expo,
+            self.backoff_delay,
             Exception,
             max_tries=self.retries + 1,
             giveup=_should_give_up,

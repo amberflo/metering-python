@@ -5,6 +5,11 @@ from unittest.mock import patch, Mock
 from metering.ingest import ThreadedProducer
 
 
+def _dummy_delay(*args, **kwargs):
+    while True:
+        yield 0.1
+
+
 class _DummyBackend:
     def send(self, payload):
         sleep(0.01)
@@ -18,6 +23,8 @@ class TestIngestConsumer(unittest.TestCase):
             max_queue_size=100,
             threads=2,
             batch_size=10,
+            retries=2,
+            backoff_delay=_dummy_delay,
         )
 
     def test_shutdown_after_sending_some_items(self):
@@ -81,6 +88,8 @@ class TestIngestConsumerQueueIsFull(unittest.TestCase):
             _DummyBackend,
             max_queue_size=1,
             threads=0,
+            retries=2,
+            backoff_delay=_dummy_delay,
         )
 
         self.assertTrue(self.client.send(1))
@@ -98,6 +107,8 @@ class TestIngestConsumerWithErrorCallback(unittest.TestCase):
             threads=1,
             batch_size=10,
             on_error=on_error_callback,
+            retries=2,
+            backoff_delay=_dummy_delay,
         )
 
         error = Exception()

@@ -3,7 +3,12 @@ from unittest.mock import patch, Mock
 from queue import Queue
 
 from metering.exceptions import ApiError
-from metering.ingest.consumer import ThreadedConsumer
+from metering.ingest.consumer import ThreadedConsumer, backoff_delay
+
+
+def _dummy_delay(*args, **kwargs):
+    while True:
+        yield 0.1
 
 
 class _DummyBackend:
@@ -21,6 +26,7 @@ class TestIngestThreadedConsumer(unittest.TestCase):
             batch_size=10,
             send_interval_in_secs=0.1,
             sleep_interval_in_secs=0.1,
+            backoff_delay=_dummy_delay,
         )
 
     def test_consumes_from_empty_queue(self):
@@ -108,6 +114,7 @@ class TestIngestThreadedConsumerWithErrorCallback(unittest.TestCase):
             send_interval_in_secs=0.1,
             sleep_interval_in_secs=0.1,
             on_error=self.on_error_callback,
+            backoff_delay=_dummy_delay,
         )
 
         for i in range(15):
@@ -136,6 +143,7 @@ class TestIngestThreadedConsumerShortSendInterval(unittest.TestCase):
             _DummyBackend(),
             batch_size=1000,
             send_interval_in_secs=0.001,
+            backoff_delay=_dummy_delay,
         )
 
         for i in range(1000):
@@ -144,3 +152,10 @@ class TestIngestThreadedConsumerShortSendInterval(unittest.TestCase):
         n = consumer.consume()
 
         self.assertLess(n, 1000)
+
+
+class TestBackoffDelay(unittest.TestCase):
+    def test_default_backoff_delay(self):
+        expected = [None, 2, 6, 12, 20, 40, 80, 80]
+        for e, x in zip(expected, backoff_delay()):
+            self.assertEqual(e, x)
