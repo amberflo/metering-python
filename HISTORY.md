@@ -1,5 +1,11 @@
 # Release History
 
+## 3.0.1
+
+Features:
+- Use highly available ingest API endpoint
+- Allow customizing backoff delay on ingest consumer
+
 ## 3.0.0
 
 **Breaking Changes:**
