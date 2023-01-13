@@ -10,8 +10,8 @@ on:
 
 env:
   # https://twine.readthedocs.io/en/stable/
-  TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
-  TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+  TWINE_USERNAME: __token__
+  TWINE_PASSWORD: ${{ secrets.PYPI_DEPLOY_KEY }}
 
 jobs:
   build:
