@@ -12,11 +12,10 @@ def require_string_dictionary(name, value, allow_none=True):
     if value is None:
         return
 
-    key_name = name + ".key"
-    value_name = name + ".value"
+    key_name = name + ".<key>"
     for k, v in value.items():
         require_string(key_name, k, allow_none=False)
-        require_string(value_name, v, allow_none=False)
+        require_string(name + "." + k, v, allow_none=False)
 
 
 def require_string_list_dictionary(name, value, allow_none=True):
@@ -28,11 +27,10 @@ def require_string_list_dictionary(name, value, allow_none=True):
     if value is None:
         return
 
-    key_name = name + ".key"
-    value_name = name + ".value"
+    key_name = name + ".<key>"
     for k, v in value.items():
         require_string(key_name, k, allow_none=False)
-        require_string_list(value_name, v, allow_none=False)
+        require_string_list(name + "." + k, v, allow_none=False)
 
 
 def require_string_list(name, value, allow_none=True):
@@ -43,6 +41,8 @@ def require_string_list(name, value, allow_none=True):
 
     if value is None:
         return
+
+    assert value, "{0!r} may not be an empty list".format(name)
 
     for i, v in enumerate(value):
         require_string("{}.{}".format(name, i), v, allow_none=False)

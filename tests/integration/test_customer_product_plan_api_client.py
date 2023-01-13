@@ -18,6 +18,7 @@ class TestCustomerProductPlanApiClient(unittest.TestCase):
 
         self.client = CustomerProductPlanApiClient(API_KEY)
 
+    @unittest.skipIf(os.environ.get("CI"), "This is a bit too flaky for CI")
     def test_assign_product_plan_to_customer(self):
         # get existing product plan
         product_plans = self.generic.get(

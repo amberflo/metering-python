@@ -19,7 +19,9 @@ class TestCustomerProductInvoiceApiClient(unittest.TestCase):
         self.customer_id = ApiSession(API_KEY).get("/customers/")[0]["customerId"]
         self.client = CustomerProductInvoiceApiClient(API_KEY)
 
-    def test_get_all(self):
+    # when looking for a specific invoice, we make sure the invoice we're
+    # looking for exists by getting an invoice from the list of all invoices
+    def test_get_all_then_get_first(self):
         message = create_all_invoices_query(
             customer_id=self.customer_id,
         )
@@ -27,25 +29,26 @@ class TestCustomerProductInvoiceApiClient(unittest.TestCase):
         self.assertIsInstance(response, list)
         self.assertIn("invoiceKey", response[0])
 
-    def test_get(self):
-        message = create_latest_invoice_query(
-            customer_id=self.customer_id,
-        )
-        response = self.client.get(message)
-        self.assertIsInstance(response, dict)
-        self.assertIn("invoiceKey", response)
-
+        # get first
         invoice_start_date = date(
-            response["invoiceKey"]["year"],
-            response["invoiceKey"]["month"],
-            response["invoiceKey"]["day"],
+            response[-1]["invoiceKey"]["year"],
+            response[-1]["invoiceKey"]["month"],
+            response[-1]["invoiceKey"]["day"],
         )
-        product_plan_id = response["invoiceKey"]["productPlanId"]
+        product_plan_id = response[-1]["invoiceKey"]["productPlanId"]
 
         message = create_invoice_query(
             customer_id=self.customer_id,
             invoice_start_date=invoice_start_date,
             product_plan_id=product_plan_id,
+        )
+        response = self.client.get(message)
+        self.assertIsInstance(response, dict)
+        self.assertIn("invoiceKey", response)
+
+    def test_get(self):
+        message = create_latest_invoice_query(
+            customer_id=self.customer_id,
         )
         response = self.client.get(message)
         self.assertIsInstance(response, dict)

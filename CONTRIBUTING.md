@@ -63,17 +63,16 @@ batches and send them to Amberflo.
 
 We follow [semantic versioning](https://semver.org/).
 
+Releasing a new version is mostly automated by a Github action. It does require a few manual steps:
+
 1. Update `VERSION` in `metering/version.py` to the new version.
 2. Add an entry to `HISTORY.md` describing what's new.
 3. Commit the changes
 ```
-git commit -am "Release X.Y.Z."
+git commit -m "Release X.Y.Z."
 ```
 4. Create a new tag
 ```
-git tag -a X.Y.Z -m "Version X.Y.Z"
+git tag "vX.Y.Z"
 ```
-5. Upload the new package to PyPI
-```
-make release
-```
+5. Push and then create a release in [Github](https://github.com/amberflo/metering-python/releases). Once you publish it, the Github action will publish the package to PyPI.

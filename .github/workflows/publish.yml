@@ -1,0 +1,35 @@
+# See https://docs.github.com/en/actions/guides/building-and-testing-python
+
+name: Publish Package
+
+# https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
+on:
+  release:
+    types:
+      - published
+
+env:
+  # https://twine.readthedocs.io/en/stable/
+  TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
+  TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.8
+
+    - name: Install dependencies
+      run: pip install --user twine
+
+    - name: Build
+      run: python3 setup.py sdist bdist_wheel
+
+    - name: Publish
+      run: twine upload dist/*

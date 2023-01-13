@@ -15,8 +15,11 @@ This is the official Python 3 client that wraps the [Amberflo REST API](https://
 
 ## :heavy_check_mark: Features
 
-- Add and update Customers
-- Assign and update Product Plans to Customers
+- Add and update customers
+- Assign and update product plans to customers
+- List invoices of a customer
+- Get a new customer portal session for a customer
+- Add and list prepaid orders to customers
 - Send meter events
     - In asynchronous batches for high throughput (with optional flush on demand)
     - Or synchronously
