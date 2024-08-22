@@ -9,7 +9,7 @@ class IngestApiClient:
     See: https://docs.amberflo.io/reference/post_ingest
     """
 
-    path = "/ingest/"
+    path = "/ingest"
 
     def __init__(self, api_key):
         """
@@ -25,7 +25,15 @@ class IngestApiClient:
 
         See: https://docs.amberflo.io/reference/post_ingest
         """
-        return self.client.post(self.path, payload)
+        return self.client.post(self.path + "/", payload)
+    
+    def sendCustom(self, payload):
+        """
+        Send one or many meter event.
+
+        The payload format can be arbitrary. Events will be parsed using custom schemas defined for the account.
+        """
+        return self.client.post(self.path + "?schemaDetection=AUTO", payload)
 
 
 def create_ingest_payload(
