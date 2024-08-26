@@ -38,11 +38,27 @@ class TestIngestS3Client(unittest.TestCase):
             )
             for i in range(10)
         ]
+        self.customMeters = [
+            {
+                "customerId": customer_id,
+                "created": timestamp + 10 * i,
+                "usage": meter_float_value
+            }
+            for i in range(10)
+        ]
 
     def test_can_send_one_meter(self):
         response = self.client.send(self.meters[0])
         self.assertEqual(response["ResponseMetadata"]["HTTPStatusCode"], 200)
 
+    def test_can_send_one_meter_custom(self):
+        response = self.client.sendCustom(self.customMeters[0])
+        self.assertEqual(response["ResponseMetadata"]["HTTPStatusCode"], 200)
+
     def test_can_send_many_meters(self):
         response = self.client.send(self.meters)
+        self.assertEqual(response["ResponseMetadata"]["HTTPStatusCode"], 200)
+
+    def test_can_send_many_meters_custom(self):
+        response = self.client.sendCustom(self.customMeters)
         self.assertEqual(response["ResponseMetadata"]["HTTPStatusCode"], 200)
