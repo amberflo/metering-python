@@ -53,6 +53,7 @@ class ThreadedConsumer:
     def __init__(
         self,
         queue,
+        customQueue,
         backend,
         retries=6,
         batch_size=100,
@@ -98,6 +99,7 @@ class ThreadedConsumer:
             (see https://github.com/litl/backoff#jitter)
         """
         self.queue = queue
+        self.customQueue = customQueue
         self.backend = backend
         self.retries = retries
         self.batch_size = batch_size
@@ -128,7 +130,7 @@ class ThreadedConsumer:
         self.logger.debug("Consumer is running")
 
         while self.running:
-            if self.consume() < 1:
+            if self.consume() < 1 and self.consumeCustom() < 1:
                 sleep(self.sleep_interval)
 
         self.logger.debug("Consumer is finished")
@@ -139,7 +141,34 @@ class ThreadedConsumer:
         items consumed.  In case of failure, returns the negative of this
         number.
         """
-        batch = self._next_batch()
+       
+        return self._consumeBatch(False)
+    
+    def consumeCustom(self):
+        """
+        Consumes the next batch of items from the custom message queue. Returns
+        the number of items consumed.  In case of failure, returns the negative
+        of this number.
+        """
+        return self._consumeBatch(True)
+    
+    def _consumeBatch(self, isCustom): 
+        """
+        isCustom:
+            Boolean that represents if to consume custom message
+
+        Consumes the next batch of items from the corresponding queue depending on
+        isCustom. Returns the number of items consumed.  In case of failure, returns
+        the negative of this number.
+        """
+
+
+        if (isCustom):
+            queue = self.customQueue
+        else:
+            queue = self.queue
+        batch = self._next_batch(queue)
+
         if not batch:
             self.logger.debug("Empty batch, nothing to do")
             return 0
@@ -147,7 +176,10 @@ class ThreadedConsumer:
         n = len(batch)
 
         try:
-            self._send(batch)
+            if (isCustom):
+                self._sendCustom(batch)
+            else:
+                self._send(batch)
             self.logger.debug("Sent batch of %s", len(batch))
         except Exception as e:
             self.logger.exception("Failed to send batch of %s: %s", len(batch), e)
@@ -156,11 +188,11 @@ class ThreadedConsumer:
             n = -n
         finally:
             for item in batch:
-                self.queue.task_done()
+                queue.task_done()
 
         return n
 
-    def _next_batch(self):
+    def _next_batch(self, queue):
         """
         Returns the next batch of items to be consumed.
         """
@@ -174,7 +206,7 @@ class ThreadedConsumer:
                 break
 
             try:
-                item = self.queue.get(block=True, timeout=self.send_interval - elapsed)
+                item = queue.get(block=True, timeout=self.send_interval - elapsed)
                 batch.append(item)
             except Empty:
                 break
@@ -196,3 +228,19 @@ class ThreadedConsumer:
             self.backend.send(batch)
 
         send()
+
+    def _sendCustom(self, batch):
+        """
+        Try sending custom messages with back-off strategy.
+        """
+
+        @backoff.on_exception(
+            self.backoff_delay,
+            Exception,
+            max_tries=self.retries + 1,
+            giveup=_should_give_up,
+        )
+        def sendCustom():
+            self.backend.sendCustom(batch)
+
+        sendCustom()
