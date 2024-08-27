@@ -1,5 +1,9 @@
 # Release History
 
+## 3.2.0
+Features:
+- Allow ingestion of arbitrary payload through schema detection
+
 ## 3.0.1
 
 Features:

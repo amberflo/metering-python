@@ -29,11 +29,29 @@ class TestIngestApiClient(unittest.TestCase):
             )
             for i in range(10)
         ]
+        self.custom_meters = [
+            {
+                "customerId": customer_id,
+                "created": timestamp + 10 * i,
+                "usage": meter_float_value,
+            }
+            for i in range(10)
+        ]
 
     def test_can_send_one_meter(self):
         response = self.client.send(self.meters[0])
         self.assertEqual(response, "1 records were ingested")
 
+    def test_can_send_one_meter_custom(self):
+        response = self.client.send_custom(self.custom_meters[0])
+        self.assertEqual(response, "1 records were ingested")
+
     def test_can_send_many_meters(self):
         response = self.client.send(self.meters)
         self.assertEqual(response, "{} records were ingested".format(len(self.meters)))
+
+    def test_can_send_many_meters_custom(self):
+        response = self.client.send_custom(self.custom_meters)
+        self.assertEqual(
+            response, "{} records were ingested".format(len(self.custom_meters))
+        )

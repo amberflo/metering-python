@@ -12,20 +12,20 @@ from metering.customer_prepaid_order import (
 
 class TestCreateCustomerPrepaidOrderPayload(unittest.TestCase):
 
-    id = "bar"
+    prepaid_id = "bar"
     customer_id = "foo"
     start_time_in_seconds = int(time())
     prepaid_price = 100.0
 
     def test_with_required_arguments(self):
         message = create_customer_prepaid_order_payload(
-            id=self.id,
+            id=self.prepaid_id,
             customer_id=self.customer_id,
             start_time_in_seconds=self.start_time_in_seconds,
             prepaid_price=self.prepaid_price,
         )
 
-        self.assertEqual(message["id"], self.id)
+        self.assertEqual(message["id"], self.prepaid_id)
         self.assertEqual(message["customerId"], self.customer_id)
         self.assertEqual(message["startTimeInSeconds"], self.start_time_in_seconds)
         self.assertEqual(message["prepaidPrice"], self.prepaid_price)
@@ -39,7 +39,7 @@ class TestCreateCustomerPrepaidOrderPayload(unittest.TestCase):
 
     def test_with_optional_arguments(self):
         message = create_customer_prepaid_order_payload(
-            id=self.id,
+            id=self.prepaid_id,
             customer_id=self.customer_id,
             start_time_in_seconds=self.start_time_in_seconds,
             prepaid_price=self.prepaid_price,
@@ -50,7 +50,7 @@ class TestCreateCustomerPrepaidOrderPayload(unittest.TestCase):
             external_payment=True,
         )
 
-        self.assertEqual(message["id"], self.id)
+        self.assertEqual(message["id"], self.prepaid_id)
         self.assertEqual(message["customerId"], self.customer_id)
         self.assertEqual(message["startTimeInSeconds"], self.start_time_in_seconds)
         self.assertEqual(message["prepaidPrice"], self.prepaid_price)

@@ -15,12 +15,17 @@ class _DummyBackend:
     def send(self, payload):
         return
 
+    def send_custom(self, payload):
+        return
+
 
 class TestIngestThreadedConsumer(unittest.TestCase):
     def setUp(self):
         self.queue = Queue()
+        self.custom_queue = Queue()
         self.consumer = ThreadedConsumer(
             self.queue,
+            self.custom_queue,
             _DummyBackend(),
             retries=2,
             batch_size=10,
@@ -36,6 +41,13 @@ class TestIngestThreadedConsumer(unittest.TestCase):
 
         self.assertEqual(n, 0)
 
+    def test_consumes_from_empty_queue_custom(self):
+        with patch.object(_DummyBackend, "send_custom") as mock_send:
+            n = self.consumer.consume_custom()
+            mock_send.assert_not_called()
+
+        self.assertEqual(n, 0)
+
     def test_does_not_wait_for_complete_batch_size(self):
         for i in range(5):
             self.queue.put(i)
@@ -47,6 +59,17 @@ class TestIngestThreadedConsumer(unittest.TestCase):
         self.assertEqual(n, 5)
         self.assertEqual(self.queue.qsize(), 0)
 
+    def test_does_not_wait_for_complete_batch_size_custom(self):
+        for i in range(5):
+            self.custom_queue.put(i)
+
+        with patch.object(_DummyBackend, "send_custom") as mock_send:
+            n = self.consumer.consume_custom()
+            mock_send.assert_called_once_with([0, 1, 2, 3, 4])
+
+        self.assertEqual(n, 5)
+        self.assertEqual(self.custom_queue.qsize(), 0)
+
     def test_consumes_at_most_batch_size_at_a_time(self):
         for i in range(15):
             self.queue.put(i)
@@ -57,6 +80,17 @@ class TestIngestThreadedConsumer(unittest.TestCase):
 
         self.assertEqual(n, 10)
         self.assertEqual(self.queue.qsize(), 5)
+
+    def test_consumes_at_most_batch_size_at_a_time_custom(self):
+        for i in range(15):
+            self.custom_queue.put(i)
+
+        with patch.object(_DummyBackend, "send_custom") as mock_send:
+            n = self.consumer.consume_custom()
+            mock_send.assert_called_once_with([i for i in range(10)])
+
+        self.assertEqual(n, 10)
+        self.assertEqual(self.custom_queue.qsize(), 5)
 
     def test_tries_to_send_a_few_times_for_some_errors(self):
         errors = [
@@ -79,6 +113,27 @@ class TestIngestThreadedConsumer(unittest.TestCase):
                 self.assertEqual(n, -10)
                 self.assertEqual(self.queue.qsize(), 0)
 
+    def test_tries_to_send_a_few_times_for_some_errors_custom(self):
+        errors = [
+            ApiError(500, "internal server error"),
+            ApiError(429, "rate limited"),
+            Exception("other errors"),
+        ]
+
+        for error in errors:
+            with self.subTest(str(error)):
+                for i in range(10):
+                    self.custom_queue.put(i)
+
+                with patch.object(_DummyBackend, "send_custom") as mock_send:
+                    mock_send.side_effect = error
+                    # does not raise
+                    n = self.consumer.consume_custom()
+                    self.assertEqual(mock_send.call_count, 3)
+
+                self.assertEqual(n, -10)
+                self.assertEqual(self.custom_queue.qsize(), 0)
+
     def test_does_not_retry_on_api_error_400(self):
         errors = [
             ApiError(400, "bad request"),
@@ -99,15 +154,37 @@ class TestIngestThreadedConsumer(unittest.TestCase):
                 self.assertEqual(n, -10)
                 self.assertEqual(self.queue.qsize(), 0)
 
+    def test_does_not_retry_on_api_error_400_custom(self):
+        errors = [
+            ApiError(400, "bad request"),
+            ApiError(403, "not authorized"),
+        ]
+
+        for error in errors:
+            with self.subTest(str(error)):
+                for i in range(10):
+                    self.custom_queue.put(i)
+
+                with patch.object(_DummyBackend, "send_custom") as mock_send:
+                    mock_send.side_effect = error
+                    # does not raise
+                    n = self.consumer.consume_custom()
+                    self.assertEqual(mock_send.call_count, 1)
+
+                self.assertEqual(n, -10)
+                self.assertEqual(self.custom_queue.qsize(), 0)
+
 
 class TestIngestThreadedConsumerWithErrorCallback(unittest.TestCase):
     def setUp(self):
         queue = Queue()
+        customQueue = Queue()
 
         self.on_error_callback = Mock(return_value=None)
 
         self.consumer = ThreadedConsumer(
             queue,
+            customQueue,
             _DummyBackend(),
             retries=2,
             batch_size=10,
@@ -119,6 +196,7 @@ class TestIngestThreadedConsumerWithErrorCallback(unittest.TestCase):
 
         for i in range(15):
             queue.put(i)
+            customQueue.put(i)
 
     def test_error_callback_is_called_if_there_is_an_error(self):
         error = ApiError(500, "internal server error")
@@ -129,8 +207,22 @@ class TestIngestThreadedConsumerWithErrorCallback(unittest.TestCase):
 
         self.on_error_callback.assert_called_once_with(error, list(range(10)))
 
+    def test_error_callback_is_called_if_there_is_an_error_custom(self):
+        error = ApiError(500, "internal server error")
+
+        with patch.object(_DummyBackend, "send_custom") as mock_send:
+            mock_send.side_effect = error
+            self.consumer.consume_custom()
+
+        self.on_error_callback.assert_called_once_with(error, list(range(10)))
+
     def test_error_callback_is_not_called_if_there_is_no_error(self):
         self.consumer.consume()
+
+        self.on_error_callback.assert_not_called()
+
+    def test_error_callback_is_not_called_if_there_is_no_error_custom(self):
+        self.consumer.consume_custom()
 
         self.on_error_callback.assert_not_called()
 
@@ -138,20 +230,41 @@ class TestIngestThreadedConsumerWithErrorCallback(unittest.TestCase):
 class TestIngestThreadedConsumerShortSendInterval(unittest.TestCase):
     def test_respects_send_interval_even_if_queue_has_items(self):
         queue = Queue()
+        custom_queue = Queue()
         consumer = ThreadedConsumer(
             queue,
+            custom_queue,
             _DummyBackend(),
-            batch_size=1000,
+            batch_size=10000,
             send_interval_in_secs=0.001,
             backoff_delay=_dummy_delay,
         )
 
-        for i in range(1000):
+        for i in range(10000):
             queue.put(i)
 
         n = consumer.consume()
 
-        self.assertLess(n, 1000)
+        self.assertLess(n, 10000)
+
+    def test_respects_send_interval_even_if_queue_has_items_custom(self):
+        queue = Queue()
+        custom_queue = Queue()
+        consumer = ThreadedConsumer(
+            queue,
+            custom_queue,
+            _DummyBackend(),
+            batch_size=10000,
+            send_interval_in_secs=0.001,
+            backoff_delay=_dummy_delay,
+        )
+
+        for i in range(10000):
+            custom_queue.put(i)
+
+        n = consumer.consume_custom()
+
+        self.assertLess(n, 10000)
 
 
 class TestBackoffDelay(unittest.TestCase):
