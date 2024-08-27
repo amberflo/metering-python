@@ -61,9 +61,9 @@ class IngestS3Client:
 
         response = self.s3.Object(self.bucket_name, file_name).put(Body=data)
 
+        # TODO celia 2024/8/27: Review error handling to access if check is necessary or should just throw exception
         status_code = response["ResponseMetadata"]["HTTPStatusCode"]
         if status_code != 200:
             self.logger.warning("Failed to upload to S3: %s", response)
-            # FIXME: maybe throw to trigger a retry?
 
         return response
