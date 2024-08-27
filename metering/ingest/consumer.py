@@ -141,9 +141,8 @@ class ThreadedConsumer:
         items consumed.  In case of failure, returns the negative of this
         number.
         """
-       
         return self._consumeBatch(False)
-    
+
     def consumeCustom(self):
         """
         Consumes the next batch of items from the custom message queue. Returns
@@ -151,8 +150,8 @@ class ThreadedConsumer:
         of this number.
         """
         return self._consumeBatch(True)
-    
-    def _consumeBatch(self, isCustom): 
+
+    def _consumeBatch(self, isCustom):
         """
         isCustom:
             Boolean that represents if to consume custom message
@@ -161,8 +160,6 @@ class ThreadedConsumer:
         isCustom. Returns the number of items consumed.  In case of failure, returns
         the negative of this number.
         """
-
-
         if (isCustom):
             queue = self.customQueue
         else:

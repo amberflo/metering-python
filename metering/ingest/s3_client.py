@@ -42,7 +42,7 @@ class IngestS3Client:
         )
 
         return self._putObject(file_name, payload)
-    
+
     def sendCustom(self, payload):
         """
         Uploads the payload to S3.
@@ -55,7 +55,7 @@ class IngestS3Client:
         )
 
         return self._putObject(file_name, payload)
-    
+
     def _putObject(self, file_name, payload):
         data = json.dumps(payload)
 

@@ -26,7 +26,7 @@ class IngestApiClient:
         See: https://docs.amberflo.io/reference/post_ingest
         """
         return self.client.post(self.path + "/", payload)
-    
+
     def sendCustom(self, payload):
         """
         Send one or many meter event.

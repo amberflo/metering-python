@@ -41,7 +41,7 @@ class TestIngestApiClient(unittest.TestCase):
     def test_can_send_one_meter(self):
         response = self.client.send(self.meters[0])
         self.assertEqual(response, "1 records were ingested")
-    
+
     def test_can_send_one_meter_custom(self):
         response = self.client.sendCustom(self.customMeters[0])
         self.assertEqual(response, "1 records were ingested")

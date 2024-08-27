@@ -14,7 +14,7 @@ def _dummy_delay(*args, **kwargs):
 class _DummyBackend:
     def send(self, payload):
         return
-    
+
     def sendCustom(self, payload):
         return
 
@@ -69,7 +69,6 @@ class TestIngestThreadedConsumer(unittest.TestCase):
 
         self.assertEqual(n, 5)
         self.assertEqual(self.customQueue.qsize(), 0)
-
 
     def test_consumes_at_most_batch_size_at_a_time(self):
         for i in range(15):
@@ -221,7 +220,7 @@ class TestIngestThreadedConsumerWithErrorCallback(unittest.TestCase):
         self.consumer.consume()
 
         self.on_error_callback.assert_not_called()
-    
+
     def test_error_callback_is_not_called_if_there_is_no_error_custom(self):
         self.consumer.consumeCustom()
 

@@ -77,7 +77,7 @@ class ThreadedProducer:
             self.logger.warning("Queue is full!")
 
         return False
-    
+
     def sendCustom(self, payload):
         """
         Enqueue a custom payload to be sent. Returns whether it was successful or not.
