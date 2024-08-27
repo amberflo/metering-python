@@ -42,7 +42,7 @@ class TestIngestS3Client(unittest.TestCase):
             {
                 "customerId": customer_id,
                 "created": timestamp + 10 * i,
-                "usage": meter_float_value
+                "usage": meter_float_value,
             }
             for i in range(10)
         ]

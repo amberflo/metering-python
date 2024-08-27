@@ -60,7 +60,9 @@ class ThreadedProducer:
 
         for _ in range(threads):
             backend = self.backend_class(**backend_params)
-            consumer = self.consumer_class(self.queue, self.customQueue, backend, **consumer_args)
+            consumer = self.consumer_class(
+                self.queue, self.customQueue, backend, **consumer_args
+            )
             consumer.start()
             self.consumers.append(consumer)
 

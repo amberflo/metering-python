@@ -160,7 +160,7 @@ class ThreadedConsumer:
         isCustom. Returns the number of items consumed.  In case of failure, returns
         the negative of this number.
         """
-        if (isCustom):
+        if isCustom:
             queue = self.customQueue
         else:
             queue = self.queue
@@ -173,7 +173,7 @@ class ThreadedConsumer:
         n = len(batch)
 
         try:
-            if (isCustom):
+            if isCustom:
                 self._sendCustom(batch)
             else:
                 self._send(batch)
