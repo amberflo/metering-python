@@ -235,17 +235,17 @@ class TestIngestThreadedConsumerShortSendInterval(unittest.TestCase):
             queue,
             customQueue,
             _DummyBackend(),
-            batch_size=1000,
+            batch_size=10000,
             send_interval_in_secs=0.001,
             backoff_delay=_dummy_delay,
         )
 
-        for i in range(1000):
+        for i in range(10000):
             queue.put(i)
 
         n = consumer.consume()
 
-        self.assertLessEqual(n, 1000)
+        self.assertLess(n, 10000)
 
     def test_respects_send_interval_even_if_queue_has_items_custom(self):
         queue = Queue()
@@ -254,17 +254,17 @@ class TestIngestThreadedConsumerShortSendInterval(unittest.TestCase):
             queue,
             customQueue,
             _DummyBackend(),
-            batch_size=1000,
+            batch_size=10000,
             send_interval_in_secs=0.001,
             backoff_delay=_dummy_delay,
         )
 
-        for i in range(1000):
+        for i in range(10000):
             customQueue.put(i)
 
         n = consumer.consumeCustom()
 
-        self.assertLessEqual(n, 1000)
+        self.assertLess(n, 10000)
 
 
 class TestBackoffDelay(unittest.TestCase):
