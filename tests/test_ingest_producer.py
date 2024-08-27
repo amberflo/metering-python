@@ -14,7 +14,7 @@ class _DummyBackend:
     def send(self, payload):
         sleep(0.01)
 
-    def sendCustom(self, payload):
+    def send_custom(self, payload):
         sleep(0.01)
 
 
@@ -48,9 +48,9 @@ class TestIngestConsumer(unittest.TestCase):
             self.assertFalse(c.thread.is_alive())
 
     def test_shutdown_after_sending_some_items_custom(self):
-        with patch.object(_DummyBackend, "sendCustom") as mock_send:
+        with patch.object(_DummyBackend, "send_custom") as mock_send:
             for i in range(90):
-                self.client.sendCustom(i)
+                self.client.send_custom(i)
 
             self.client.shutdown()
 
@@ -58,7 +58,7 @@ class TestIngestConsumer(unittest.TestCase):
             self.assertTrue(mock_send.called)
 
         # queue is empty
-        self.assertTrue(self.client.customQueue.empty())
+        self.assertTrue(self.client.custom_queue.empty())
 
         # threads have stopped
         for c in self.client.consumers:
@@ -85,12 +85,12 @@ class TestIngestConsumer(unittest.TestCase):
 
     def test_flush_and_join_custom(self):
         for i in range(90):
-            self.client.sendCustom(i)
+            self.client.send_custom(i)
 
         self.client.flush()
 
         # queue is empty
-        self.assertTrue(self.client.customQueue.empty())
+        self.assertTrue(self.client.custom_queue.empty())
 
         # threads are still alive
         for c in self.client.consumers:
@@ -117,7 +117,7 @@ class TestIngestConsumer(unittest.TestCase):
 
     def test_join_without_flush_custom(self):
         for i in range(90):
-            self.client.sendCustom(i)
+            self.client.send_custom(i)
 
         self.client.join()
 
@@ -126,7 +126,7 @@ class TestIngestConsumer(unittest.TestCase):
             self.assertFalse(c.thread.is_alive())
 
         # queue is not empty
-        self.assertFalse(self.client.customQueue.empty())
+        self.assertFalse(self.client.custom_queue.empty())
 
     def test_empty_shutdown(self):
         # does not raise
@@ -157,8 +157,8 @@ class TestIngestConsumerQueueIsFull(unittest.TestCase):
             backoff_delay=_dummy_delay,
         )
 
-        self.assertTrue(self.client.sendCustom(1))
-        self.assertFalse(self.client.sendCustom(2))
+        self.assertTrue(self.client.send_custom(1))
+        self.assertFalse(self.client.send_custom(2))
 
 
 class TestIngestConsumerWithErrorCallback(unittest.TestCase):
@@ -204,11 +204,11 @@ class TestIngestConsumerWithErrorCallback(unittest.TestCase):
 
         error = Exception()
 
-        with patch.object(_DummyBackend, "sendCustom") as mock_send:
+        with patch.object(_DummyBackend, "send_custom") as mock_send:
             mock_send.side_effect = error
 
             for i in range(15):
-                client.sendCustom(i)
+                client.send_custom(i)
 
             client.join()
 

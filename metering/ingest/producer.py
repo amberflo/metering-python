@@ -47,7 +47,7 @@ class ThreadedProducer:
         self.backend_class = backend_class
         self.logger = logging.getLogger(__name__)
         self.queue = Queue(max_queue_size)
-        self.customQueue = Queue(max_queue_size)
+        self.custom_queue = Queue(max_queue_size)
 
         # On program exit, allow the consumer thread to exit cleanly.
         # This prevents exceptions and a messy shutdown when the interpreter is
@@ -61,7 +61,7 @@ class ThreadedProducer:
         for _ in range(threads):
             backend = self.backend_class(**backend_params)
             consumer = self.consumer_class(
-                self.queue, self.customQueue, backend, **consumer_args
+                self.queue, self.custom_queue, backend, **consumer_args
             )
             consumer.start()
             self.consumers.append(consumer)
@@ -80,12 +80,12 @@ class ThreadedProducer:
 
         return False
 
-    def sendCustom(self, payload):
+    def send_custom(self, payload):
         """
         Enqueue a custom payload to be sent. Returns whether it was successful or not.
         """
         try:
-            self.customQueue.put(payload, block=False)
+            self.custom_queue.put(payload, block=False)
             return True
         except Full:
             self.logger.warning("Custom queue is full!")

@@ -27,7 +27,7 @@ class IngestApiClient:
         """
         return self.client.post(self.path + "/", payload)
 
-    def sendCustom(self, payload):
+    def send_custom(self, payload):
         """
         Send one or many meter event.
 
