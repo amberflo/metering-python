@@ -107,7 +107,7 @@ class ThreadedProducer:
         Blocks until all messages in the queue are consumed.
         """
         self.queue.join()
-        self.customQueue.join()
+        self.custom_queue.join()
 
     def join(self):
         """
