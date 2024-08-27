@@ -36,6 +36,9 @@ jobs:
       if: ${{ matrix.python-version }} == '3.7'
       run: pip install importlib-metadata==4.13.0
 
+    - name: Check black version
+      run: black --version
+
     - name: Check code formatting
       run: black --check .
 
