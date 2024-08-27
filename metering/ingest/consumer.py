@@ -141,7 +141,7 @@ class ThreadedConsumer:
         items consumed.  In case of failure, returns the negative of this
         number.
         """
-        return self._consume(False)
+        return self._consume(is_custom=False)
 
     def consume_custom(self):
         """
@@ -149,7 +149,7 @@ class ThreadedConsumer:
         the number of items consumed.  In case of failure, returns the negative
         of this number.
         """
-        return self._consume(True)
+        return self._consume(is_custom=True)
 
     def _consume(self, is_custom):
         """
