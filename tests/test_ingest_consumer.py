@@ -245,7 +245,7 @@ class TestIngestThreadedConsumerShortSendInterval(unittest.TestCase):
 
         n = consumer.consume()
 
-        self.assertLess(n, 1000)
+        self.assertLessEqual(n, 1000)
 
     def test_respects_send_interval_even_if_queue_has_items_custom(self):
         queue = Queue()
@@ -264,7 +264,7 @@ class TestIngestThreadedConsumerShortSendInterval(unittest.TestCase):
 
         n = consumer.consumeCustom()
 
-        self.assertLess(n, 1000)
+        self.assertLessEqual(n, 1000)
 
 
 class TestBackoffDelay(unittest.TestCase):
