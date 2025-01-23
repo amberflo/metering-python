@@ -63,7 +63,7 @@ def create_ingest_payload(
 
     dimensions: Optional. Dictionary of String to String.
         Here you can specify more partition properies which which can help you
-        analize your data.
+        analyze your data.
 
     See: https://docs.amberflo.io/reference/post_ingest
     """

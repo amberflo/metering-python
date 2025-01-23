@@ -1,6 +1,7 @@
 requests
 backoff
 boto3
+openai
 
 # dev
 virtualenv
