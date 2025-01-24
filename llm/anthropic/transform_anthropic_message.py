@@ -1,18 +1,17 @@
 from ingest.api_client import create_ingest_payload
 import time
 
-
-def transform_open_ai_chat_completion(response, meter_api_name, user):
+def transform_anthropic_message(response, meter_api_name, user):
     """
-    Takes the ChatCompletion from openai and transforms it into
+    Takes the Message response from anthropic messages api and transforms it into
     a meter event that can be ingested into Amberflo.
     Requires Amberflo Meter and Amberflo customer to be pre-created
     """
 
     if response["usage"] is None:
-        raise Exception("OpenAi 'usage' not found in response")
+        raise Exception("Anthropic 'usage' not found in response")
 
-    totalTokens = response["usage"]["total_tokens"]
+    totalTokens = response["usage"]["input_tokens"] + response["usage"]["output_tokens"]
 
     dimensions = {"model": response["model"], "object": response["object"]}
 
