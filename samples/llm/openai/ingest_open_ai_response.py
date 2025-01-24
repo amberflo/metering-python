@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-This sample shows an example of how to call OpenAi for chat completion, 
+This sample shows an example of how to call OpenAi for chat completion,
 and then ingest the tokens consumed from the response into Amberflo.
 """
 
