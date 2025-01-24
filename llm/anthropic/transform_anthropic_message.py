@@ -1,6 +1,7 @@
 from ingest.api_client import create_ingest_payload
 import time
 
+
 def transform_anthropic_message(response, meter_api_name, user):
     """
     Takes the Message response from anthropic messages api and transforms it into
