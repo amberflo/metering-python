@@ -30,6 +30,9 @@ extras_require = {
     "s3": [
         "boto3",  # https://boto3.amazonaws.com/v1/documentation/api/latest/index.html
     ],
+    "openai": [
+        "openai",  # https://platform.openai.com/docs/api-reference/introduction
+    ],
 }
 
 packages = [p for p in find_packages() if "tests" not in p]
