@@ -1,10 +1,8 @@
+import atexit
 import unittest
-from metering.meter_llm import process_llm_response
-from metering.constants import (
-    LlmProvider,
-    INPUT_TOKENS_METER_API_NAME,
-    OUTPUT_TOKENS_METER_API_NAME,
-)
+from unittest.mock import MagicMock, patch
+from metering import meter_llm
+from metering.llms import process_llm_response
 
 meter_api_name_key = "meterApiName"
 meter_value_key = "meterValue"
@@ -13,6 +11,13 @@ customer_id_key = "customerId"
 unique_id_key = "uniqueId"
 dimensions_key = "dimensions"
 customer_id = "user123"
+INPUT_TOKENS_METER_API_NAME = "input_tokens"
+OUTPUT_TOKENS_METER_API_NAME = "output_tokens"
+ANTHROPIC_PROVIDER = "anthropic"
+OPENAI_PROVIDER = "openai"
+COHERE_PROVIDER = "cohere"
+VERTEXAI_PROVIDER = "vertexai"
+UNKNOWN_PROVIDER = "unknown"
 EMPTY_DIMENSIONS = {}
 
 
@@ -25,7 +30,7 @@ class AnthropicResponse:
     def __init__(self, type: str, model: str):
         self.type = type
         self.model = model
-        self.usage = self.Usage(10, 12)
+        self.usage = self.Usage(9, 12)
 
 
 class OpenAiChatResponse:
@@ -108,32 +113,11 @@ class TestProcessLLMReponse(unittest.TestCase):
         expected_dimensions = {
             "model": response.model,
             "object": response.type,
-            "provider": LlmProvider.ANTHROPIC.value,
+            "provider": ANTHROPIC_PROVIDER,
         }
 
-        self.assertIsNotNone(input_tokens_event[meter_value_key])
-        self.assertIsNotNone(input_tokens_event[unique_id_key])
-        self.assertIsNotNone(input_tokens_event[timestamp_key])
-        self.assertIsNotNone(input_tokens_event[customer_id_key])
-        self.assertIsNotNone(input_tokens_event[dimensions_key])
-        self.assertEqual(
-            input_tokens_event[meter_api_name_key], INPUT_TOKENS_METER_API_NAME
-        )
-        self.assertEqual(input_tokens_event[meter_value_key], 10)
-        self.assertEqual(input_tokens_event[dimensions_key], expected_dimensions)
-        self.assertEqual(input_tokens_event[customer_id_key], customer_id)
-
-        self.assertIsNotNone(output_tokens_event[meter_value_key])
-        self.assertIsNotNone(output_tokens_event[unique_id_key])
-        self.assertIsNotNone(output_tokens_event[timestamp_key])
-        self.assertIsNotNone(output_tokens_event[customer_id_key])
-        self.assertIsNotNone(output_tokens_event[dimensions_key])
-        self.assertEqual(
-            output_tokens_event[meter_api_name_key], OUTPUT_TOKENS_METER_API_NAME
-        )
-        self.assertEqual(output_tokens_event[meter_value_key], 12)
-        self.assertEqual(output_tokens_event[dimensions_key], expected_dimensions)
-        self.assertEqual(output_tokens_event[customer_id_key], customer_id)
+        make_input_token_assertions(self, input_tokens_event, expected_dimensions)
+        make_output_token_assertions(self, output_tokens_event, expected_dimensions)
 
     def test_openai_chat_completion_response(self):
         response = OpenAiChatResponse(
@@ -148,62 +132,29 @@ class TestProcessLLMReponse(unittest.TestCase):
         expected_dimensions = {
             "model": response.model,
             "object": response.object,
-            "provider": LlmProvider.OPENAI.value,
+            "provider": OPENAI_PROVIDER,
         }
 
-        self.assertIsNotNone(input_tokens_event[meter_value_key])
-        self.assertIsNotNone(input_tokens_event[unique_id_key])
-        self.assertIsNotNone(input_tokens_event[timestamp_key])
-        self.assertIsNotNone(input_tokens_event[customer_id_key])
-        self.assertIsNotNone(input_tokens_event[dimensions_key])
-        self.assertEqual(
-            input_tokens_event[meter_api_name_key], INPUT_TOKENS_METER_API_NAME
-        )
-        self.assertEqual(input_tokens_event[meter_value_key], 9)
-        self.assertEqual(input_tokens_event[dimensions_key], expected_dimensions)
-        self.assertEqual(input_tokens_event[customer_id_key], customer_id)
-
-        self.assertIsNotNone(output_tokens_event[meter_value_key])
-        self.assertIsNotNone(output_tokens_event[unique_id_key])
-        self.assertIsNotNone(output_tokens_event[timestamp_key])
-        self.assertIsNotNone(output_tokens_event[customer_id_key])
-        self.assertIsNotNone(output_tokens_event[dimensions_key])
-        self.assertEqual(
-            output_tokens_event[meter_api_name_key], OUTPUT_TOKENS_METER_API_NAME
-        )
-        self.assertEqual(output_tokens_event[meter_value_key], 12)
-        self.assertEqual(output_tokens_event[dimensions_key], expected_dimensions)
-        self.assertEqual(output_tokens_event[customer_id_key], customer_id)
+        make_input_token_assertions(self, input_tokens_event, expected_dimensions)
+        make_output_token_assertions(self, output_tokens_event, expected_dimensions)
 
     def test_openai_embedding_response(self):
         response = OpenAiEmbeddingResponse(
             model="text-embedding-ada-002", object="embedding"
         )
-        input_tokens_event, output_tokens_event = process_llm_response(
+        input_tokens_event = process_llm_response(
             llm_response=response,
             customer_id=customer_id,
             aflo_dimensions=EMPTY_DIMENSIONS,
-        )
+        )[0]
 
         expected_dimensions = {
             "model": response.model,
             "object": response.data.object,
-            "provider": LlmProvider.OPENAI.value,
+            "provider": OPENAI_PROVIDER,
         }
 
-        self.assertIsNotNone(input_tokens_event[meter_value_key])
-        self.assertIsNotNone(input_tokens_event[unique_id_key])
-        self.assertIsNotNone(input_tokens_event[timestamp_key])
-        self.assertIsNotNone(input_tokens_event[customer_id_key])
-        self.assertIsNotNone(input_tokens_event[dimensions_key])
-        self.assertEqual(
-            input_tokens_event[meter_api_name_key], INPUT_TOKENS_METER_API_NAME
-        )
-        self.assertEqual(input_tokens_event[meter_value_key], 9)
-        self.assertEqual(input_tokens_event[dimensions_key], expected_dimensions)
-        self.assertEqual(input_tokens_event[customer_id_key], customer_id)
-
-        self.assertEqual(output_tokens_event, None)
+        make_input_token_assertions(self, input_tokens_event, expected_dimensions)
 
     def test_cohere_v1_response(self):
         response = CohereV1Response()
@@ -216,32 +167,11 @@ class TestProcessLLMReponse(unittest.TestCase):
         expected_dimensions = {
             "model": "unknown model",
             "object": "text",
-            "provider": LlmProvider.COHERE.value,
+            "provider": COHERE_PROVIDER,
         }
 
-        self.assertIsNotNone(input_tokens_event[meter_value_key])
-        self.assertIsNotNone(input_tokens_event[unique_id_key])
-        self.assertIsNotNone(input_tokens_event[timestamp_key])
-        self.assertIsNotNone(input_tokens_event[customer_id_key])
-        self.assertIsNotNone(input_tokens_event[dimensions_key])
-        self.assertEqual(
-            input_tokens_event[meter_api_name_key], INPUT_TOKENS_METER_API_NAME
-        )
-        self.assertEqual(input_tokens_event[meter_value_key], 9)
-        self.assertEqual(input_tokens_event[dimensions_key], expected_dimensions)
-        self.assertEqual(input_tokens_event[customer_id_key], customer_id)
-
-        self.assertIsNotNone(output_tokens_event[meter_value_key])
-        self.assertIsNotNone(output_tokens_event[unique_id_key])
-        self.assertIsNotNone(output_tokens_event[timestamp_key])
-        self.assertIsNotNone(output_tokens_event[customer_id_key])
-        self.assertIsNotNone(output_tokens_event[dimensions_key])
-        self.assertEqual(
-            output_tokens_event[meter_api_name_key], OUTPUT_TOKENS_METER_API_NAME
-        )
-        self.assertEqual(output_tokens_event[meter_value_key], 12)
-        self.assertEqual(output_tokens_event[dimensions_key], expected_dimensions)
-        self.assertEqual(output_tokens_event[customer_id_key], customer_id)
+        make_input_token_assertions(self, input_tokens_event, expected_dimensions)
+        make_output_token_assertions(self, output_tokens_event, expected_dimensions)
 
     def test_cohere_v2_response(self):
         response = CohereV2Response()
@@ -254,32 +184,11 @@ class TestProcessLLMReponse(unittest.TestCase):
         expected_dimensions = {
             "model": "unknown model",
             "object": "text",
-            "provider": LlmProvider.COHERE.value,
+            "provider": COHERE_PROVIDER,
         }
 
-        self.assertIsNotNone(input_tokens_event[meter_value_key])
-        self.assertIsNotNone(input_tokens_event[unique_id_key])
-        self.assertIsNotNone(input_tokens_event[timestamp_key])
-        self.assertIsNotNone(input_tokens_event[customer_id_key])
-        self.assertIsNotNone(input_tokens_event[dimensions_key])
-        self.assertEqual(
-            input_tokens_event[meter_api_name_key], INPUT_TOKENS_METER_API_NAME
-        )
-        self.assertEqual(input_tokens_event[meter_value_key], 9)
-        self.assertEqual(input_tokens_event[dimensions_key], expected_dimensions)
-        self.assertEqual(input_tokens_event[customer_id_key], customer_id)
-
-        self.assertIsNotNone(output_tokens_event[meter_value_key])
-        self.assertIsNotNone(output_tokens_event[unique_id_key])
-        self.assertIsNotNone(output_tokens_event[timestamp_key])
-        self.assertIsNotNone(output_tokens_event[customer_id_key])
-        self.assertIsNotNone(output_tokens_event[dimensions_key])
-        self.assertEqual(
-            output_tokens_event[meter_api_name_key], OUTPUT_TOKENS_METER_API_NAME
-        )
-        self.assertEqual(output_tokens_event[meter_value_key], 12)
-        self.assertEqual(output_tokens_event[dimensions_key], expected_dimensions)
-        self.assertEqual(output_tokens_event[customer_id_key], customer_id)
+        make_input_token_assertions(self, input_tokens_event, expected_dimensions)
+        make_output_token_assertions(self, output_tokens_event, expected_dimensions)
 
     def test_vertexai_response(self):
         response = VertexAiResponse(promptTokenCount=9, candidatesTokenCount=12)
@@ -292,29 +201,81 @@ class TestProcessLLMReponse(unittest.TestCase):
         expected_dimensions = {
             "model": "unknown model",
             "object": "vertexCompletion",
-            "provider": LlmProvider.VERTEXAI.value,
+            "provider": VERTEXAI_PROVIDER,
         }
 
-        self.assertIsNotNone(input_tokens_event[meter_value_key])
-        self.assertIsNotNone(input_tokens_event[unique_id_key])
-        self.assertIsNotNone(input_tokens_event[timestamp_key])
-        self.assertIsNotNone(input_tokens_event[customer_id_key])
-        self.assertIsNotNone(input_tokens_event[dimensions_key])
-        self.assertEqual(
-            input_tokens_event[meter_api_name_key], INPUT_TOKENS_METER_API_NAME
-        )
-        self.assertEqual(input_tokens_event[meter_value_key], 9)
-        self.assertEqual(input_tokens_event[dimensions_key], expected_dimensions)
-        self.assertEqual(input_tokens_event[customer_id_key], customer_id)
+        make_input_token_assertions(self, input_tokens_event, expected_dimensions)
+        make_output_token_assertions(self, output_tokens_event, expected_dimensions)
 
-        self.assertIsNotNone(output_tokens_event[meter_value_key])
-        self.assertIsNotNone(output_tokens_event[unique_id_key])
-        self.assertIsNotNone(output_tokens_event[timestamp_key])
-        self.assertIsNotNone(output_tokens_event[customer_id_key])
-        self.assertIsNotNone(output_tokens_event[dimensions_key])
-        self.assertEqual(
-            output_tokens_event[meter_api_name_key], OUTPUT_TOKENS_METER_API_NAME
-        )
-        self.assertEqual(output_tokens_event[meter_value_key], 12)
-        self.assertEqual(output_tokens_event[dimensions_key], expected_dimensions)
-        self.assertEqual(output_tokens_event[customer_id_key], customer_id)
+
+class TestMeterLLMDecorator(unittest.TestCase):
+    @patch("metering.llms.create_ingest_client")  # Mock the client creation
+    def test_meter_llm_calls_shutdown_with_passed_client(
+        self, mock_create_ingest_client
+    ):
+        # Mock metering client
+        mock_client = MagicMock()
+        mock_create_ingest_client.return_value = mock_client
+
+        print(f"Mock client: {mock_client}")
+
+        @meter_llm(metering_client=mock_client)
+        def dummy_llm_function():
+            return AnthropicResponse("message", "claude-3-5-sonnet-20241022")
+
+        dummy_llm_function()
+
+        mock_client.shutdown.assert_not_called()  # Not called yet
+        self.assertEqual(mock_client.send.call_count, 2)  # Two calls to send
+
+        # Simulate process exit and check if shutdown was called
+        atexit._run_exitfuncs()  # Manually trigger atexit functions
+        mock_client.shutdown.assert_called_once()
+
+    @patch("metering.llms.create_ingest_client")  # Mock the client creation
+    def test_meter_llm_calls_shutdown_with_no_client(self, mock_create_ingest_client):
+        # Mock metering client
+        mock_client = MagicMock()
+        mock_create_ingest_client.return_value = mock_client
+
+        @meter_llm()
+        def dummy_llm_function():
+            return AnthropicResponse("message", "claude-3-5-sonnet-20241022")
+
+        dummy_llm_function()
+
+        # Assert that metering_client.shutdown was registered
+        mock_client.shutdown.assert_not_called()  # Not called yet
+        self.assertEqual(mock_client.send.call_count, 2)  # Two calls to send
+
+        # Simulate process exit and check if shutdown was called
+        atexit._run_exitfuncs()  # Manually trigger atexit functions
+        mock_client.shutdown.assert_called_once()
+
+
+def make_input_token_assertions(self, input_tokens_event, expected_dimensions):
+    self.assertIsNotNone(input_tokens_event[meter_value_key])
+    self.assertIsNotNone(input_tokens_event[unique_id_key])
+    self.assertIsNotNone(input_tokens_event[timestamp_key])
+    self.assertIsNotNone(input_tokens_event[customer_id_key])
+    self.assertIsNotNone(input_tokens_event[dimensions_key])
+    self.assertEqual(
+        input_tokens_event[meter_api_name_key], INPUT_TOKENS_METER_API_NAME
+    )
+    self.assertEqual(input_tokens_event[meter_value_key], 9)
+    self.assertEqual(input_tokens_event[dimensions_key], expected_dimensions)
+    self.assertEqual(input_tokens_event[customer_id_key], customer_id)
+
+
+def make_output_token_assertions(self, output_tokens_event, expected_dimensions):
+    self.assertIsNotNone(output_tokens_event[meter_value_key])
+    self.assertIsNotNone(output_tokens_event[unique_id_key])
+    self.assertIsNotNone(output_tokens_event[timestamp_key])
+    self.assertIsNotNone(output_tokens_event[customer_id_key])
+    self.assertIsNotNone(output_tokens_event[dimensions_key])
+    self.assertEqual(
+        output_tokens_event[meter_api_name_key], OUTPUT_TOKENS_METER_API_NAME
+    )
+    self.assertEqual(output_tokens_event[meter_value_key], 12)
+    self.assertEqual(output_tokens_event[dimensions_key], expected_dimensions)
+    self.assertEqual(output_tokens_event[customer_id_key], customer_id)

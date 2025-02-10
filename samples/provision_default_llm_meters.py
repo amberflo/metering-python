@@ -14,6 +14,7 @@ It is advised to not run this script more than once=
 
 
 def provision_meters():
+    URL = "https://app.amberflo.io/provisioning"
     # Provision the meters
     headers = {
         "Accept": "application/json",
@@ -22,13 +23,11 @@ def provision_meters():
     }
     data = {"templateId": "llm"}
 
-    return requests.post(
-        "https://app.amberflo.io/provisioning", headers=headers, json=data
-    )
+    return requests.post(URL, headers=headers, json=data)
 
 
 def create_test_customer():
-    URL = "https://app.amberflo.io/meters"
+    URL = "https://app.amberflo.io/customers"
 
     payload = json.dumps(
         {

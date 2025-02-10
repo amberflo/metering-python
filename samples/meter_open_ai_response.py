@@ -5,9 +5,12 @@ This sample shows an example of how to use the meter_llm decorator to intercept 
 transform the reponse into Amberflo events, and then ingest the events into Amberflo.
 """
 
+import logging
 from openai import OpenAI
 from typing import Optional
-from metering.meter_llm import meter_llm
+from metering import meter_llm
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 @meter_llm()
