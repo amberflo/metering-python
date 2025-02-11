@@ -227,7 +227,6 @@ def process_llm_response(llm_response: object, customer_id: str, aflo_dimensions
             ),
         ]
 
-    # TODO @vgeorgewillv add logger
     logger.debug("No known llm provider matched")
     return []
 

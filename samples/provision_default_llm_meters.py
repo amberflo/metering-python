@@ -9,12 +9,13 @@ This script will:
 1. Provision the input_tokens and output_tokens meters.
 2. Create a dummy customer called "test_customer".
 
-It is advised to not run this script more than once=
+It is advised to not run this script more than once
 """
+BASE_URL = "https://app.amberflo.io"
 
 
 def provision_meters():
-    URL = "https://app.amberflo.io/provisioning"
+    path = "/provisioning"
     # Provision the meters
     headers = {
         "Accept": "application/json",
@@ -23,11 +24,11 @@ def provision_meters():
     }
     data = {"templateId": "llm"}
 
-    return requests.post(URL, headers=headers, json=data)
+    return requests.post(BASE_URL + path, headers=headers, json=data)
 
 
 def create_test_customer():
-    URL = "https://app.amberflo.io/customers"
+    path = "/customers"
 
     payload = json.dumps(
         {
@@ -50,14 +51,14 @@ def create_test_customer():
 
     requests.request(
         "POST",
-        URL,
+        BASE_URL + path,
         headers=headers,
         data=payload,
     )
 
 
 def validate_meters_do_not_exist():
-    URL = "https://app.amberflo.io/meters"
+    path = "/meters"
 
     payload = {}
     headers = {
@@ -68,7 +69,7 @@ def validate_meters_do_not_exist():
 
     response = requests.request(
         "GET",
-        URL,
+        BASE_URL + path,
         headers=headers,
         data=payload,
     )
@@ -86,7 +87,7 @@ def validate_meters_do_not_exist():
 
 
 def validate_default_customer_does_not_exist():
-    URL = "https://app.amberflo.io/customers/test_customer"
+    path = "/customers/test_customer"
 
     payload = {}
     headers = {
@@ -97,7 +98,7 @@ def validate_default_customer_does_not_exist():
 
     response = requests.request(
         "GET",
-        URL,
+        BASE_URL + path,
         headers=headers,
         data=payload,
     )
