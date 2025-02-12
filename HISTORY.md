@@ -1,5 +1,10 @@
 # Release History
 
+## 3.3.0
+Features:
+- New `meter_llm` decorator to allow automatic extraction and ingestion of llm responses into Amberflo
+- Sample script to automaticaly create templated "input_tokens" and "output_tokens" meters as well as a "test_customer" to get started with the decorator
+
 ## 3.2.0
 Features:
 - Allow ingestion of arbitrary payload through schema detection
