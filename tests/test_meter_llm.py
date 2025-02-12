@@ -210,7 +210,7 @@ class TestProcessLLMReponse(unittest.TestCase):
 
 class TestMeterLLMDecorator(unittest.TestCase):
     @patch("metering.llms.create_ingest_client")  # Mock the client creation
-    def test_meter_llm_calls_shutdown_with_passed_client(
+    def test_meter_llm_does_not_call_shutdown_with_passed_client(
         self, mock_create_ingest_client
     ):
         # Mock metering client
@@ -230,7 +230,7 @@ class TestMeterLLMDecorator(unittest.TestCase):
 
         # Simulate process exit and check if shutdown was called
         atexit._run_exitfuncs()  # Manually trigger atexit functions
-        mock_client.shutdown.assert_called_once()
+        mock_client.shutdown.assert_not_called()
 
     @patch("metering.llms.create_ingest_client")  # Mock the client creation
     def test_meter_llm_calls_shutdown_with_no_client(self, mock_create_ingest_client):

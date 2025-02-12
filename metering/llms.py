@@ -16,7 +16,7 @@ UNKNOWN_PROVIDER = "unknown"
 
 logger = logging.getLogger(__name__)
 
-__metering_client = None
+_default_client = None
 
 
 def customer_id_getter(kwargs):
@@ -27,15 +27,12 @@ def aflo_dimensions_getter(kwargs):
     return kwargs.get("aflo_dimensions", {})
 
 
-def initialize_metering_client(client):
-    global __metering_client
-    __metering_client = client
-    atexit.register(__metering_client.shutdown)
-
-
-def get_metering_client():
-    global __metering_client
-    return __metering_client
+def _get_default_client():
+    global _default_client
+    if not _default_client:
+        _default_client = create_ingest_client(api_key=os.environ.get("API_KEY"))
+        atexit.register(_default_client.shutdown)
+    return _default_client
 
 
 def meter_llm(
@@ -44,13 +41,7 @@ def meter_llm(
     metering_client=None,
 ):
     if metering_client is None:
-        if get_metering_client() is None:
-            initialize_metering_client(
-                create_ingest_client(api_key=os.environ.get("API_KEY"))
-            )
-        metering_client = get_metering_client()
-    else:
-        initialize_metering_client(metering_client)
+        metering_client = _get_default_client()
 
     def decorator(func):
         def wrapper(*args, **kwargs):
