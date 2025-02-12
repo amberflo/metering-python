@@ -1,6 +1,5 @@
-import requests
 import os
-import json
+from metering.session.api_session import ApiSession
 
 """
 Use this script to provision the input_tokens and output_tokens meters.
@@ -11,70 +10,11 @@ This script will:
 
 It is advised to not run this script more than once
 """
-BASE_URL = "https://app.amberflo.io"
 
 
-def provision_meters():
-    path = "/provisioning"
-    # Provision the meters
-    headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "x-api-key": os.environ.get("API_KEY"),
-    }
-    data = {"templateId": "llm"}
-
-    return requests.post(BASE_URL + path, headers=headers, json=data)
-
-
-def create_test_customer():
-    path = "/customers"
-
-    payload = json.dumps(
-        {
-            "customerId": "test_customer",
-            "customerName": "test_customer",
-            "address": {
-                "line1": "",
-                "city": "",
-                "state": "",
-                "country": "",
-                "postalCode": "",
-            },
-        }
-    )
-    headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "x-api-key": os.environ.get("API_KEY"),
-    }
-
-    requests.request(
-        "POST",
-        BASE_URL + path,
-        headers=headers,
-        data=payload,
-    )
-
-
-def validate_meters_do_not_exist():
-    path = "/meters"
-
-    payload = {}
-    headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "x-api-key": os.environ.get("API_KEY"),
-    }
-
-    response = requests.request(
-        "GET",
-        BASE_URL + path,
-        headers=headers,
-        data=payload,
-    )
-    meters = json.loads(response.text)
-    for meter in meters:
+def validate_meters_do_not_exist(session: ApiSession):
+    response = session.get("/meters")
+    for meter in response:
         if (
             meter["meterApiName"] == "input_tokens"
             or meter["meterApiName"] == "output_tokens"
@@ -86,35 +26,33 @@ def validate_meters_do_not_exist():
     return True
 
 
-def validate_default_customer_does_not_exist():
-    path = "/customers/test_customer"
+def validate_default_customer_does_not_exist(session: ApiSession):
+    test_customer = session.get("/customers/test_customer")
 
-    payload = {}
-    headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "x-api-key": os.environ.get("API_KEY"),
-    }
-
-    response = requests.request(
-        "GET",
-        BASE_URL + path,
-        headers=headers,
-        data=payload,
-    )
-    customers = json.loads(response.text)
-    if len(customers) != 0:
+    if len(test_customer) != 0:
         return False
     return True
 
 
 def main():
-    if validate_meters_do_not_exist():
+    session = ApiSession(os.environ.get("API_KEY"))
+    if validate_meters_do_not_exist(session):
         print("provisioning meters")
-        provision_meters()
-    if validate_default_customer_does_not_exist():
+        session.post("/provisioning", {"templateId": "llm"})
+    if validate_default_customer_does_not_exist(session):
         print("Customer does not exist. Creating customer.")
-        create_test_customer()
+        customer_payload = {
+            "customerId": "test_customer",
+            "customerName": "test_customer",
+            "address": {
+                "line1": "1939 Kane Street",
+                "city": "Gotham City",
+                "state": "NY",
+                "country": "USA",
+                "postalCode": "11111",
+            },
+        }
+        session.post("/customers", json=customer_payload)
     else:
         print("Test customer already exists. Creation not necessary.")
     print("Exiting")

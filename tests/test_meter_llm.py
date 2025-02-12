@@ -2,7 +2,7 @@ import atexit
 import unittest
 from unittest.mock import MagicMock, patch
 from metering import meter_llm
-from metering.llms import process_llm_response
+from metering.llms import extract_ingest_messages
 
 meter_api_name_key = "meterApiName"
 meter_value_key = "meterValue"
@@ -104,7 +104,7 @@ class VertexAiResponse:
 class TestProcessLLMReponse(unittest.TestCase):
     def test_anthropic_response(self):
         response = AnthropicResponse("message", "claude-3-5-sonnet-20241022")
-        input_tokens_event, output_tokens_event = process_llm_response(
+        input_tokens_event, output_tokens_event = extract_ingest_messages(
             llm_response=response,
             customer_id=customer_id,
             aflo_dimensions=EMPTY_DIMENSIONS,
@@ -123,7 +123,7 @@ class TestProcessLLMReponse(unittest.TestCase):
         response = OpenAiChatResponse(
             model="gpt-4o-mini", prompt_tokens=9, completion_tokens=12, user=customer_id
         )
-        input_tokens_event, output_tokens_event = process_llm_response(
+        input_tokens_event, output_tokens_event = extract_ingest_messages(
             llm_response=response,
             customer_id=customer_id,
             aflo_dimensions=EMPTY_DIMENSIONS,
@@ -142,7 +142,7 @@ class TestProcessLLMReponse(unittest.TestCase):
         response = OpenAiEmbeddingResponse(
             model="text-embedding-ada-002", object="embedding"
         )
-        input_tokens_event = process_llm_response(
+        input_tokens_event = extract_ingest_messages(
             llm_response=response,
             customer_id=customer_id,
             aflo_dimensions=EMPTY_DIMENSIONS,
@@ -158,7 +158,7 @@ class TestProcessLLMReponse(unittest.TestCase):
 
     def test_cohere_v1_response(self):
         response = CohereV1Response()
-        input_tokens_event, output_tokens_event = process_llm_response(
+        input_tokens_event, output_tokens_event = extract_ingest_messages(
             llm_response=response,
             customer_id=customer_id,
             aflo_dimensions=EMPTY_DIMENSIONS,
@@ -175,7 +175,7 @@ class TestProcessLLMReponse(unittest.TestCase):
 
     def test_cohere_v2_response(self):
         response = CohereV2Response()
-        input_tokens_event, output_tokens_event = process_llm_response(
+        input_tokens_event, output_tokens_event = extract_ingest_messages(
             llm_response=response,
             customer_id=customer_id,
             aflo_dimensions=EMPTY_DIMENSIONS,
@@ -192,7 +192,7 @@ class TestProcessLLMReponse(unittest.TestCase):
 
     def test_vertexai_response(self):
         response = VertexAiResponse(promptTokenCount=9, candidatesTokenCount=12)
-        input_tokens_event, output_tokens_event = process_llm_response(
+        input_tokens_event, output_tokens_event = extract_ingest_messages(
             llm_response=response,
             customer_id=customer_id,
             aflo_dimensions=EMPTY_DIMENSIONS,

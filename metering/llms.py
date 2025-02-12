@@ -16,6 +16,8 @@ UNKNOWN_PROVIDER = "unknown"
 
 logger = logging.getLogger(__name__)
 
+__metering_client = None
+
 
 def customer_id_getter(kwargs):
     return kwargs.get("customer_id", "test_customer")
@@ -25,16 +27,30 @@ def aflo_dimensions_getter(kwargs):
     return kwargs.get("aflo_dimensions", {})
 
 
+def initialize_metering_client(client):
+    global __metering_client
+    __metering_client = client
+    atexit.register(__metering_client.shutdown)
+
+
+def get_metering_client():
+    global __metering_client
+    return __metering_client
+
+
 def meter_llm(
     customer_id_getter=customer_id_getter,
     dimensions_getter=aflo_dimensions_getter,
     metering_client=None,
 ):
     if metering_client is None:
-        metering_client = create_ingest_client(os.environ.get("API_KEY"))
-        atexit.register(metering_client.shutdown)
+        if get_metering_client() is None:
+            initialize_metering_client(
+                create_ingest_client(api_key=os.environ.get("API_KEY"))
+            )
+        metering_client = get_metering_client()
     else:
-        atexit.register(metering_client.shutdown)
+        initialize_metering_client(metering_client)
 
     def decorator(func):
         def wrapper(*args, **kwargs):
@@ -44,12 +60,11 @@ def meter_llm(
 
             llm_response = func(*args, **kwargs)
 
-            events = process_llm_response(
+            events = extract_ingest_messages(
                 llm_response=llm_response,
                 customer_id=customer_id,
                 aflo_dimensions=aflo_dimensions,
             )
-            events = [event for event in events if event is not None]
             for event in events:
                 try:
                     logger.debug(f"Sending event: {event}")
@@ -64,10 +79,10 @@ def meter_llm(
     return decorator
 
 
-def create_payloads(
+def _create_event(
     meter_api_name: str, meter_value: float, customer_id: str, dimensions: dict
 ):
-    """Helper function to create ingestion payloads."""
+    """Helper function to create a single ingestion payload aka an event."""
 
     return create_ingest_payload(
         meter_api_name=meter_api_name,
@@ -78,7 +93,9 @@ def create_payloads(
     )
 
 
-def process_llm_response(llm_response: object, customer_id: str, aflo_dimensions: dict):
+def extract_ingest_messages(
+    llm_response: object, customer_id: str, aflo_dimensions: dict
+):
     """
     Processes certain LLM provider chat completion or embedding response and returns token usage payloads.
     We currently support Anthropic Messages, OpenAI Chat, OpenAI Embedding, Cohere v1 Chat, Cohere v2 Chat,
@@ -98,20 +115,20 @@ def process_llm_response(llm_response: object, customer_id: str, aflo_dimensions
     if getattr(llm_response, "usage", None):
         # Anthropic
         if getattr(llm_response, "type", None) == "message":
-            dimensions = build_dimensions(
+            dimensions = _build_dimensions(
                 llm_response.model,
                 llm_response.type,
                 ANTHROPIC_PROVIDER,
                 aflo_dimensions,
             )
             return [
-                create_payloads(
+                _create_event(
                     INPUT_TOKENS_METER_API_NAME,
                     llm_response.usage.input_tokens,
                     customer_id,
                     dimensions,
                 ),
-                create_payloads(
+                _create_event(
                     OUTPUT_TOKENS_METER_API_NAME,
                     llm_response.usage.output_tokens,
                     customer_id,
@@ -121,20 +138,20 @@ def process_llm_response(llm_response: object, customer_id: str, aflo_dimensions
 
         # OpenAI Chat
         if getattr(llm_response, "object", None) == "chat.completion":
-            dimensions = build_dimensions(
+            dimensions = _build_dimensions(
                 llm_response.model,
                 llm_response.object,
                 OPENAI_PROVIDER,
                 aflo_dimensions,
             )
             return [
-                create_payloads(
+                _create_event(
                     INPUT_TOKENS_METER_API_NAME,
                     llm_response.usage.prompt_tokens,
                     customer_id,
                     dimensions,
                 ),
-                create_payloads(
+                _create_event(
                     OUTPUT_TOKENS_METER_API_NAME,
                     llm_response.usage.completion_tokens,
                     customer_id,
@@ -147,14 +164,14 @@ def process_llm_response(llm_response: object, customer_id: str, aflo_dimensions
             getattr(llm_response, "data", None)
             and getattr(llm_response.data, "object", None) == "embedding"
         ):
-            dimensions = build_dimensions(
+            dimensions = _build_dimensions(
                 llm_response.model,
                 llm_response.data.object,
                 OPENAI_PROVIDER,
                 aflo_dimensions,
             )
             return [
-                create_payloads(
+                _create_event(
                     INPUT_TOKENS_METER_API_NAME,
                     llm_response.usage.prompt_tokens,
                     customer_id,
@@ -164,17 +181,17 @@ def process_llm_response(llm_response: object, customer_id: str, aflo_dimensions
 
         # Cohere v2 chat
         if getattr(llm_response.usage, "billed_units", None):
-            dimensions = build_dimensions(
+            dimensions = _build_dimensions(
                 "unknown model", "text", COHERE_PROVIDER, aflo_dimensions
             )
             return [
-                create_payloads(
+                _create_event(
                     INPUT_TOKENS_METER_API_NAME,
                     llm_response.usage.billed_units.input_tokens,
                     customer_id,
                     dimensions,
                 ),
-                create_payloads(
+                _create_event(
                     OUTPUT_TOKENS_METER_API_NAME,
                     llm_response.usage.billed_units.output_tokens,
                     customer_id,
@@ -186,17 +203,17 @@ def process_llm_response(llm_response: object, customer_id: str, aflo_dimensions
     if getattr(llm_response, "meta", None) and getattr(
         llm_response.meta, "billed_units", None
     ):
-        dimensions = build_dimensions(
+        dimensions = _build_dimensions(
             "unknown model", "text", COHERE_PROVIDER, aflo_dimensions
         )
         return [
-            create_payloads(
+            _create_event(
                 INPUT_TOKENS_METER_API_NAME,
                 llm_response.meta.billed_units.input_tokens,
                 customer_id,
                 dimensions,
             ),
-            create_payloads(
+            _create_event(
                 OUTPUT_TOKENS_METER_API_NAME,
                 llm_response.meta.billed_units.output_tokens,
                 customer_id,
@@ -206,20 +223,20 @@ def process_llm_response(llm_response: object, customer_id: str, aflo_dimensions
 
     # Google VertexAI
     if getattr(llm_response, "usageMetadata", None):
-        dimensions = build_dimensions(
+        dimensions = _build_dimensions(
             "unknown model",
             "vertexCompletion",
             VERTEXAI_PROVIDER,
             aflo_dimensions,
         )
         return [
-            create_payloads(
+            _create_event(
                 INPUT_TOKENS_METER_API_NAME,
                 llm_response.usageMetadata.promptTokenCount,
                 customer_id,
                 dimensions,
             ),
-            create_payloads(
+            _create_event(
                 OUTPUT_TOKENS_METER_API_NAME,
                 llm_response.usageMetadata.candidatesTokenCount,
                 customer_id,
@@ -231,7 +248,7 @@ def process_llm_response(llm_response: object, customer_id: str, aflo_dimensions
     return []
 
 
-def build_dimensions(model: str, object: str, provider: str, dimensions: dict = {}):
+def _build_dimensions(model: str, object: str, provider: str, dimensions: dict = {}):
 
     base_llm_dimensions = {
         "model": model,
