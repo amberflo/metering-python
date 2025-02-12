@@ -3,6 +3,7 @@ from warnings import warn
 from metering.version import VERSION
 from metering.customer import CustomerApiClient, create_customer_payload
 from metering.ingest import create_ingest_client
+from metering.llms import meter_llm  # noqa
 
 __version__ = VERSION
 
