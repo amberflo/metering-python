@@ -1,5 +1,10 @@
 # Release History
 
+## 3.3.1
+
+Fix:
+- Typo in method name.
+
 ## 3.3.0
 Features:
 - New `meter_llm` decorator to allow automatic extraction and ingestion of llm responses into Amberflo
