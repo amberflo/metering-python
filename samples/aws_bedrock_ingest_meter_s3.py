@@ -87,7 +87,7 @@ def ingest_llm_response(llm_result, metering_client, llm_context, caller_context
         meter_api_name="amazon_bedrock_input_tokens",
         meter_time_in_millis=now_in_millis(),
         meter_value=input_tokens,
-        customer_id="sales",
+        customer_id=caller_context.get("department"),
         dimensions=dimensions,
         # unique_id is the LLM response id
         # and can link input and output tokens
@@ -99,7 +99,7 @@ def ingest_llm_response(llm_result, metering_client, llm_context, caller_context
         meter_api_name="amazon_bedrock_output_tokens",
         meter_time_in_millis=now_in_millis(),
         meter_value=output_tokens,
-        customer_id="sales",
+        customer_id=caller_context.get("department"),
         dimensions=dimensions,
         unique_id=llm_result.get("id"),
     )
@@ -112,6 +112,7 @@ def main():
     caller_context = {
         "user_id": "talha",
         "app": "sales-chatbot",
+        "department": "sales",
     }
 
     # LLM input
