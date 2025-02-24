@@ -1,8 +1,8 @@
 """
-This sample demonstrates how to ingest AWS Bedrock 
+This sample demonstrates how to ingest AWS Bedrock
 LLM responses as meter events via S3 using boto3.
-Ingestion occurs in batches on a background thread to support high throughput, 
-making it particularly useful in web server environments by 
+Ingestion occurs in batches on a background thread to support high throughput,
+making it particularly useful in web server environments by
 offloading ingestion from the request-response cycle.
 
 Instead of the Amberflo API, this approach utilizes the S3 meter record sink.
