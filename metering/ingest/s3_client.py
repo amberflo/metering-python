@@ -41,7 +41,7 @@ class IngestS3Client:
             uuid4(), datetime.now().strftime(r"%d-%b-%Y-%H-%M-%S-%f")
         )
 
-        return self._putObject(file_name, payload)
+        return self._put_object(file_name, payload)
 
     def send_custom(self, payload):
         """
@@ -54,7 +54,7 @@ class IngestS3Client:
             uuid4(), datetime.now().strftime(r"%d-%b-%Y-%H-%M-%S-%f")
         )
 
-        return self._putObject(file_name, payload)
+        return self._put_object(file_name, payload)
 
     def _put_object(self, file_name, payload):
         data = json.dumps(payload)
