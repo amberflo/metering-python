@@ -41,8 +41,6 @@ metering_client = create_ingest_client(
 def get_chat_completion(prompt):
     return bedrock_client.invoke_model(
         modelId="anthropic.claude-3-5-haiku-20241022-v1:0",
-        contentType="application/json",
-        accept="application/json",
         body=json.dumps(
             {
                 "anthropic_version": "bedrock-2023-05-31",
@@ -83,27 +81,21 @@ def ingest_llm_response(llm_result, metering_client, llm_context, caller_context
         json.dumps(dimensions, indent=4),
     )
 
-    input_token_event = create_ingest_payload(
-        meter_api_name="amazon_bedrock_input_tokens",
-        meter_time_in_millis=now_in_millis(),
-        meter_value=input_tokens,
-        customer_id=caller_context.get("department"),
-        dimensions=dimensions,
-        # unique_id is the LLM response id
-        # and can link input and output tokens
-        unique_id=llm_result.get("id"),
-    )
-    metering_client.send(input_token_event)
-
-    output_tokens_event = create_ingest_payload(
-        meter_api_name="amazon_bedrock_output_tokens",
-        meter_time_in_millis=now_in_millis(),
-        meter_value=output_tokens,
-        customer_id=caller_context.get("department"),
-        dimensions=dimensions,
-        unique_id=llm_result.get("id"),
-    )
-    metering_client.send(output_tokens_event)
+    for meter_api_name, meter_value in [
+        ("amazon_bedrock_input_tokens", input_tokens),
+        ("amazon_bedrock_output_tokens", output_tokens),
+    ]:
+        event = create_ingest_payload(
+            meter_api_name=meter_api_name,
+            meter_time_in_millis=int(round(time() * 1000)),
+            meter_value=meter_value,
+            customer_id="sales",
+            dimensions=dimensions,
+            # unique_id is the LLM response id
+            # and can link input and output tokens
+            unique_id=llm_result.get("id"),
+        )
+        metering_client.send(event)
 
 
 def main():
